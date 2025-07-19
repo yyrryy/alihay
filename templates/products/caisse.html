@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+{% if  request.user.retailer_user.retailer.caisse == 0 %}
+<div class="m-auto w-50">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Caisse initial</h4>
+        <form action="{% url 'product:addcaisse' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group mb-2">
+                <input type="number" class="form-control" id="caisse" name="caisse" placeholder="Caisse" required>
+            </div>
+            <button type="submit" class="btn btn-outline-danger">Submit</button>
+        </form>
+    </div>
+</div>
+{% else %}
+
+<!-- fixed bootom -->
+<div class="p-3 text-white d-flex justify-content-between" style="background: black;">
+    <h4>
+        Solde Caisse: {{caisse|floatformat:2}}
+    </h4>
+    <div class="d-flex">
+      <select class="years" name="" onchange="getsoldmonth()">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
+      <select class="months" name="" onchange="getsoldmonth()">
+        <option value="">--</option>
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05">05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
+      <div class="monthsold d-flex ms-5 align-items-center">
+        <div class="entree bg-success me-3 p-2 rounded">
+        </div>
+
+        <div class="sortie bg-danger me-3 p-2 rounded">
+        </div>
+
+        <div class="soldmonth">
+        </div>
+      </div>
+    </div>
+    <div class="d-flex">
+        <button class="btn btn-info bi" onclick="$('.addcaisse').toggleClass('d-none')"></button>
+        <div class="d-none addcaisse ms-5">
+            <input type="number">
+            <button class="btn btn-outline-light" onclick="updatecaise(event)">+</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div class="bg-white rounded shadow">
+            <div class="">
+                <h5 class="card-header bg-success text-white">ENTREES</h5>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Montant</th>
+					<th>Client</th>
+                                    <th>Raison</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in ins %}
+                                  {% if i.1 == 'pay' %}
+                                    <tr>
+                                        <td>{{i.0.created_at|date:'d/m/Y'}}</td>
+                                        <td>{{i.0.amount}}</td>
+                                        <td>{{i.0.client.customer_name}}</td>
+                                        <td>payments</td>
+                                    </tr>
+                                    {% elif i.1 == 'cont' %}
+                                    <tr>
+                                        <td>{{i.0.datebon|date:'d/m/Y'}}</td>
+                                        <td>{{i.0.grand_total}}</td>
+                                        <td>Comptoir</td>
+                                        <td>Ventes des produits</td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td>{{i.0.date|date:'d/m/Y'}}</td>
+                                        <td>{{i.0.amount}}</td>
+                                        <td colspan="2">Du caisse externe</td>
+                                    </tr>
+                                  {% endif %}
+                                {% endfor %}
+                                <!-- {% for ent in comptoir %}
+                                <tr>
+                                    <td>{{ent.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{ent.grand_total}}</td>
+                                    <td>Comptoir</td>
+                                    <td>Ventes des produits</td>
+                                </tr>
+                                {% endfor %}
+                                {% for ent in payments %}
+                                <tr>
+                                    <td>{{ent.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{ent.amount}}</td>
+				<td>{{ent.client.customer_name}}</td>
+                                    <td>payments</td>
+                                </tr>
+                                {% endfor %} -->
+
+                            </tbody>
+                    </table>
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+
+        <div class="bg-white rounded shadow">
+            <div class="outcaisseholder p-2 d-none">
+                <h4 class="bg-primary text-center text-white">
+                    Sortie caisse interieur
+                </h4>
+                <form action="{% url 'product:outcaisse' %}" method="post">
+                    <strong>Mantant</strong>
+                    <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{caisse}}')" required>
+                    <strong>Raison</strong>
+                    <textarea name="raison" class="form-control mb-2" cols="30" rows="10" required></textarea>
+                    <strong>Type</strong>
+                    <select name="typesortie" class="mb-2" required>
+                        <option value="">--</option>
+                        <option value="charge">Charges</option>
+                        <option value="externe">Caisse Exterieur</option>
+                    </select>
+                    
+                    <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div>
+                <h5 class="d-flex justify-content-between card-header bg-danger text-white">
+                    <div>
+                        SORTIES
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light" onclick="$('.outcaisseholder').toggleClass('d-none')">+</button>
+                    </div>
+                    <div>
+                        <select name="" id="" class="months"onchange="typeofouts(event)">
+                            <option value="">---</option>
+                            <option value="charges">charges</option>
+                            <option value="externe">extern</option>
+                        </select>
+                        <strong class="totaltype"></strong>
+                    </div>
+                </h5>
+                <div class="card-body">
+                    <strong>Sorties reguliers</strong>
+                  <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Montant</th>
+                                <th>Raison</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            {% for out in outs %}
+                            <tr>
+                                <td>{{out.date|date:'d/m/Y'}}</td>
+                                <td>{{out.amount}}</td>
+                                <td>
+                                    {% if out.charge %}
+                                    Charge - 
+                                    {% elif out.externe %}
+                                    Externe - 
+                                    {% endif %}
+                                    {{out.raison}}
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                  </table>
+                  <br>
+                  <!--<strong>Reglement Fournisseur espece</strong>
+                  <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Fournisseur</th>
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for out in supplierspayments %}
+                        <tr>
+                            <td>{{out.date|date:'d/m/Y'}}</td>
+                            <td>{{out.amount}}</td>
+                            <td>{{out.supplier.name}}</td>
+                            <td>Reglement</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                  </table>-->
+                  <br>
+                  <strong>Avoir Comptoir</strong>
+                  <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Client</th>
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for out in avoirclietns %}
+                        <tr>
+                            <td>{{out.created_at|date:'d/m/Y'}}</td>
+                            <td>{{out.grand_total}}</td>
+                            <td>{{out.customer.customer_name}}</td>
+                            <td>Avoir</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- out caisse modal -->
+<div class="modal fade" id="outcaissemodal" tabindex="-1" aria-labelledby="outcaissemodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form action="{% url 'product:outcaisse' %}" method="post">
+                <strong>Mantant</strong>
+                <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{caisse}}')">
+                <strong>Raison</strong>
+                <textarea name="raison" class="form-control mb-2" cols="30" rows="10" required>ff</textarea>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" name="externe" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Caisse Externe</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" name="charge" type="checkbox" role="switch" id="chargeswitch">
+                    <label class="form-check-label" for="chargeswitch">Charges</label>
+                </div>
+                <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                {% csrf_token %}
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function typeofouts(event){
+        type=$(event.target).val()
+        $.get('/product/typeofouts', {
+            'type':type
+        }, (data)=>{
+            $('.totaltype').text(data.total)
+            console.log(data)
+        })
+        
+    }
+    inactive=localStorage.getItem('inactive')||'1'
+      console.log('>>>>> ', inactive)
+      if (inactive=='1'){
+        console.log('its inactive')
+        $('.passwordscreen').removeClass('d-none')
+        $('.passwordinput').focus()
+      }else{
+        console.log('its not inactive')
+        checkForInactivity(120)
+      }
+    function getsoldmonth(){
+      $('.monthsold').css('filter', 'blur(2px)')
+      year=$('.years').val()
+      month=$('.months').val()
+      if (month==""){
+        alertify.error('ERROR')
+        return
+        $('.monthsold').css('filter', 'blur(0)')
+
+      }
+      $.get('/product/getsoldmonth', {'year':year, 'month':month}, (data)=>{
+        $('.entree').text(data.ins)
+        $('.sortie').text(data.outs)
+        $('.soldmonth').text(data.soldmonth)
+        $('.monthsold').css('filter', 'blur(0)')
+        
+      })
+    }
+    function updatecaise(event){
+        var amount = $(event.target).prev().val();
+        input=$(event.target).prev()
+        if (amount == '' || amount == 0){
+            console.log('eerrrr')
+            input.addClass('border-danger');
+            return;
+        }
+        $.get('/product/updatecaisse', {'amount': amount}, function(data){
+                location.reload();
+            }
+        )
+    }
+    
+</script>
+{% endblock %}

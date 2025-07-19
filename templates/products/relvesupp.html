@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+</head>
+<body>
+    <div class="container w-75 m-auto">
+        <button class="btn btn-primary" onclick="prt()">
+            Imprimer
+        </button>
+        <div class="mt-5" id="print">
+            Relvé du {{start_date}} au {{end_date}}
+          <br>
+            Fournisseur: {{supplier}}
+
+          <!-- <table class="table table-bordered mt-2">
+            <thead>
+              <th>Fournisseur</th>
+              <th>Total</th>
+              <th>Paiments</th>
+              <th>Avoirs</th>
+              <th>Reste</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  {{supplier}}
+                </td>
+                <td>
+                  {{supplier.total|floatformat:2 }}  DH
+                </td>
+                <td>
+                  {{totalpayments|floatformat:2 }}  DH
+                </td>
+                <td>
+                  {{totalavoirs|floatformat:2 }}  DH
+                </td>
+                <td>
+                  {{supplier.rest|floatformat:2 }}  DH
+                </td>
+              </tr>
+            </tbody>
+          </table> -->
+            <!-- <div class="d-flex">
+              <div>
+                <strong>
+                  Relvé de {{supplier}} <br>
+                  du {{start_date}} au {{end_date}}
+                </strong>
+              </div>
+              <div>
+
+                <strong>
+                  Total: {{totalbons}}
+                </strong>
+                <strong>
+                  Paiments: {{totalpayments}}
+                </strong>
+                <strong>
+                  Rest: {{rest}}
+                </strong>
+              </div>
+            </div> -->
+
+            <table class="table mt-3">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>N° bon</th>
+                    <th>Debit</th>
+                    <th>Credit</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in releve %}
+                  <tr>
+                    <td>
+                        {% if i.1 == 'bon' %}
+                        {{ i.0.bondate|date:'d/m/Y' }}
+                        {% elif i.1 == 'bonclient' %}
+                        {{ i.0.datebon|date:'d/m/Y' }}
+                        {% elif i.1 == 'avoirclient'  %}
+                        {{ i.0.created_at|date:'d/m/Y' }}
+                        {% else %}
+                        {{ i.0.date|date:'d/m/Y' }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if i.1 == 'bon' %}
+                        Bon d'entrée {{i.0.nbon}}
+                        {% elif i.1 == 'avoir' %}
+                        Avoir {{i.0.receipt_no}}
+                        {% elif i.1 == 'bonclient' %}
+                        Bon client {{i.0.receipt_no}}
+                        {% elif i.1 == 'avoirclient'  %}
+                        Avoir cl. {{ i.0.receipt_no }}
+                        {% else %}
+                        Reglement {{i.0.mode}} {% if i.0.npiece %}{{i.0.npiece}} {% endif %} {% if i.0.note %}({{i.0.note}}){% endif %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if i.1 == 'bon' %}
+                        {{ i.0.total }} DH
+                        {% elif i.1 == 'avoirclient'  %}
+                        {{ i.0.grand_total }}
+                        {% elif i.1 == 'reglclient' %}
+                        {{i.0.amount}}
+                        {% else %}
+                        --
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if i.1 == 'bon' %}
+
+                        {% elif i.1 == 'avoirclient'  %}
+                        {% elif i.1 == 'reglclient' %}
+
+                        {% elif i.1 == 'avoir' %}
+                        {{ i.0.total }} DH
+                        {% elif i.1 == 'bonclient' %}
+                        {{ i.0.grand_total }} DH
+
+                        {% else %}
+                        {{ i.0.amount }} DH
+                        {% endif %}
+                    </td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+
+                  {% endfor %}
+
+
+                  <tr>
+                    <td colspan="2">
+                      Totaux
+                    </td>
+                    <td>
+                      {{totaldebit|floatformat:2}} DH
+                    </td>
+                    <td>
+                      {{totalcredit|floatformat:2}} DH
+                    </td>
+                    <td>Sold</td>
+                    <td>
+                      {{supplier.rest|floatformat:2}} DH
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- <strong>
+                Le reste: {{supplier.rest}} DH
+              </strong> -->
+        </div>
+
+    </div>
+    <script>
+        function prt(){
+          var printContents = document.getElementById('print').innerHTML;
+          var originalContents = document.body.innerHTML;
+          document.body.innerHTML = printContents;
+          document.querySelector('.table').style.fontSize= '11px'
+          document.querySelectorAll('td').forEach(el => el.style.padding = '1px');
+          document.body.classList.add('p-3')
+          window.print();
+          document.body.innerHTML = originalContents;
+        }
+    </script>
+</body>
+</html>

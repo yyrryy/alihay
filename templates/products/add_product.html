@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% block content %}
+<div class="container">
+
+    <div class="border p-3 ">
+        
+    
+        <form method="post" action="{% url 'product:addoneproduct' %}" enctype="multipart/form-data" class="addoneproductform">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="mb-3 col-6">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <strong for="">Categorie (*)</strong>
+                        <div class="addcategory col-4 d-none">
+                            <div class="my-1">
+                            <div class="input-group">
+                                <input type="text" class="form-control addcategoryinput" placeholder="Category">
+                                <div class="input-group-prepend">
+                                <div class="input-group-text" onclick="addcategoryajax(event)">+</div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <span class="btn me-3 border" onclick="$('.addcategory').toggleClass('d-none');$('.addcategoryinput').focus()">+</span>
+                        <!-- <span class="fa fa-refresh btn btn-dark me-3 border refreshmark"></span> -->
+                    </div>
+                    <select class="form-select checkref select2 notempty categoryselect" name="category">
+                        <option value=""></option>
+                        {% for i in children %}
+                        <option value="{{i.id}}">
+                            {{i.name.upper}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <strong>
+                        Marque (*)
+                      </strong>
+                      <div class="addmark col-4 d-none">
+                          <div class="my-1">
+                            <div class="input-group">
+                                <input type="text" class="form-control addmarkinput" placeholder="Marque">
+                                <div class="input-group-prepend">
+                                  <div class="input-group-text" onclick="addmarkajax(event)">+</div>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+                        <span class="btn me-3 border" onclick="$('.addmark').toggleClass('d-none');$('.addmarkinput').focus()">+</span>
+                        <!-- <span class="fa fa-refresh btn btn-dark me-3 refreshmark"></span> -->
+                    </div>
+                    <select class="form-select checkref markselect select2 notempty" type="text" name="mark">
+                        <option value=""></option>
+                        {% for i in marks %}
+                        <option value="{{i.id}}">
+                            {{i.name.upper}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <strong for="">
+                    Image
+                </strong>
+                <input type="file" class="form-control" name="image">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6
+                mb-3">
+                    <b class="text-center text-danger checkerror d-none">
+                        Deja existé
+                    </b>
+                    <div>
+                        <strong>
+                            Ref. (*)
+                        </strong>
+                        <input class="form-control checkref notempty refinput" type="text" name="ref" >
+                    </div>
+
+                </div>
+                <div class="col-md-6
+                mb-3">
+                    <strong>
+                        Designation (*)
+                    </strong>
+                    <input  class="form-control notempty carinput" type="text" name="car" >
+                </div>
+            </div>
+            <!-- <div class="mb-3">
+                <strong>
+                    Article
+                </strong>
+                <input class="form-control" required type="text" name="name" >
+            </div> -->
+            <div class="mb-3">
+                <strong>
+                    Fournisseur
+                </strong>
+                <select class="form-select supplierselect select2" type="text" name="originsupp">
+                    <option value=""></option>
+                    {% for i in suppliers %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- <div class="mb-3">
+                <strong for="">
+                    Prix ventes
+                </strong>
+                <input required type="number" class="form-control" name="price" min="0" step="0.01">
+            </div> -->
+            <div class="row">
+                <div class="col-6">
+                    <strong>
+                        Prix vente compt.
+                    </strong>
+                    <input type="number" class="form-control prventemaginput" name="prventemag" min="0" step="0.01">
+                </div>
+
+                <div class="col-6">
+                    <strong>
+                        Prix Vente Gro
+                    </strong>
+                    <input type="number" class="form-control prventegroinput" name="prventegro" min="0" step="0.01">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-6">
+                    <strong>
+                        Prix acht
+                    </strong>
+                    <input type="number" class="form-control prachatinput" name="prachat" min="0" step="0.01">
+                </div>
+                <div class="col-6">
+                    <strong>
+                        Remise %
+                    </strong>
+                    <input type="number" class="form-control remiseinput" name="remise" min="0" step="0.01">
+                </div>
+
+            </div>
+            <div class="mb-3">
+                <strong for="">
+                    Stock
+                </strong>
+                <input class="form-control stockinput" type="number" name="stock" min="0">
+            </div>
+            <div class="mb-3">
+                <strong for="">
+                    Stock min.
+                </strong>
+                <input class="form-control minstockinput" type="number" name="minstock" min="0">
+            </div>
+
+
+
+            <button class="btn btn-primary addoneproductbtn" disabled onclick="addoneproduct(event)">Ajouter</button>
+
+        </form>
+
+        <div class="d-flex justify-content-between">
+
+
+        </div>
+
+
+
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    // precvent enter key from sending
+    $(document).on("keypress", ":input:not(textarea)", function(event) {
+        return event.keyCode != 13;
+    }); 
+
+    $(document).ready(()=>{
+
+
+
+
+        $('.refreshmark').on('click', ()=>{
+            $.ajax({
+                url: "{% url 'product:refreshmark' %}",
+                type: "GET",
+                success: (data)=>{
+                    $('.markselect').html(data.data)
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

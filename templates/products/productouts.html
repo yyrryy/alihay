@@ -1,0 +1,29 @@
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>
+                date
+            </th>
+            <th>quantity</th>
+            <th>Prix</th>
+            <th>N° bon</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in stockout %}
+        <tr>
+            <td>{{ i.invoice.datebon|date:'d/m/Y' }}</td>
+            <td class="qtyofout">{{ i.quantity }}</td>
+            <td class="priceofout">{{ i.price }}</td>
+            <td>
+                <button class="btn btn-primary" onclick="bondata({{ i.invoice.id }})">
+                    {{ i.invoice.receipt_no }}
+                </button>
+                <button class="btn fa fa-arrow-up" onclick="$('.addpriceinp').val('{{i.price}}'), populateavoirclient(event)"></button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>

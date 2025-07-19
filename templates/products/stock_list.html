@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+{% block content %}
+
+<div class="content-panel table-responsive p-3">
+
+
+
+    <div class="p-2 d-flex justify-content-between">
+        <form enctype="multipart/form-data" action="{% url 'product:addbulk' %}" method="post">
+            <input type="file" name="productsfile" id="" required>
+            <button class="btn btn-primary submitbulk">
+                Ajouter
+            </button>
+        </form>
+        <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Ajouter un article
+        </button>
+    </div>
+    <table class="table table-striped table-bordered table-advance table-hover item-table">
+        <div class="d-flex align-items-center justify-content-between">
+            <h2>{{length}} Articles</h2>
+            <a class="text-danger" href=" {% url 'product:lowstock' %} ">
+                Alert du Stock <span class="bg-danger rounded px-3 text-white">{{p_n}}</span>
+            </a>
+        </div>
+        
+        <!-- <div class="d-flex justify-content-between p-2">        
+            <div class="pagination">
+                {% for page_number in page_obj.paginator.page_range %}
+                        <a
+                            href="?page={{ page_number }}"
+                            class="p-2 h5 m-2 border-bottom border-3{% if page_number == page_obj.number %} border-primary{% endif %}"
+                        >
+                        <b>
+                            {{page_number}}
+                        </b>
+                    </a>
+                {% endfor %}
+            </div>
+            <a class="text-danger" href=" {% url 'product:lowstock' %} ">
+                Alert du Stock <span class="bg-danger rounded px-3 text-white">{{p_n}}</span>
+            </a>
+        </div> -->
+
+        <div class="row" style="padding: 5px">
+            <div class="">
+                <input type="text" class="form-control name_search" placeholder="Chercher un article" >
+            </div>
+        </div>
+        <hr>
+        
+        <thead>
+        <tr>
+            <th class="text-center"><i class="fa fa-bullhorn"></i> Article</th>
+            <th class="text-center"><i class="fa fa-question-circle"></i> Marque </th>
+            <!-- <th class="text-center"><i class=" fa fa-bookmark"></i> Unit</th> -->
+            <th class="text-center"><i class=" fa fa-bookmark"></i> Stock</th>
+            <th>Prix achat</th>
+            <th>
+                prix vente
+            </th>
+            <!-- <th class="text-center"><i class=" fa fa-edit"></i> Purchased Items</th>
+            <th class="text-center"><i class=" fa fa-edit"></i> Bar Code</th> -->
+            <th class="text-center" style="width:15%;">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="product-table-body text-center product_search_result">
+        <!-- {% for item in object_list %}
+            <tr>
+                <td>{{ item.name}}</td>
+                <td>{{ item.stock|floatformat:-2 }}</td>
+                <td>{{ item.bar_code}}</td> 
+                <td>
+                    <a href="{% url 'product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a>
+                    <a href="{% url 'product:stockin_list' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                    <a href="{% url 'product:stockout_list' product_id=item.id %}"><button class="btn btn-danger btn-xs" title="Stock Out">الخروج</button></a>
+                        delete item is commented for now cause of the factorizaation -->
+                    <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+
+                    <!-- old code 
+                    <a href="{% url 'product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                    <a href="{% url 'product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a
+                </td>
+            </tr>
+        {% endfor %} -->
+        </tbody>
+    </table>
+    
+</div>
+<!-- add one product model -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+        
+        <div class="modal-body">
+          <form class="addoneproductform" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input class="form-control" required type="text" name="productname" placeholder="Article">
+            </div>
+            <div class="mb-3">
+                <input required type="number" class="form-control" name="productprice" placeholder="Prix vent">
+            </div>
+            <div class="mb-3">
+                <input type="number" required class="form-control" name="productprachat" placeholder="Prix achat">    
+            </div>
+            <div class="mb-3">
+                <input class="form-control" required type="number" name="productstock" placeholder="Stock">
+            </div>
+            <div class="mb-3">
+                <input class="form-control" type="text" name="productbrand" placeholder="Marque">
+            </div>
+            <button type="submit" class="btn btn-primary addoneproductbtn">Submit</button>
+
+        </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+    $(document).ready(function(){
+      $(".search-product").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $(".product-table-body tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+</script>
+
+<!-- old code 
+<div class="col-md-12">
+    <br>
+    
+    <br><br><br>
+    <div class="content-panel table-responsive p-2">
+        <table class="table table-striped table-bordered table-advance table-hover item-table">
+            <div class="d-flex justify-content-between w-100">
+                <div class="d-flex" style="padding: 5px">
+                    <div>
+                        <input type="text" class="form-control name_search" placeholder="Article" >
+                    </div>
+                    <div >
+                        <button class="btn btn-primary search">>></button>
+                    </div>
+                </div>
+                <div>
+                    <form enctype="multipart/form-data" action="{% url 'product:addbulk' %}" method="post">
+                        <input type="file" name="productsfile" id="" required>
+                        <button class="btn btn-primary submitbulk">
+                            Ajouter
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <hr>
+            {% if paginator.page_range|length > 1 %}
+            <div class="d-flex justify-content-between">
+                <a  style="background-color: #3070A8; color: white" class="page_previous" href="{% if page_obj.has_previous %}{% url 'product:stock_items_list' %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" title="Previous"><<</a><a style="background-color: #3070A8; color: white" class="page_next" href="{% if page_obj.has_next %}{% url 'product:stock_items_list' %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}" title="Next">>></a>
+            </div>
+        {% endif %}
+            <div class="input-group custom-search-form col-md-4" style="left: 5px">
+                <input type="text" class="form-control search-product" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+            <thead>
+            <tr>
+                <th class="text-center">Article</th>
+                <th class="text-center">Marque</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Bar Code</th>
+                <th class="text-center">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="product-table-body text-center">
+            {% for item in object_list %}
+                <tr>
+                    <td>{{ item.name}}</td>
+                    <td>{{ item.stock|floatformat:-2 }}</td>
+                    <td>{{ item.bar_code }}</td>
+                    <td>
+                        <a href="{% url 'product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a>
+                        <a href="{% url 'product:stockin_list' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                        <a href="{% url 'product:stockout_list' product_id=item.id %}"><button class="btn btn-danger btn-xs" title="Stock Out">الخروج</button></a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% if paginator.page_range|length > 1 %}
+            <div class="text-center">
+                <ul class="pagination d-flex justify-content-between"></ul>
+                    <li><a  style="background-color: #3070A8; color: white" class="page_previous" href="{% if page_obj.has_previous %}{% url 'product:stock_items_list' %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" title="Previous"><<</a></li>
+                    <li><a style="background-color: #3070A8; color: white" class="page_next" href="{% if page_obj.has_next %}{% url 'product:stock_items_list' %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}" title="Next">>></a></li>
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>-->
+    
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    // document ready
+
+
+    // $('.submitbulk').on('clcik', (e)=>{
+    //     console.log('hello')
+    //     e.preventDefault
+    //     var form = new FormData();
+    //     form.append("file", $('input[name=productsfile]')[0].files[0]);
+    //     $.ajax({
+    //         url: "{% url 'product:addbulk' %}",
+    //         type: "POST",
+    //         data: form,
+    //         processData: false,
+    //         contentType: false,
+    //         success: function (data) {
+    //             console.log('data')
+    //         }
+    //     });
+
+    // })
+    $(function () {
+        $('.name_search').on('input', function () {
+            console.log('rrr')
+            if ($('.name_search').val()==''){
+                $('.product_search_result').html('')
+            }
+            else{
+                $.ajax({
+                url: "/product/product_search",
+                type: "POST",
+                data: {
+                    'name': $('.name_search').val(),
+                },
+                success: function (data) {
+                    $('.product_search_result').html(data.data)
+                }
+            })
+            }
+        });
+        
+
+
+        $('.deleteproduct').each((i, el)=>{
+            $(el).on('click', ()=>{
+                t=$(el)
+                if (confirm('Supprimer ?')){
+                    $.ajax({
+                        url: "{% url 'product:delete_product' %}",
+                        type: "POST",
+                        data: {
+                            'id': t.attr('data-id'),
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            if (data.status == 'success'){
+                                t.parent().parent().remove()
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data)
+                        }
+                    });
+                }
+            })
+        })
+    
+        $('.addoneproductbtn').on('click', (e)=>{
+            $('.addoneproductbtn').attr('disabled', true)
+            if ($('[name=productname]').val() == '' || $('[name=productprice]').val() == '' || $('[name=productstock]').val() == '' || $('[name=productprachat]').val() == '' ){
+                alert('Veuillez remplir tous les champs')
+                return
+            }
+            e.preventDefault();
+            // send data to server
+            $.ajax({
+                url: "{% url 'product:addoneproduct' %}",
+                type: "POST",
+                data: {
+                    'name':$('[name=productname]').val(),
+                    'brand':$('[name=productbrand]').val(),
+                    'price':$('[name=productprice]').val(),
+                    'stock':$('[name=productstock]').val(),
+                    'prachat':$('[name=productprachat]').val(),
+                    'unit':$('[name=productunit]').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    console.log(data)
+                    $('.product-table-body').prepend(`
+                            <tr>
+                                <td>${data.data.name}</td>
+                                <td>${data.data.brand}</td>
+                                <td>${data.data.stock}</td>
+                                <td>
+                                    <a href="{% url 'product:update_product' pk=0 %}${data.data.id}"><button class="btn btn-success btn-xs">Modifier</button></a>
+                                    <a href="{% url 'product:stockin_list' product_id=0 %}${data.data.id}"><button class="btn btn-primary btn-xs"><i class="fa fa-plus
+                                    "></i></button></a>
+                                    <a href="{% url 'product:stockout_list' product_id=0 %}${data.data.id}"><button class="btn btn-danger btn-xs" title="Stock Out">الخروج</button></a>
+                                </td>
+                            </tr>
+                        `)
+                    // clear form   
+                    $('form')[2].reset()
+                    location.reload()
+                },
+                // refresh 
+
+        })
+    });
+    }); 
+
+</script>
+{% endblock %}

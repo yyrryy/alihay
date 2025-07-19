@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <br>
+        <!-- <a href="{% url 'product:stock_items_list' %}"><button type="button" id="back-product" class="btn btn-primary fa fa-arrow-left" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a> -->
+        <br><br><br>
+        <div class="content-panel p-2">
+
+            <div class="panel-body">
+                <form class="form-horizontal add-product-form" action="{% url 'product:update_product' pk=object.id %}" method="post" autocomplete="off">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            {% csrf_token %}
+                            <label><strong>Article</strong></label>
+                            <input type="text" class="form-control product_name" name="name"   placeholder="Article" value="{{ object.name|title }}"><br>
+                            <label><strong> Prix ventes </strong></label>
+                            <input type="text" class="form-control product_name" name="price"   placeholder="Prix" value="{{ object.price }}"><br>
+                            <label><strong> Prix acht </strong></label>
+                            <input type="text" class="form-control product_name" name="pr_achat"   placeholder="Prix d'achat" value="{{ object.pr_achat}}"><br>
+                            
+                            <br>
+
+                            <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+                            <button type="submit" id="save" class="btn btn-primary product-submit-btn" style="float: right" >Enregister</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<script>
+
+$('#back-product').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

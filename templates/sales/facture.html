@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture_{{inv.id}}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+</head>
+<body>
+    <div class="text-end">
+        <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="printfacture('{{inv.id}}')">
+          <i class="fa fa-print mr-1"></i> Print </a>
+        
+      </div>
+    <div class="container-fluid mt-100 mb-100">
+        <div id="ui-view">
+          <div class=" d-flex flex-column" id="invoice">
+              <div class="d-flex justify-content-between px-3">
+                <div>
+                  <h1>
+                    {{user.retailer_user.retailer.name}}
+                  </h1><br>
+                  Facture N°: {{inv.receipt_no}} <br>
+                  Date: {{inv.datebon | date:'d/m/Y'}}
+                </div>
+                <div>
+                  
+                  <div>
+		<br>
+                    STE: 
+                  <strong>{{ inv.customer.customer_name }}.</strong>
+                </div>
+                <div>ICE: {{ inv.customer.ice }}</div>
+		<div>ADRESSE: {{ inv.customer.address}}</div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-bordered text-center mt-3">
+                  <thead>
+                    <tr>
+                      <th class="center">Qté</th> 
+                      <th>Item</th>
+                      <th class="right">Prix unit.</th>
+                      <th class="right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody >
+                      {% for i in inv.purchased_items.all %}
+                    <tr>
+                      <td >
+                        {{ i.quantity|floatformat:-2}}
+                      </td>
+                      <td class="left">{{i.product.car}}</td>
+                      <td class="center">{{i.price|floatformat:2}}</td>
+                      <td >
+                          {{ i.purchase_amount|floatformat:2 }}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                      <td></td>
+                    </tr>
+                    
+                  
+                  <!-- <tr>
+                      <td colspan="2"></td>
+                      <td>TVA</td>
+                      <td>{{tva}} Dh</td>
+                  </tr>
+                  <tr>
+                      <td colspan="2"></td>
+                      <td>Total TTC</td>
+                      <td>{{totalttc}} Dh</td>
+                  </tr> -->
+                  </tbody>
+                  <tfoot>
+                      
+                  </tfoot>
+                </table>
+
+              </div>
+              <div class="mt-3 row">
+                <div class="col-8">
+                  arrête la presente facture à la somme de: <br>
+                    <strong class="frenchword"></strong> <br><br><br>
+		<strong class='mt-5'> Vent Hors Champs de TVA (Art 89-2° du CGI)</strong>
+                </div>
+                <div class="d-flex flex-column col-4" >
+                  <div class="p-2 d-flex justify-content-between border">
+                    <p>Total</p>
+                    <p>
+                      <b>{{inv.grand_total}}</b>
+                    </p>
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="foooterfacture w-100">
+                
+                <hr>
+                <div class="text-center">
+                  <div >
+                    {{request.user.retailer_user.name}} {{request.user.retailer_user.address}}<br>TEL: {{request.user.retailer_user.phone}} ICE: {{request.user.retailer_user.ice}} IF:{{request.user.retailer_user.id_fiscal}} TP:{{request.user.retailer_user.tp}}
+                  </div>
+		<div> 
+                  
+                </div>
+              </div> 
+          </div>
+            
+        </div>
+    </div>
+</body>
+<script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+<script src="/static/js/spellingnumbers.js"></script>
+<script>
+
+  
+    $('.frenchword').text($.spellingNumber({{inv.grand_total|floatformat:2}}, {
+    lang:'fr',
+    wholesUnit:"Dirhams",
+    fractionUnit:"cents",
+    digitsLengthW2F: 2,
+    decimalSeperator:"et"
+
+  }))
+console.log('rr', {{inv.grand_total}})
+</script>
+</html>

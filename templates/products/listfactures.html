@@ -1,0 +1,607 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+
+
+<div class="bg-white shadow rounded p-2 rounded">
+    <a href="/product/factureview" class="btn btn-success"
+    style="border-radius: 10px;"
+    >
+        Ajouter facture
+    </a>
+  <div class="accordion" id="accordionreglbl">
+    <div class="">
+
+        
+
+      <div id="collapsereglbl" class="collapse" aria-labelledby="headingOne" data-parent="#accordionreglbl">
+        <div class="card-body border shadow rounded">
+            <div class="row">
+
+                <div class="d-flex justify-content-between">
+                    <!-- <div class="">
+                        <small>Date:</small> <br>
+                        <input type="date" name="datereglementclientbl" class="w-100 notempty datereglement mb-2" value="{{today|date:'Y-m-d'}}" onchange="checkyearreglbl(event)">
+                        <small class="errordatereglclbl text-danger d-none">
+                          Date incorrect
+                        </small>
+                    </div> -->
+                    <!-- <button type="button" name="button" class="btn bg-darkblue text-white" onclick="refreshselectclient(event)">↻</button> -->
+                    <div class="col-3">
+                      <select name="addreglementclientsbl" id="" class="form-select addreglementclientsbl select2client" style="width:100%;">
+
+                      </select>
+                    </div>
+                </div>
+
+                
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <small>Bons:</small> <strong class="totalcheckedbl">0.00</strong><br>
+                        </div>
+                        
+                        
+                    </div>
+
+                    <div class="mb-2 mt-2 listaddreglblholder" style="max-height: 150px; overflow-y: scroll;">
+
+                        <table class="table table-bordered listaddreglbl table-hover" style="font-size: 12px;">
+                            <thead style="position: sticky; top: 0; background: white;">
+                                <tr>
+                                    <td>
+                                        Date
+                                    </td>
+                                    <td>
+                                        N° Bon
+                                    </td>
+                                    <td>
+                                        Client
+                                    </td>
+                                    <td>
+                                        total
+                                    </td>
+                                    <td>
+                                      <input type="checkbox">
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody class="reglementclientbonholder">
+                            </tbody>
+                            
+
+                        </table>
+                        <!-- <select name="addreglementbons disabled" id="" class="select2 form-select " multiple="multiple">
+
+                        </select> -->
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small>Client facture:</small><br>
+                            <select name="clientoffacture" id="" class="clientoffacture"></select>
+                        </div>
+                        <div>
+                          <small>Date:</small><br>
+                          <input type="date" class="dateoffacture form-control" value="{{lastdatefacture|date:'Y-m-d'}}">
+                      </div>
+                      <div>
+                        <small>N° facture:</small><br>
+                        <input readonly value="{{receipt_no}}" type="text" class="facture_no form-control">
+                      </div>
+                    </div>
+                    <button class="btn text-white w-100 facturemultiple" style="background: #00538c;">
+                        Valider
+                    </button>
+                    <!-- <div class="mb-2">
+                        <small>Facture</small>
+                        <select name="addreglementbons disabled" id="" class="select2 form-select " multiple="multiple">
+
+                        </select>
+                    </div>
+
+                    <select name="addreglementfactures disabled" id="" class="select2 form-select " multiple="multiple">
+
+                    </select> -->
+
+                </div>
+                <div class="mt-3">
+                    {% csrf_token %}
+
+
+                </div>
+
+            </div>
+        </div>
+      </div>
+</div>
+  <div class="bg-orange text-white p-2">
+    <div class="d-flex justify-content-between">
+      <div>
+        <div class="d-flex">
+          <div class="me-2">
+            <!-- <input type="date" name="" id="" class="startdatelistfc" value="{{today|date:'Y-m-d'}}"> -->
+            <input type="date" name="" id="" class="startdatelistfc">
+          </div>
+          <div>
+            <input type="date" name="" id="" class="enddatelistfc">
+          </div>
+          <div>
+            <button class="btn btn-sm bg-dark text-white filterfcdate">Filtrer</button>
+            <button class="btn btn-success bi bi-download" onclick="exportfc(event)">
+          
+            </button>
+          </div>
+
+        </div>
+      <input style="width:20em; border-radius: 10px;" type="text" name="" id="" placeholder="Recherche" class="searchinputlistfactures mt-2" waiting="1">
+        <!-- waiting means the search is in waiting list -->
+      </div>
+
+      <div class="d-flex flex-column">
+        <select name="yearsfc" class="populateyears rounded" onchange="yeardatafc()">
+
+
+        </select>
+        
+      </div>
+      <!-- <div style="color: red; cursor: pointer; padding: 7px; border-radius: 12px; height: 2.5em; width: 4em;" title="BON 3 MOIS" class="bg-white text-center" onclick="getnotpaidfc(event)">
+        {{depasserfc}}
+
+      </div> -->
+      
+
+    </div>
+    <div class="d-flex">
+    </div>
+  </div>
+
+    <div class="listfcholder" style="height:70vh;overflow: scroll;">
+      <table class="table table-bordered table-hover facturestable listfctable" style="font-size: 12px;" id="">
+        <thead style="background: rgb(231, 231, 231); position: sticky;top: 0;">
+
+          <tr>
+            <td  onclick="sorttable(event)">N° facture</td>
+            <td  onclick="sorttable(event)">
+              <div class="d-flex justify-content-between align-items-center">
+                <!-- <button class="btn btn-sm" style="font-size: 6px; background: #f06623; color: white;" onclick="sortupfc(event)">↑</button>  -->
+                <div>Date</div>
+                <!-- <button class="btn btn-sm" style="font-size: 6px; background: #f06623; color: white;" onclick="sortdownfc(event)">↓</button>  -->
+              </div>
+            </td>
+            <td onclick="sorttable(event)">Total TTC</td>
+            <td onclick="sorttable(event)">HT</td>
+            <td onclick="sorttable(event)">TVA</td>
+            <td onclick="sorttable(event)">Client</td>
+            <!-- <td onclick="sorttable(event)">Solde fc cl.</td> -->
+            <!-- <td onclick="sorttable(event)">Repr</td> -->
+            <td onclick="sorttable(event)">Staus</td>
+            <td></td>
+            <!-- <td style="width: 5%;" onclick="sorttable(event)">Comptablisé</td> -->
+          </tr>
+        </thead>
+        <tbody class="listfcbody">
+          {% for order in bons %}
+            <tr class="ord fc-row" orderid="{{order.code}}"  mode="waiting"
+            >
+              <td>{{ order.facture_no }}</td>
+              <td>{{ order.date|date:'d/m/Y' }}</td>
+              <td>{{ order.total|floatformat:2|intspace}}</td>
+              <td>{{ order.ht|floatformat:2|intspace}}</td>
+              <td>{{ order.thistva|floatformat:2|intspace}}</td>
+              <td>{{ order.client.customer_name }}</td>
+              <!-- <td>{{ order.client.soldfacture|floatformat:2|intspace }}</td> -->
+              <!-- <td>{{ order.salseman }}</td> -->
+              <td>
+              {% if order.ispaid %}
+              <div  style="text-align: center; background: lightgreen;">
+                Payé
+              </div>
+
+              {% else %}
+              <div class="" style="text-align: center; background: rgb(255, 77, 0);">
+                Non payé
+              </div>
+              {% endif %}
+            </td>
+
+                <td class="d-flex">
+                  {% if order.isaccount %}
+                  <i class="bi bi-check h3"></i>
+                  {% endif %}
+                  <button title="Imprimer" class="btn btn-sm fa fa-eye" onclick="facturedata('{{order.id}}')"></button>
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <thead style="position: sticky;bottom: 0;">
+
+          <tr>
+            <td></td>
+            <td></td>
+            <td class="totalfc" style="background: yellowgreen;">{{total}}</td>
+            <td class="totalfctva"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            
+            <td></td>
+          </tr>
+        <!-- <tfoot>
+          <tr>
+            <td>N° bon</td>
+            <td>Date</td>
+            <td>Client</td>
+            <td>Code client</td>
+            <td>Total</td>
+            <td>Region</td>
+            <td>Ville</td>
+            <td>Solde cl.</td>
+            <td>Repr</td>
+            <td>N° bon</td>
+            <td>Facturé</td>
+            <td>Transport</td>
+          </tr>
+        </tfoot> -->
+      </table>
+    </div>
+    <!-- <div class="totalfc"></div> -->
+</div>
+
+
+
+
+<script>
+  function facturedata(id){
+      $('.bondataholder').removeClass('d-none')
+      $.get("{% url 'product:facturedata' %}",{id:id},function(data){
+          $('.bondata').html(data.data)
+      })
+  }
+  currentPagelistfc=1
+  loadinglistfc = false;
+  function getfacturevalider(){
+    $('.searchinputlistfactures').attr('waiting', '0')
+    $('.listfcbody').addClass('blurred')
+    $.get('/products/getfacturevalider?target={{target}}', (data)=>{
+      $('.listfcbody').html(data.html)
+      $('.totalfc').html(data.total)
+      $('.listfcbody').removeClass('blurred')
+    })
+  }
+  $(function(){
+      $('.addreglementclientsbl').select2({
+        minimumInputLength: 1,
+        placeholder:'Chercher client',
+        ajax: {
+          type:'get',
+          dataType: 'json',
+          url: '/products/searchclient?target={{target}}',
+          data: function (params) {
+            var query = {
+              term: params.term,
+            }
+            // Query parameters will be ?search=[term]&type=public
+            return query;
+          },
+          proccessresults: function (data) {
+              return {
+                results:data.results
+              }
+          },
+          cache:true
+        }
+      });
+      $('.clientoffacture').select2({
+        minimumInputLength: 1,
+        placeholder:'Chercher client',
+        ajax: {
+          type:'get',
+          dataType: 'json',
+          url: '/products/searchclient?target={{target}}',
+          data: function (params) {
+            var query = {
+              term: params.term,
+            }
+            // Query parameters will be ?search=[term]&type=public
+            return query;
+          },
+          proccessresults: function (data) {
+              return {
+                results:data.results
+              }
+          },
+          cache:true
+        }
+      });
+
+    })
+
+  $(document).ready(function () {
+    // popukate years starting from 2024
+    console.log('>> populating years')
+    const $select = $('.populateyears');
+    const currentYear = new Date().getFullYear();
+    const startYear = 2025;
+    console.log('startYear, currentYear', startYear, currentYear)
+
+    for (let year = startYear; year <= currentYear; year++) {
+        $select.prepend($('<option>', {
+            value: year,
+            text: year
+        }));
+    }
+    $select.val(currentYear);
+  })
+  function handleScrollreglblcl () {
+      console.log('scroll')
+      console.log(currentPageblregl, loadingblregl)
+
+      const container = $('.listaddreglblholder')[0]; // Get the native DOM element
+
+      const lastRow = document.querySelector('.blreglrow:last-child');
+      let clientid=lastRow.getAttribute('clientid')
+      let nonregllist=lastRow.classList.contains('nr')?1:0
+      const lastRowOffset = lastRow.offsetTop + lastRow.clientHeight;
+
+      const containerBottom = container.scrollTop + container.clientHeight;
+
+      if (containerBottom+900 >= lastRowOffset && !loadingblregl) {
+          currentPageblregl++;
+          loadMoreRecordsreglblcl(clientid, nonregllist);
+      }
+    };
+
+  $('[name="addreglementclientsbl"]').on('change', function(){
+        currentPageblregl=1
+        loadingblregl = false;
+        $('.listaddreglblholder').on('scroll', handleScrollreglblcl)
+        if ($(this).val()==""){
+            // disable the divholder of the multiselects
+            // disable the button
+            $('.submitaddreglemntclientbtn').addClass('disabled')
+            return
+        }
+        $('.submitaddreglemntclientbtn').removeClass('disabled')
+        $('.reglementbonsholder').removeClass('d-none')
+        clientid=$(this).val()
+        $('.loadingscreen').removeClass('d-none')
+        $.post('/products/getclientbonsforfacture', {
+            clientid:clientid,
+            target:'{{target}}',
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+            }, function(data){
+                console.log(data)
+                $('.loadingscreen').addClass('d-none')
+                $('.reglementclientbonholder').html(data.trs)
+                $('.totalbonsbl').text(data.total)
+                $('.soldblregl').text((data.soldbl).toFixed(2))
+                // $('.select2').select2()
+            // populate bons multiselect
+        })
+        // enable the divholder of the multiselects
+        // get client bons
+        //populate bons multiselect
+        // get client facture
+        // populate facture multiselect
+    })
+
+    
+  function makefacturecompta(event, factureid){
+    tr=$(event.target).parent().parent()
+    $.get('/products/comptable', {
+      'factureid':factureid
+    }, (data)=>{
+      tr.find('td')[13].append('✔')
+    })
+  }
+  function getcompatbilse() {
+    console.log('>>>>>>>ss');
+    var year = $('[name="yearsfc"]').val();  // Get the value of the year input field
+    $.get('/products/getcompatbilse', { year: year }, function(data) {
+        $('.listfcbody').html(data.trs);
+        $('.totalbonsfc').text(data.total);
+    });
+  }
+  function getnotpaidfc(event) {
+    let parentdiv=$(event.target).parent().parent().parent()
+    $.get(
+      'products/getnotpaidfc',
+      (data)=>
+{        $('.listfcbody').html(data.html)
+        $('.totalfc').text(data.total)
+      }
+    )
+  }
+  function exportfc(event){
+    startdatelistfc=$('.startdatelistfc').val()
+    enddatelistfc=$('.enddatelistfc').val()
+    let year=$('.populateyears').val()
+    if (startdatelistfc==''||enddatelistfc==''){
+      alertify.error('Date')
+      return
+    }
+    console.log('date', startdatelistfc, enddatelistfc)
+    let url = `/products/exportfc?year=${year}&target={{target}}&startdate=${startdatelistfc}&enddate=${enddatelistfc}`;
+
+    // Create a hidden iframe to trigger the file download
+    var iframe = $('<iframe>', {
+        id: 'download-frame',
+        src: url,
+        style: 'display: none;',
+    }).appendTo('body');
+
+    // Remove the iframe after download
+    iframe.on('load', function () {
+        iframe.remove();
+    });
+  }
+  function yeardatafc(){
+    let year=$('select[name="yearsfc"]').val()
+    if (year==''){return}
+    currentPagelistfc=1
+    loadinglistfc = false;
+    $('.listfcholder').on('scroll', handleScrolllistfc);
+    $.get('/products/yeardatafc?target={{target}}', {year:year}, (data)=>{
+      $('.listfcbody').html(data.trs)
+      $('.totalbonsfc').text(data.total)
+    })
+  }
+  // let currentPagelistfc=1
+  // let loadinglistfc = false;
+  function loadMorelistfc (year, startdate, enddate, term, comptable, mode)  {
+    console.log('term and page ubr', term, currentPagelistfc)
+    loadinglistfc = true;
+    waiting=$('.searchinputlistfactures').attr('waiting')
+    $.get(`/products/loadlistfc/?target={{target}}&page=${currentPagelistfc}&year=${year}&startdate=${startdate}&enddate=${enddate}&term=${term}&comptable=${comptable}&mode=${waiting}&target={{target}}`, (data)=>{
+
+      const tbody = $('.listfctable tbody');
+      tbody.append(data.trs);
+
+      console.log('products loaded')
+      loadinglistfc = false;
+
+
+          if (!data.has_more) {
+
+              // Remove the scroll event listener when there are no more records
+              $('.listfcholder').off('scroll', handleScrolllistfc);
+          }
+        })
+
+
+        // Append the new records to your table or update the DOM as needed
+    };
+
+    function handleScrolllistfc () {
+      const container = $('.listfcholder')[0]; // Get the native DOM element
+
+      const lastRow = document.querySelector('.fc-row:last-child');
+      const lastRowOffset = lastRow.offsetTop + lastRow.clientHeight;
+      // let year=lastRow.getAttribute('year')?lastRow.getAttribute('year'):0
+      let year=$('.populateyears').val()
+      let mode=lastRow.getAttribute('mode')
+      let startdate=$('.startdatelistfc').val()==""?0:$('.startdatelistfc').val()
+      let enddate=$('.enddatelistfc').val()==""?0:$('.enddatelistfc').val()
+      let term=$('.searchinputlistfactures').val()
+      let comptable=lastRow.getAttribute('comptable')?lastRow.getAttribute('comptable'):0
+      const containerBottom = container.scrollTop + container.clientHeight;
+      if (containerBottom+900 >= lastRowOffset && !loadinglistfc) {
+
+          currentPagelistfc++;
+          loadMorelistfc(year, startdate, enddate, term, comptable, mode);
+      }
+    };
+
+    // Attach the scroll event listener
+    $('.listfcholder').on('scroll', handleScrolllistfc)
+
+
+
+  function sortupfc(event){
+    let parentdiv=$(event.target).parent().parent().parent().parent().parent()
+    let tbody=parentdiv.find('tbody')
+    $.get('/products/sortupfc', (data)=>{
+      tbody.html(data.html)
+    })
+  }
+  function sortdownfc(event){
+    let parentdiv=$(event.target).parent().parent().parent().parent().parent()
+    let tbody=parentdiv.find('tbody')
+    $.get('/products/sortdownfc', (data)=>{
+      tbody.html(data.html)
+    })
+  }
+  $('.facturemultiple').on('click', function(event){
+        event.preventDefault()
+        let parentdiv=$(this).parent().parent()
+        // if ((selectedValues = parentdiv.find("input[name='bonstopay']:checked").map(function() {
+        //     return this.value;
+        // }).get()).length == 0){
+        //     alertify.error('Veuillez selectionner au moins un bon')
+        //     return
+        // }
+        selectedValues = parentdiv.find("input[name='bonstopay']:checked").map(function() {
+            return this.value;
+        }).get()
+        
+        clientid=$('[name="clientoffacture"]').val()
+        
+        date=$(".dateoffacture").val()
+
+       
+        if (selectedValues.length==0 || clientid==null){
+          alertify.error('Champs vide')
+          return
+        }
+        $(this).addClass('disabled')
+
+        console.log(clientid, date, selectedValues)
+        $.get('/products/facturemultiple?target={{target}}', {
+          'clientid':clientid,
+          'bons':JSON.stringify(selectedValues),
+          'date':date
+        }, (data)=>{
+          if (data.success){
+            ajaxpage('add', '+ Article', '/products/listfactures?target={{target}}')
+          }else{
+            alertify.error(data.error)
+            $(this).removeClass('disabled')
+            
+          }
+        })
+    })
+
+$('.filterfcdate').on('click', function(){
+    currentPagelistfc=1
+    loadinglistfc = false;
+    $('.listfcholder').on('scroll', handleScrolllistfc)
+
+    let parentdiv= $(this).parent().parent().parent().parent().parent().parent()
+    console.log(parentdiv)
+    startdate=parentdiv.find('.startdatelistfc').val()
+    enddate=parentdiv.find('.enddatelistfc').val()
+    if (startdate=='' || enddate==''){
+      alertify.error('Date')
+      return
+    }
+    waiting=$('.searchinputlistfactures').attr('waiting')
+    $.get('/products/filterfcdate', {startdate:startdate, enddate:enddate, 'target':'{{target}}', 'waiting':waiting},(data)=>{
+      console.log(data)
+      parentdiv.find('tbody').html(data.trs)
+      $('.totalfc').text(data.total)
+      $('.totalfctva').text(data.totaltva)
+    })
+  })
+$('.searchinputlistfactures').on("change", function() {
+
+
+    // Get the values from all filter input fields
+    var filterValue = $(this).val().toLowerCase();
+    let year=$('select[name="yearsfc"]').val()?$('select[name="yearsfc"]').val():0
+
+    // Split the filter value into individual terms based on the '&' sign
+    if (filterValue==""){
+      forceupdatetab('addlistfactures', '/products/listfactures')
+
+    }
+    else{
+    waiting=$('.searchinputlistfactures').attr('waiting')
+    $.get('/products/searchforlistfc', {'term':filterValue.trim(), 'year':year, 'startdate':$('.startdatelistfc').val(), 'enddate':$('.enddatelistfc').val(), 'target':'{{target}}', 'waiting':waiting}, (data)=>{
+      $(".facturestable tbody").html('')
+      $(".facturestable tbody").html(data.trs)
+      $('.totalfc').text(data.total)
+      $('.totalfctva').text(data.totalfctva)
+    // Iterate through the table rows
+
+    })
+    $('.listfcholder').on('scroll', handleScrolllistfc)
+
+    currentPagelistfc=1
+    loadinglistfc = false;
+  }
+});
+
+
+
+</script>
+{% endblock %}

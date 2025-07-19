@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Scanner Input</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #barcode-input {
+            width: 300px;
+            height: 40px;
+            font-size: 18px;
+            padding: 5px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Scan Barcode</h1>
+    <input type="text" id="barcode-input" placeholder="Scan your barcode here..." autofocus />
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#barcode-input').on('keypress', function(event) {
+                // Listen for the Enter key (key code 13)
+                if (event.which === 13) {
+                    const barcodeValue = $(this).val(); // Get the scanned value
+                    $('#result').text('Detected barcode: ' + barcodeValue); // Display the result
+                    $(this).val(''); // Clear the input field for the next scan
+                }
+            });
+        });
+    </script>
+</body>
+</html>

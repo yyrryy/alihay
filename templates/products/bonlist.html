@@ -1,0 +1,33 @@
+{% for invoice in bons %}
+                        <tr {% if invoice.ismanual or invoice.isfacture %} style="background:yellowgreen;"{% endif %}>
+                            <td ondblclick="bondata('{{invoice.id}}')" class="text-primary">
+                                {{ invoice.receipt_no }}
+                                <!-- <a class="bg-white" href="/sales/invoice/{{invoice.id}}/detail/">
+
+                                </a> -->
+                            </td>
+                            <td>{% if invoice.customer %}{{ invoice.customer.customer_name|title}}{% else %}Comptoir{% endif %}</td>
+                            <!-- <td>{{ invoice.total_quantity }}</td> -->
+                            <td>{{ invoice.grand_total|floatformat:2 }}</td>
+                            <td>{{ invoice.paid_amount|floatformat:2 }}</td>
+                            <td>{{ invoice.datebon|date:"d/m/Y" }}</td>
+                            <td>
+                                <!-- {% if invoice.remaining_payment > 0 %}
+                                <a href="{% url 'sales:invoice_update' id=invoice.id %}"><button class="btn btn-primary btn-xs"><i class="fa fa-edit" title="Invoice list"></i></button></a>{%endif%} -->
+                                <!-- <a href="{% url 'sales:invoice_update' id=invoice.id %}"><button class="btn btn-primary btn-xs">Modifier</button></a> -->
+                                <!-- <a href="{% url 'sales:invoice_detail' invoice_id=invoice.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye" title="Invoice list"></i></button></a> -->
+                                <!-- <a href="/sales/update/{{invoice.id}}/api/">
+
+                                    Modifier
+                                </a> -->
+                                {% if invoice.ismanual or invoice.isfacture %} 
+                                {% else %}
+                                <!-- <button class="btn-dark btn btn-xs" onclick="genererfacture('{{invoice.id}}')">Generer Facture</button> -->
+                                {% endif %}
+                                <!-- <a href="{% url 'sales:bon' pk=invoice.id %}"><button class="btn btn-xs">Bon</button></a> -->
+                                <!--
+                                    deleteFunction({{invoice.id}})
+                                    <button class="btn btn-danger btn-xs fa fa-trash-o" onClick=""></button>     -->
+                            </td>
+                        </tr>
+                    {% endfor %}

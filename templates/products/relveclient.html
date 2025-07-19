@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+</head>
+<body>
+    <div class="container w-75">
+      <a class="btn btn-dark" href="/ledger/customer/{{customer.id}}/ledger/details/">
+        Retour
+      </a>
+      <button class="btn btn-primary" onclick="prt()">
+        Imprimer
+      </button>
+        <div class="" id="print">
+                Relvé Client: {{customer.customer_name}} <br>
+                du {{start_date}} au {{end_date}}
+            <table class="table mt-3">
+                <thead>
+                  <tr>
+                    <td>Date</td>
+                    <td>N° bon</td>
+                    <td>Debit</td>
+                    <td>Credit</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for i in releve %}
+                    <tr>
+                      <td>
+                        {% if i.1 == 'bon'%}
+                        {{i.0.datebon|date:'d/m/Y H:i'}}
+                        {% elif i.1 == 'avoir'%}
+                          {% if i.0.dateavoir == None %}{{i.0.created_at|date:"d/m/Y"}}{% else %}  {{i.0.dateavoir|date:"d/m/Y"}} {% endif %}
+                        {% elif i.1 == 'reglement' or i.1 == 'relementsupp' or i.1 == 'avoirsupp' %}
+                        {{i.0.date |date:'d/m/Y'}}
+                        {% else %}
+                        {{i.0.bondate |date:'d/m/Y'}}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if i.1 == 'bon'%}
+                        Bon sortie{{i.0.receipt_no}}
+                        {% elif i.1 == 'avoir'%}
+                        Avoir {{i.0.receipt_no}}
+                        {% elif i.1 == 'reglement'%}
+                        Reglement {{i.0.mode}} {% if i.0.npiece %}{{i.0.npiece}} {% endif %} {% if i.0.note %}({{i.0.note}}){% endif %} bon: {{i.0.bon.receipt_no}}
+                        {% elif i.1 == 'relementsupp' %}
+                        Reglement Frn. {{i.0.mode}} {% if i.0.npiece %}{{i.0.npiece}} {% endif %} {% if i.0.note %}({{i.0.note}}){% endif %}
+                        {% elif i.1 == 'avoirsupp' %}
+                        Avoir Frn. {{i.0.receipt_no}}
+                        {% else %}
+                        Bon achat N°{{i.0.nbon}}
+                        {% endif %}
+                      </td>
+                      <!-- {% if i.0.paid_amount > 0 %} (payé: {{i.0.paid_amount}}){% endif %} -->
+                      <td>
+                        {% if i.1 == 'bon'%}
+                        {{i.0.grand_total}} 
+                        {% elif i.1 == 'relementsupp' %}
+                        {{i.0.amount}}
+                        {% elif i.1 == 'avoirsupp' %}
+                        {{i.0.total}}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if i.1 == 'avoir'%}
+                        {{i.0.grand_total}}
+                        {% elif i.1 == 'reglement'%}
+                        {{i.0.amount}}
+                        {% elif i.1 == 'avoirsupp'%}
+                        {% else %}
+                        {{i.0.total}}
+                        {% endif %}
+                      </td>
+
+                    </tr>
+                  {% endfor %}
+                  <tr>
+                    <td colspan="2">Totaux</td>
+                    <td>{{totaldebit|floatformat:2}}</td>
+                    <td>{{totalcredit|floatformat:2}}</td>
+                    <td>Soldperiode: {{soldperiod|floatformat:2}}</td>
+                   <!--  <td>Sold: {{customer.rest|floatformat:2}}</td> -->
+                  </tr>
+
+
+                      <!-- {% if item in bons %}
+                      {% elif item in avoirs %}
+                        <td>Bon Avoir</td>
+                        <td>{{ item.receipt_no }}</td>
+                        <td></td>
+                        <td>{{ item.grand_total }}</td>
+                      {% else %}
+                        <td>Reglement</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ item.amount }}</td>
+                      {% endif %} -->
+                </tbody>
+
+              </table>
+                <strong>
+                  sold client: {{soldclient|floatformat:2 }}  DH
+                </strong> 
+        </div>
+
+    </div>
+    <script>
+        function prt(){
+            var printContents = document.getElementById('print').innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            document.querySelector('.table').style.fontSize= '11px'
+            document.querySelectorAll('td').forEach(el => el.style.padding = '1px');
+            document.body.classList.add('p-3')
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+    </script>
+</body>
+</html>

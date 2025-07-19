@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+<div class="row mt-3">
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <div class="h1 border-end totalpdcts">
+                    {{totalpdcts}}
+                </div>
+                <h5 class="totalstock">
+                    Total Pdt en stock
+                </h5>
+
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <div class="h1 border-end totalsoldclient">
+                    {{totalsoldclient}}
+                </div>
+                <h5 class="totalcaisseextern">
+                    Total Sold Clients
+                </h5>
+
+            </div>
+        </div>
+
+        <div class="col-3" hidden>
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <div class="h1 border-end totalcs">
+                    {{caisext}}
+                </div>
+                <h5 class="totalcaisseextern">
+                    Total caisse externe
+                </h5>
+
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <input class="h1 border-end totalbank form-control" type="number" onchange="clczakat()">
+                <h5 class="">
+                    Banque + Autres 
+                </h5>
+
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #10ae5f;">
+                <div class="h1 border-end total">
+                    --
+                </div>
+                <h5 class="">
+                    Total
+                </h5>
+
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <div class="mt-5 d-flex justify-content-between align-items-center">
+        
+        <div>
+            <h1 class="text-danger">
+                <strong>
+                    -
+                </strong>
+            </h1>
+        </div>
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #ff3f35;">
+                <div class="h1 border-end totalsoldfrs">
+                    {{totalsoldfrs}}
+                </div>
+                <h5 class="">
+                    Total Sold Frs
+                </h5>
+
+            </div>
+        </div>
+        <h1 class="text-success">
+            <strong>
+                =
+            </strong>
+        </h1>
+
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #3f4d55;">
+                <div class="h1 border-end totalnet">
+                    --
+                </div>
+                <h5 class="">
+                    NET
+                </h5>
+
+            </div>
+        </div>
+        <div>
+            <h1 class="text-danger">
+                <strong>
+                    X
+                </strong>
+            </h1>
+        </div>
+        <div class="col-2">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <div class="h1 border-end totalfrs">
+                    2.5%
+                </div>
+                <h5 class="">
+                    Taux de Zakat
+                </h5>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 d-flex align-items-center">
+
+
+        <h1 class="text-success">
+            <strong>
+                =
+            </strong>
+        </h1>
+
+        <div class="col-3">
+            <div class="rounded shadow p-2 text-white align-items-center" style="background: #106fae;">
+                <div class="h1 border-end totalzakat">
+                    --
+                </div>
+                <h5 class="">
+                    Zakat
+                </h5>
+
+            </div>
+        </div>
+    </div>
+    <div style="top:0;" class="d-none passwordscreen m-auto position-fixed bg-dark w-100 h-100 d-flex justify-content-center text-white align-items-center">
+        <input type="password" class="form-control w-50" placeholder="Mot de passe" id="password" onkeyup="checkpassword(event)">
+      </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+    //   inactive=localStorage.getItem('inactive')||'1'
+    //   console.log('>>>>> ', inactive)
+    //   if (inactive=='1'){
+    //     console.log('its inactive')
+    //     $('.passwordscreen').removeClass('d-none')
+    //     $('.passwordinput').focus()
+    //   }else{
+    //     console.log('its not inactive')
+    //     checkForInactivity(120)
+    //   }
+       function clczakat(){
+        totalpdcts=parseFloat($('.totalpdcts').text())
+        totalsoldclient=parseFloat($('.totalsoldclient').text())
+        totalcs=parseFloat($('.totalcs').text())
+        totalbank=parseFloat($('.totalbank').val())
+        total=$('.total')
+        totalsoldfrs=parseFloat($('.totalsoldfrs').text())
+        totalnet=$('.totalnet')
+        totalzakat=$('.totalzakat')
+        tt=totalpdcts+totalsoldclient+totalbank+totalcs
+        total.text(tt)
+        ttnet=(tt-totalsoldfrs).toFixed(2)
+        totalnet.text(ttnet)
+        totalzakat.text((ttnet*0.025).toFixed(2))
+       }
+    </script>
+{% endblock %}

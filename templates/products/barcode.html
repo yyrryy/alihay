@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Barcodes</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        /* Define label size based on your thermal printer */
+        .label {
+            width: 95mm; /* Adjust to match your label size */
+            height: 45mm; /* Adjust to match your label size */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* margin-bottom: .2mm; */
+            /* border: 1px solid #000; Optional, for visualizing the labels */
+        }
+        
+        /* Ensure barcode images fit properly */
+        .barcode-img {
+            width:100%;
+        }
+
+        /* Hide everything except the barcodes when printing */
+        @media print {
+            .label {
+            width: 55mm; /* Adjust to match your label size */
+            height: 25mm; /* Adjust to match your label size */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* margin: 5mm; */
+            /* border: 1px solid #000; Optional, for visualizing the labels */
+        }
+        
+        /* Ensure barcode images fit properly */
+        .barcode-img {
+            width: 95%;
+            height: auto;
+        }
+
+            
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-area" style="display: flex;flex-direction: column;align-items: center;">
+        <!-- Example: Loop over barcode images -->
+        {% for barcode in barcodes %}
+        <div class="label">
+            <img class="barcode-img" src="data:image/png;base64,{{ barcode }}" alt="Barcode">
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

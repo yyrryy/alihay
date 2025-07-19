@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <title>Init page</title>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <a href="/">Accueill</a>
+            <h1 class="text-center">Configuration page</h1>
+        </div>
+        <div class="border p-2 row">
+            <div class="col-6">
+                <strong>1- Information de societé</strong>
+                <form action="{% url 'product:adjustcompanyinfo' %}" method="post" class="mb-3" enctype="multipart/form-data">
+                    {% if not retialerexist %}
+                        <small class="text-danger">Creer des infos de societé avant de creer un admin</small>
+                    {% endif %}
+                    {% csrf_token %}
+                    <img src="{% if retailer.logo%}{{retailer.logo.url}}{%endif%}" alt="" width="180"><br>
+                    logo:
+                    <input type="file" name="logo" id="">
+                    <input type="text" class="form-control mb-2" name="name" placeholder="Nom de la societé" required value="{{retailer.name.upper}}">
+                    <input type="text" class="form-control mb-2" name="address" placeholder="Adresse de la societé" required  value="{{retailer.address.upper}}">
+                    <input type="text" class="form-control mb-2" name="phone" placeholder="Téléphone de la societé" required  value="{{retailer.phone.upper}}">
+                    <input type="text" required class="form-control mb-2" name="ice" placeholder="ICE" value="{{retailer.ice.upper}}">
+                    <input type="text" required class="form-control mb-2" name="id_fiscal" placeholder="id_fiscal" value="{{retailer.id_fiscal.upper}}">
+                    <input type="text" required class="form-control mb-2" name="pt" placeholder="pt" value="{{retailer.pt.upper}}">
+                    <button class="btn btn-primary">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+            
+            <div class="col-6">
+                <strong>2- Session Admin</strong>
+                <small class="text-danger">
+                    {% if not retialerexist %} Creer des infos de societé avant de creer un admin {% endif %}
+                </small>
+                <form action="{% url 'product:addadmin' %}" method="post" class="mb-3">
+                    {% csrf_token %}
+                    <input type="text" class="form-control mb-2 w-100" name="username" placeholder="Username" value="{{adminuser.username}}" required>
+                    <input type="text" class="form-control mb-2 w-100" name="password" placeholder="Mot de passe" required>
+                    <button class="btn btn-primary">
+                        Enregistrer
+                    </button>
+                </form>
+
+                <!-- pod zccount -->
+                 <strong>3- Session Point de vente</strong>
+                <small class="text-danger">
+                    {% if not retialerexist %} Creer des infos de societé avant de creer une point de vente {% endif %}
+                </small>
+                <form action="{% url 'product:addposuser' %}" method="post" class="mb-3">
+                    {% csrf_token %}
+                    <input type="text" class="form-control mb-2 w-100" name="username" placeholder="Username" value="{{posuser.username}}" required>
+                    <input type="text" class="form-control mb-2 w-100" name="password" placeholder="Mot de passe" required>
+                    <button class="btn btn-primary">
+                        Enregistrer
+                    </button>
+                </form>
+            </div>
+            
+
+            <strong>Ajouter Des produit via excel</strong>
+        <form action="{% url 'product:addbulk' %}" class="addbulk col-6" method="post" enctype="multipart/form-data">
+            <input type="file" class="form-control mb-2" required name="excel_file">
+    
+            <select name="category" class="form-select mb-2" required>
+                <option value="">---</option>
+                {% for i in categories %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                {% endfor %}
+            </select>
+    
+            <button class="btn btn-primary addbulkcategorybtn">
+                Ajouter
+            </button>
+        </form>
+    
+        <strong>Ajouter Des Fournisseurs via excel</strong>
+        <form action="{% url 'product:addbulksuppliers' %}" class="addbulk col-6" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" class="form-control mb-2" required name="excel_file">
+    
+            
+    
+            <button class="btn btn-primary">
+                Ajouter
+            </button>
+        </form>
+
+        </div>
+        
+    </div>
+    <script>
+        const TOKEN_KEY = 'authToken';
+        const EXPIRATION_KEY = 'tokenExpiration';
+        const duration = 10 * 24 * 60 * 60 * 1000; // 10 days in milliseconds
+        console.log('2 min')
+        const token = "auth";  // Replace with your actual token
+        const now = Date.now();
+
+        // Check if token exists and is still valid (not expired)
+        if (!localStorage.getItem(TOKEN_KEY)) {
+            console.log('no token')
+            localStorage.setItem(TOKEN_KEY, token);
+            localStorage.setItem(EXPIRATION_KEY, now + duration);
+        }
+
+    </script>
+</body>
+</html>

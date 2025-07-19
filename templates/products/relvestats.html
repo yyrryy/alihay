@@ -1,0 +1,25 @@
+{% for i in products %}
+        <tr>
+            <td>
+                <a href=" {% url 'product:producthistory' id=i.id %} " >
+                    {{i.name}}
+                </a>
+            </td>
+            <td>
+                {{i.available_items}}
+            </td>
+            <td>
+                {{i.sold_items}}
+            </td>
+            <td>
+                {{i.total_profit}}
+            </td>
+            <td>
+                {{i.total_cost}}
+            </td>
+
+            <td class="bg-{% if i.net_profit < 0%}danger {%else%}success{%endif%} text-white">
+                {{i.net_profit}}
+            </td>
+        </tr>
+{% endfor %}

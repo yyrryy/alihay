@@ -1,0 +1,17 @@
+{% for i in products %}
+<div class="d-flex justify-content-between mb-2 border-bottom">
+    <p>
+        {{i.name}}
+    </p>
+    <button class="btn btn-primary addtoinvoice" prachat="{{i.pr_achat}}" prix=" {{i.price}}" stock=" {{i.stock}}" article=" {{i.name}}" id=" {{i.id}} ">
+        +
+    </button>
+</div>
+
+{% empty %}
+<div>
+    <p>
+        Article introvable
+    </p>
+</div>
+{% endfor %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+
+
+{% block content %}
+<div class="bg-white rounded shadow">
+    <div class="filterholder p-3 row text-center">
+        <div class="col-md-3">
+            <input type="date" class="form-control date">
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="year1">
+                
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select col-4" name="month1">
+                <option value="0">
+                    Mois
+                </option>
+                <option value="1">Janvier</option>
+                <option value="2">Février</option>
+                <option value="3">Mars</option>
+                <option value="4">Avril</option>
+                <option value="5">Mai</option>
+                <option value="6">Juin</option>
+                <option value="7">Juillet</option>
+                <option value="8">Août</option>
+                <option value="9">Septembre</option>
+                <option value="10">Octobre</option>
+                <option value="11">Novembre</option>
+                <option value="12">Décembre</option>
+            </select>
+        </div>
+        <button class="findnetprofit btn btn-primary fa fa-search col-md-3">
+        </button>
+    </div>
+    <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="PrintInvoice('printrepport')">
+        <i class="fa fa-print mr-1"></i> Print </a>  
+    <div class="tableholder position-relative p-2" id="printrepport">
+        <div class="loadingnumbers d-none justify-content-center" style="position:absolute; width:100%; height:100%; background: rgba(0, 0, 0, 0.315);">
+            <div class="spinner-border text-primary text-white" role="status">
+            </div>
+        </div>
+    <table class="table table-striped table-advance table-hover item-table table-bordered">
+        <p>
+            Rapport de <span class="daterapport"></span>
+        </p>
+        <thead>
+            <tr>
+                <th>Article</th>
+                <th>
+                    Stock
+                </th>
+                
+                <th>
+                    Ventes
+                </th>
+                <th>
+                    Revenus
+                </th>
+                <th>
+                    Cost
+                </th>
+                <th>
+                    Profit net
+                </th>
+            </tr>
+        </thead>
+        <tbody class="stats">
+            
+        </tbody>
+    
+    </table>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    function PrintInvoice(divName){
+     var printContents = document.getElementById(divName).innerHTML;
+     var originalContents = document.body.innerHTML;
+     document.body.innerHTML = printContents;
+     $('body').css('font-size', '12px')
+     $('.head').addClass('')
+     $('table').css('font-size', '9px');
+     $("table > thead > tr > th").css('padding', '0px');
+     $("table > tbody > tr > td").css('padding', '0px');
+     $('body').addClass('d-flex flex-column vh-100 p-3')
+     $('.foooterfacture').addClass('mt-auto');
+     window.print();
+     document.body.innerHTML = originalContents;
+}
+    $(document).ready(()=>{
+    
+        $('.findnetprofit').on('click', ()=>{
+                $('.loadingnumbers').removeClass('d-none').addClass('d-flex');
+                $.post("{% url 'product:statsofrelve' %}",{
+                    'year': $('select[name="year1"]').val(),
+                    'month': $('select[name="month1"]').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                }, function(data, status){
+                    $('.loadingnumbers').removeClass('d-flex').addClass('d-none');
+                    $('.stats').html(data.data);
+                    $('.daterapport').text($('select[name="month1"]').val()+'/'+$('select[name="year1"]').val())
+                })
+        })
+
+    
+    // daily
+    $('.date').on('change', function () {
+        if ($(this).val() == '') {
+            return
+            
+        } 
+        else {
+            $('.loadingnumbers').removeClass('d-none').addClass('d-flex');
+            $.post("{% url 'product:dailystatsstock' %}",{
+                'date': $(this).val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                $('.loadingnumbers').removeClass('d-flex').addClass('d-none');
+                $('.stats').html(data.data);
+                $('.daterapport').text($('.date').val())
+            })
+        }
+    })
+
+
+    })
+    
+</script>
+{% endblock %}

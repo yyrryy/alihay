@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% load static %}
+
+
+{% block content %}
+<div>
+    <div class="bg-white p-2 shadow row">
+        <div class="col-3">
+            <!-- add user form -->
+            <h3>
+                Ajouter un utilisateur
+            </h3>
+            <form action="/product/adduser">
+                <div>
+                    <label>Username</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div>
+                    <label>Mot de passe</label>
+                    <input type="text" class="form-control" name="password" required>
+                </div>
+                <button class="btn btn-success w-100">Ajouter</button>
+            </form>
+        </div>
+        <div class="col-8">
+            <div class="d-flex justify-content-between">
+                <h4 class="text-center">Liste des utilisateurs</h4>
+                <a href="" class="btn btn-primary">Ajouter</a>
+            </div>
+            <table class="table table-bordered mt-2">
+                <thead>
+                    
+                    <th>Username</th>
+                    
+                    <th>Permissions</th>
+                </thead>
+                <tbody>
+                    {% for i in users %}
+                    <tr>
+                        
+                        <td>{{i.username}}</td>
+                        
+                        <td>
+                            <a href="/product/userinfo/{{i.id}}" class="btn btn-primary">Modifier</a>
+                           
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{%endblock%}

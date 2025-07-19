@@ -1,0 +1,5 @@
+add_product.html
+def addoneproduct in pis_product/views.py
+add addprodct to base.html
+update addsupply.html
+def addsuppply views.py

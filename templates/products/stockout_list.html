@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="col-md-12">
+        <br>
+        
+        <!-- ّ<a href="{% url 'product:stock_items_list' %}"><button type="button" id="add-product" class="btn btn-primary fa fa-arrow-left" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a> -->
+        <br><br><br>
+        <div class="content-panel table-responsive">
+            <h1 class="text-center">{{ product.name|title }} | الخروج</h1><br>
+            <table class="table table-striped table-advance table-hover item-table table-bordered">
+                <thead>
+                <tr>
+                    <th class="text-center">Quantité</th>
+                    
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Facture</th>
+                </tr>
+                </thead>
+                <tbody class="product-table-body text-center">
+                {% for stockout in object_list %}
+                    <tr>
+                        <td>{{ stockout.stock_out_quantity|floatformat:-2 }} </td>
+                        <td>{{ stockout.dated|date:"d/m/Y"}}</td>
+                        <td><a href="{% url 'sales:invoice_detail' invoice_id=stockout.invoice.id %}">{{ stockout.invoice.receipt_no}}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if paginator.page_range|length > 1 %}
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li><a  style="background-color: #3070A8; color: white" class="page_previous" href="{% if page_obj.has_previous %}{% url 'product:stockout_list' product_id=product.id %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" title="Previous"><<</a></li>
+                        <li><a style="background-color: #3070A8; color: white" class="page_next" href="{% if page_obj.has_next %}{% url 'product:stockout_list' product_id=product.id %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}" title="Next">>></a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+<script>
+$('#stock-out').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+$('#add-product').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

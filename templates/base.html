@@ -1,0 +1,2187 @@
+﻿<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/html" data-bs-theme="dark">
+{% load static %}
+{% load template_tags %}
+<head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/img/favicon-16x16.png">
+    <meta charset="utf-8">
+    <script src="{% static 'js/jquery.min.1.9.1.js'%}"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <title>
+        {% if title %} {{title}} {% else %}
+        Accueill
+        {% endif %}
+    </title>
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/select2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/alertify.min.css' %}" rel="stylesheet">
+    <!--external css-->
+    <style>
+      /* .form-group {
+  position: relative;
+  margin-top: 20px;
+}
+
+
+label {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  background: white;
+  padding: 0 4px;
+  color: #999;
+  font-size: 16px;
+  transition: 0.2s ease all;
+  pointer-events: none;
+}
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 8px;
+  font-size: 12px;
+  color: #333;
+} */
+      .passwordscreen{
+        z-index: 9999;
+      }
+      .pricenet{
+            background: #fff99e;
+        }
+      .avoirdataholder {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        overflow-y: scroll;
+        z-index: 9999900;
+    }
+      .bondataholder {
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        overflow-y: scroll;
+        z-index: 9999900;
+    }
+      /* style scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      /* Track */
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      /* Handle */
+      ::-webkit-scrollbar-thumb {
+        background: #888;
+      }
+
+      /* Handle on hover */
+      ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+      /* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+    .open > .dropdown-menu{
+        left: inherit;
+        }
+    .dropdown-menu{
+        right:12px !important;
+    }
+    .notify-arrow{
+        left:88% !important;
+    }
+    .panel_bg_color{
+        background:#6180c1;
+    }
+    .panel_txt{
+        color:#fff;
+        font-size:22px;
+        font-weight:bold;
+    }
+    .home_icon{
+        float:left;
+        color:#fff;
+        margin-right:8px;
+        margin-top:5px;
+    }
+    .home_icon:hover{
+        color:#fff;
+    }
+
+.pure-tree {
+  text-align: left;
+  display: block;
+}
+.pure-tree.main-tree {
+  width: 18em;
+  display: inline-block;
+  padding-left: 0;
+}
+.pure-tree:not(.main-tree) {
+  padding-left: .5em;
+  background: aliceblue;
+}
+.pure-tree:not(.main-tree) li {
+  overflow: hidden;
+  height: 0;
+  display: block;
+}
+.pure-tree label {
+  display: block;
+  cursor: pointer;
+  color: #717780;
+  border-bottom: 1px dashed #B0B9C5;
+  padding: 1.125em 1.125em 1.125em 0;
+}
+.pure-tree label:before {
+  width: 1em;
+  height: 1em;
+  line-height: 1em;
+  display: inline-block;
+  font-family: 'FontAwesome', sans-serif;
+  content: "\f114";
+  padding-right: .75em;
+}
+.pure-tree label:hover {
+  color: #434a58;
+  border-bottom-color: #434a58;
+}
+.pure-tree .pure-tree_link a {
+  padding: 1.500em 1.125em 0.750em 0;
+  display: block;
+  text-decoration: none;
+}
+.pure-tree .pure-tree_link a:hover {
+  color: #434a58;
+}
+.pure-tree.nested {
+  padding-left: 1.7em;
+}
+.pure-tree [type="checkbox"] {
+  display: none;
+}
+.pure-tree [type="checkbox"]:checked + label {
+  color: #434a58;
+  border-bottom-color: #434a58;
+}
+.pure-tree [type="checkbox"]:checked ~ ul > li {
+  height: auto;
+}
+.categoryactive{
+        padding: 7px;
+        color: #dc3545;
+        font-weight: bold;
+    }
+    .nav-side-menu {
+  font-family: verdana;
+  font-size: 12px;
+  font-weight: 200;
+  background-color: #131d46;
+  height: 92vh;
+  color: #e1ffff;
+}
+.nav-side-menu .brand {
+  background-color: #23282e;
+  line-height: 50px;
+  display: block;
+  text-align: center;
+  font-size: 14px;
+}
+.nav-side-menu .toggle-btn {
+  display: none;
+}
+.nav-side-menu ul,
+.nav-side-menu li {
+  list-style: none;
+  padding: 0px 0px;
+  margin: 0px;
+  line-height: 35px;
+  /*
+    .collapsed{
+       .arrow:before{
+                 font-family: FontAwesome;
+                 content: "\f053";
+                 display: inline-block;
+                 padding-left:10px;
+                 padding-right: 10px;
+                 vertical-align: middle;
+                 float:right;
+            }
+     }
+*/
+}
+.nav-side-menu li:hover{
+  border-left: 6px solid rgb(255, 255, 255);
+  padding-left:5px;
+  background: 212d62;
+}
+.nav-side-menu ul :not(collapsed) .arrow:before,
+.nav-side-menu li :not(collapsed) .arrow:before {
+  font-family: FontAwesome;
+  content: "\f078";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+  float: right;
+}
+.nav-side-menu ul .active,
+.nav-side-menu li .active {
+  border-left: 5px solid #d19b3d;
+  background-color: #4f5b69;
+}
+.nav-side-menu ul .sub-menu li.active,
+.nav-side-menu li .sub-menu li.active {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu li:hover{
+  border-left:2px solid yellowgreen;
+}
+.nav-side-menu ul .sub-menu li.active a,
+.nav-side-menu li .sub-menu li.active a {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu li,
+.nav-side-menu li .sub-menu li {
+  background-color: #181c20;
+  border: none;
+  line-height: 28px;
+  border-bottom: 1px solid #23282e;
+  margin-left: 0px;
+}
+.nav-side-menu a{
+  color:white;
+}
+.nav-side-menu ul .sub-menu li:hover,
+.nav-side-menu li .sub-menu li:hover {
+  background-color: #4f5b69;
+  
+}
+/* .nav-side-menu ul .sub-menu li:before,
+.nav-side-menu li .sub-menu li:before {
+  font-family: FontAwesome;
+  content: "\f105";
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+} */
+.nav-side-menu li {
+  padding-left: 0px;
+  border-left: 3px solid #2e353d;
+  border-bottom: 1px solid #23282e;
+}
+.nav-side-menu li a {
+  text-decoration: none;
+  color: #e1ffff;
+  padding: 5px;
+  display: block;
+  width: 100%;
+}
+.nav-side-menu li a i {
+  padding-right: 20px;
+}
+/*.nav-side-menu li a:hover {
+  border-left: 3px solid #d19b3d;
+  background-color: #4f5b69;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+}*/
+@media (max-width: 767px) {
+  .nav-side-menu {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+	height:inherit;
+  }
+  .nav-side-menu .toggle-btn {
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10 !important;
+    padding: 3px;
+    background-color: #ffffff;
+    color: #000;
+    width: 40px;
+    text-align: center;
+  }
+  .brand {
+    text-align: left !important;
+    font-size: 22px;
+    padding-left: 20px;
+    line-height: 50px !important;
+  }
+}
+@media (min-width: 767px) {
+  .nav-side-menu .menu-list .menu-content {
+    display: block;
+  }
+}
+table{
+  font-size: 17px;
+}
+.w2{
+  width: 2%;
+}
+.sidebar{
+  width: 2%;
+}
+.sidebar:hover{
+  width: 16%;
+}
+.w15{
+  width: 15%;
+}
+.dropbtn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border: 2px solid;
+  border-radius: 10px;
+  width:33em;
+  z-index: 1;
+  top: 0;
+  left: 2.5em;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 8em;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {color: #fbfbfb; background: #0f1456; border-bottom: 2px solid;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: flex;flex-wrap: wrap;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+    </style>
+    {% block css %}{% endblock %}
+    <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'css/style-responsive.css' %}" rel="stylesheet"> -->
+
+
+    <script src="/static/js/chart.min.js"></script>
+</head>
+
+<body>
+
+  {% product_notifications retailer_id=1 as p_n %}
+  {% alertechsupp as alertechsupp %}
+  {% alertechclient as alertechclient%}
+  {% command as cmnd %}
+  {% allcategories as allcategories%}
+  {% allmarks as allmarks%}
+  <div class="loading flex-column align-items-center justify-content-center w-100 h-100 position-fixed top-0 bg-dark d-none" style="z-index:1199">
+    <div class="spinner-border text-light"></div>
+    <strong class="text-light textloading">
+
+    </strong>
+</div>
+<div class="px-2 shadow d-flex justify-content-between position-relative" style="
+            background: aliceblue;
+            color: black;
+            font-size: 21px;
+           
+            position: sticky;
+            top: 0;
+        ">
+          <div>
+            <a class="btn btn-dark fa fa-home" href="/">
+                
+            </a>
+            <!-- Example single danger button -->
+            <div class="dropdown">
+              <!-- <button class="btn btn-dark" onclick="$('.sidebar').toggleClass('w15');$('.sidebar').toggleClass('w2')">
+                ☰
+              </button> -->
+              <button class="btn btn-dark">
+                ☰
+              </button>
+              
+              <div class="dropdown-content">
+                <div class="d-flex flex-wrap">
+                  <a href="#" onclick="$('.addclientholder').toggleClass('d-none')" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+client</div>
+                  </a>
+                  <a href="#" onclick="$('.addproductholder').toggleClass('d-none')" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+Article</div>
+                  </a>
+                  <a href="/sales/create/invoice/" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+bon</div>
+                  </a>
+                  
+                  <a href="/sales/invoice/list/" class="quickitem">
+                    <div class="fa fa-list"></div>
+                    <div>List bons</div>
+                  </a>
+                  <a href="/product/deviview/" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+Devis</div>
+                  </a>
+                  <a href="/ledger/list/customer/" class="quickitem">
+                    <div class="fa fa-user"></div>
+                    <div>Client</div>
+                  </a>
+                  
+                  <a href="/product/items/productslistbycategory/" class="quickitem">
+                    <div class="fa fa-list
+                    "></div>
+                    <div>Produits</div>
+                  </a>
+                </div>
+
+                <!-- <a href="/product/facturation" class="quickitem">
+                  <div class="fa fa-cash
+                  "></div>
+                  <div>Facturation</div>
+                </a> -->
+                
+                
+              </div>
+            </div>
+            
+            <!-- <button class="btn btn-dark fa fa-home" ></button> -->
+            <!-- <button class="btn btn-dark" onclick="$('.sidebar').toggleClass('w15');$('.sidebar').toggleClass('w2')">
+              ☰
+            </button> -->
+             {{ request.user.retailer_user.retailer.name }} {% if  user.groups.all.0.name == 'account' %}-Facturation{% endif %}
+          </div>
+            <!-- <div>
+            </div> -->
+            <div>
+              {{title}} - {% now "d/m/Y" %}
+            </div>
+            <div class="d-flex">
+              
+              <button class="border shadow me-2 btn fa fa-search text-primary" onclick="$('.searchpage').toggleClass('d-none');$('.searchglobal').focus()">
+
+              </button>
+              {% if not request.user.retailer_user.role_type == 'pos'%}
+              <a href="/product/echeancesupp/" class="btn fa fa-money text-danger border shadow me-2 ">
+                <sup>{{alertechsupp}}</sup>
+              </a>
+              <a href="/product/echeanceclient/" class="btn fa fa-money text-danger border shadow me-2 ">
+                <sup>{{alertechclient}}</sup>
+              </a>
+              <a href="/product/items/lowstock/" class="btn fa fa-bell text-danger border shadow me-2">
+                <sup>{{p_n}}</sup>
+              </a>
+              <a href="/product/items/productscommande/" class="btn fa fa-shopping-cart border shadow text-danger me-2">
+                <sup>{{cmnd}}</sup>
+              </a>
+              {% endif %}
+              <button class="btn fa fa-lock border shadow btn-dark" onclick="location.href='/logout'">
+              </button>
+            </div>
+        </div>
+        
+<section class="d-flex">
+  
+
+  
+
+
+  <div class="sidebar" style="transition: width .5s ease; overflow: hidden; white-space: nowrap;">
+    <div class="nav-side-menu d-flex flex-column" >
+      
+
+          <div class="menu-list">
+
+              <ul id="menu-content" class="menu-content collapse out" style="font-size: 14px;">
+                <!-- <a href="/">
+                      <li>
+                    <i class="fa fa-dashboard fa-lg"></i> Dashboard
+                  </li>
+                </a> -->
+                {% if request.user.retailer_user.role_type == 'pos' %}
+                <li><a href="/product/sorticontoir/">
+                    Sortie Comptoir
+                  </a></li>
+                  <li><a href="/product/avoircomptoirpage/">
+                    Avoir Comptoir
+                  </a></li>
+                  <li><a href="/sales/create/invoice/">
+                    Bon Livraison
+                  </a></li>
+                  
+                  <li><a href="/sales/avoirclient">
+                    Bon avoir
+                  </a></li>
+                  <li><a href="/sales/invoice/list/">
+                    List des bons
+                  </a></li>
+                  
+                {%else%}
+                <li  data-bs-toggle="collapse" data-bs-target="#ventes" class="collapsed">
+                  <a href="#"><i class="fa fa-money fa-lg"></i> Ventes </a>
+                </li>
+                <ul class="sub-menu collapse" id="ventes">
+                  <li><a href="/product/sorticontoir/">
+                    Sortie Comptoir
+                  </a></li>
+                  <li><a href="/product/avoircomptoirpage/">
+                    Avoir Comptoir
+                  </a></li>
+                  <li><a href="/sales/create/invoice/">
+                    Bon Livraison
+                  </a></li>
+                  
+                  <li><a href="/sales/avoirclient">
+                    Bon avoir
+                  </a></li>
+                  <li><a href="/sales/invoice/list/">
+                    List des bons
+                  </a></li>
+                  <li><a href="{% url 'product:listdevis' %}">
+                    List Devis
+                  </a></li>
+                </ul>
+                <li>
+                  <a href="/product/items/productslistbycategory/">
+                    <i class="fa fa-eject fa-lg"></i>
+                  Stock
+                  </a>
+                </li>
+                  <!-- <li  data-bs-toggle="collapse" data-bs-target="#products" class="collapsed">
+                    <a href="#"><i class="fa fa-gift fa-lg"></i> Produits </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="products">
+                    <li>
+                      <a href="/product/items/productslistbycategory/">
+                        
+                      List des produits
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/product/addproduct">
+                        Ajouter un produits
+                      </a>
+                    </li>
+                  </ul> -->
+                  
+                  <li  data-bs-toggle="collapse" data-bs-target="#suppliers" class="collapsed">
+                    <a href="#"><i class="fa fa-gift fa-lg"></i> Fournisseurs </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="suppliers">
+                    <li><a href="{% url 'product:supplierslist' %}">
+                      List fournisseurs
+                    </a></li>
+                      <li><a href="{% url 'product:supply' %}">
+                        Bon achat
+                      </a></li>
+                      <li><a href="{% url 'product:avoirsupp' %}">
+                        Avoir Fournisseur
+                      </a></li>
+
+                      <li><a href="{% url 'product:bonsentrees' %}">
+                        List bon achat
+                      </a></li>
+                      
+                      
+                  </ul>
+
+
+                  
+
+
+                 
+
+
+                  <li>
+                   <a href="/ledger/list/customer/">
+                   <i class="fa fa-user fa-lg"></i> Clients
+                   </a>
+                   </li>
+                   
+
+
+
+                    <!-- <li>
+                      <a href="{% url 'product:lowstock' %}" class="text-danger">
+                      <i class="fa fa-exclamation-circle fa-lg"></i> Alert stock ({{p_n}})
+                      </a>
+                    </li>
+
+                  <li>
+                    <a href="/product/items/productscommande/">
+                    <i class="fa fa-shopping-cart fa-lg"></i>Commandes ({{cmnd}})
+                    </a>
+                  </li> -->
+                  <li>
+                    <a href="/product/inventaire">
+                    <i class="fa fa-list fa-lg"></i> Inventaire
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/product/reports">
+                    <i class="fa fa-arrows fa-lg"></i> Rapports
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/product/initpage">
+                    <i class="fa fa-gear fa-lg"></i> Configuration
+                    </a>
+                  </li>
+                  <li data-bs-toggle="collapse" data-bs-target="#facturation" class="collapsed">
+                    <a href="#"><i class="fa fa-globe fa-lg"></i> Facturation </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="facturation">
+                    <li><a href="/product/listfactures">
+                      Factures clients
+                    </a></li>
+                    <li><a href="/product/factureview/">
+                      + Facture client
+                    </a></li>
+                    <li><a href="/product/bonsentrees/?facture=1">
+                      Factures fournisseur
+                    </a></li>
+                    
+                    <li><a href="/product/supply/?facture=1">
+                      + Facture achat
+                    </a></li>
+                    
+                    
+                  </ul>
+                  <li>
+                    <a href="/product/zakat">
+                    <i class="fa fa-money fa-lg"></i> Zakat
+                    </a>
+                  </li>
+                  
+                 {%endif%}
+                  
+                  
+              </ul>
+
+       </div>
+       
+      </div>
+  </div>
+
+  <section class="wrapper" style="width:100%;height: 92vh; overflow-y: scroll; position: relative; overflow-x: hidden;">
+      
+      <!-- <div class="text-center" style="
+      color: #ffffff;
+    font-weight: bold;
+    background: #131d46;
+  ">{{title.upper}}</div> -->
+  <div class="px-2">
+
+    {% block content %}{% endblock %}
+  </div>
+      
+        
+    </section>
+   
+
+    <!-- Actualiser -->
+    <div class="modal fade" id="tt" tabindex="-1" aria-labelledby="ttLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ttLabel">Inactive</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Actualiser la page <button onclick="location.reload()" class="btn fa fa-refresh"></button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+Version: 1.3.0 
+
+@Adachi Systems <i type="button" class="fa fa-phone fa-lg p-2"  onclick="$('.adachiinfo').toggleClass('d-none')"></i> <span class="p-2 border adachiinfo d-none">
+  Abdelwahed
+  06 88 52 43 20
+</span>
+
+<!-- modals -->
+<!-- modal update products -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-white">
+
+      <div class="modal-body">
+          <form class="form-horizontal add-product-form" action="" method="post" autocomplete="off" enctype="multipart/form-data">
+            <div class="checkerror text-danger d-none">Deja existe</div>
+              <div class="form-group">
+                  <input type="hidden" name="thiscategory">
+                  <div class="col-sm-12">
+                      {% csrf_token %}
+                      <label for="">Categorie</label>
+                      <select class="form-select checkref" required type="number" name="updatecategory">
+                          {% for i in children %}
+                          <option value="{{i.id}}">
+                              {{i.name}}
+                          </option>
+                          {% endfor %}
+                      </select><br>
+                      <div class="mb-3">
+                          <label for="">
+                              Image
+                          </label>
+                          <input type="file" class="form-control" name="updateimage">
+                      </div>
+                      <label><strong>Ref</strong></label>
+                      <input type="text" class="form-control product_name checkref" name="updateref" value=""><br>
+                      <!-- <label><strong>Article</strong></label>
+                      <input type="text" class="form-control product_name" name="updatename" value=""><br> -->
+                      <label><strong>Designation</strong></label>
+                      <input type="text" class="form-control product_name" name="updatecar" value=""><br>
+                      <label><strong>Min stock</strong></label>
+                      <input type="text" class="form-control product_name" name="updateminstock" value=""><br>
+                      <!-- <label><strong> Prix ventes </strong></label>
+                      <input type="number" step="0.01" class="form-control product_name" name="updateprice" value="" ><br> -->
+                      <div class="row">
+                        <div class="col-6">
+                          <label><strong> Prix acht </strong></label>
+                      <input type="number" step="0.01" class="form-control product_name" name="updatepr_achat" value="" ><br>
+
+                        </div>
+                        <div class="col">
+                          <label><strong> Remise </strong></label>
+                          <input type="number" name="updateremise" step="0.01" class="form-control" value="" ><br>
+
+                        </div>
+
+                      </div>
+                      <label><strong> Forn </strong></label>
+                      <select required name="updateoriginsupp" class="form-select">
+                          <option value=""></option>
+                          {% for i in suppliers %}
+                          <option value="{{i.id}}">{{i.name}}</option>
+                          {% endfor %}
+                      </select>
+                      <br>
+                      <label><strong> Marque </strong></label>
+                      <select required name="updatemark" class="form-select checkref">
+                          <option value=""></option>
+                          {% for i in marks %}
+                          <option value="{{i.id}}">{{i.name}}</option>
+                          {% endfor %}
+                      </select>
+                      <br>
+
+                      <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+                      <button type="submit" id="save" class="btn btn-primary product-submit-btn w-100" style="float: right">Enregister</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- image display modal -->
+<div class="modal fade" id="imagedisplaymodal" tabindex="-1" aria-labelledby="eimagedisplaymodalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-white">
+
+      <div class="modal-body text-center">
+          <img src="" alt="" class="imgproductmodal" style="max-width: 100%;">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--  duplicate modal -->
+
+<!-- add one product model -->
+<div class="modal fade" id="addoneproductmodal" tabindex="-1" aria-labelledby="eaddoneproductmodalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-white">
+
+      <div class="modal-body">
+          <form method="post" action="{% url 'product:addoneproduct' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+
+              <div class="mb-3">
+                  <label for="">Categorie</label>
+                  <select class="form-select checkref" required name="pcategory">
+                      <option value=""></option>
+                      {% for i in children %}
+                      <option value="{{i.id}}">
+                          {{i.name}}
+                      </option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Image
+                  </label>
+                  <input type="file" class="form-control" name="image">
+              </div>
+
+              <div class="mb-3 row">
+                  <b class="text-center text-danger checkerror d-none">
+                      Deja existé
+                  </b>
+                  <div class="col-6">
+                      <label>
+                          Ref.
+                      </label>
+                      <input class="form-control checkref" required type="text" name="ref" >
+                  </div>
+                  <div class="col-6">
+                      <label>
+                          Marque
+                      </label>
+                      <select class="form-select checkref" required type="text" name="mark">
+                          <option value=""></option>
+                          {% for i in marks %}
+                          <option value="{{i.id}}">
+                              {{i.name}}
+                          </option>
+                          {% endfor %}
+                      </select>
+                  </div>
+              </div>
+              <!-- <div class="mb-3">
+                  <label>
+                      Article
+                  </label>
+                  <input class="form-control" required type="text" name="name" >
+              </div> -->
+              <div class="mb-3">
+                  <label>
+                      Fournisseur
+                  </label>
+                  <select class="form-select" required type="text" name="originsupp">
+                      <option value=""></option>
+                      {% for i in suppliers %}
+                      <option value="{{i.id}}">
+                          {{i.name}}
+                      </option>
+                      {% endfor %}
+                  </select>
+              </div>
+              <div class="mb-3">
+                  <label>
+                      Vehicule
+                  </label>
+                  <input class="form-control" required type="text" name="car" >
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Prix ventes
+                  </label>
+                  <input required type="number" class="form-control" name="price" min="0" step="0.01">
+              </div>
+              <div class="mb-3">
+                  <label>
+                      Prix acht
+                  </label>
+                  <input type="number" required class="form-control" name="prachat" min="0" step="0.01">
+              </div>
+              <div class="mb-3">
+                  <label for="">
+                      Stock
+                  </label>
+                  <input class="form-control" required type="number" name="stock" min="0">
+              </div>
+
+
+
+              <button type="submit" class="btn btn-primary addoneproductbtn" disabled>Ajouter</button>
+
+          </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- collable divs -->
+<!-- bon data holder -->
+<div class="bondataholder row d-none">
+    <div class="col-2" onclick="hidebondata()"
+        style="background: #0000006f;">
+    </div>
+    <div class="bg-white rounded shadow col-10 bondata">
+        <div class="spinner-grow text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+    </div>
+</div>
+<!-- avoir data -->
+<div class="avoirdataholder row d-none">
+    <div class="bg-white rounded shadow col-6 text-center avoirdata">
+        <div class="spinner-grow text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+    </div>
+    <div class="col-6" onclick="hideavoirdata()"
+        style="background: #0000006f;">
+
+    </div>
+</div>
+
+<!-- add product -->
+<div class="container position-absolute bg-white addproductholder shadow-lg d-none rounded" style="right:0; width: 60vw;top:0; height: 100vh; z-index: 99;">
+  <div class="border p-3 ">
+      <div class="bg-primary d-flex justify-content-between">
+          <h3 class="text-center border-bottom text-white p-2">
+              Ajouter un produit
+          </h3>
+          <button onclick="$('.addproductholder').toggleClass('d-none')">X</button>
+      </div>
+      <form method="post" action="{% url 'product:addoneproductinbase' %}" enctype="multipart/form-data" class="addoneproductforminbase">
+        {% csrf_token %}
+          <div class="row">
+              <div class="mb-3 col-6">
+                  <div class="d-flex align-items-center justify-content-between">
+                      <strong for="">Categorie (*)</strong>
+                      <div class="addcategory col-4 d-none">
+                          <div class="my-1">
+                          <div class="input-group">
+                              <input type="text" class="form-control addcategoryinput" placeholder="Category">
+                              <div class="input-group-prepend">
+                              <div class="input-group-text" onclick="addcategoryajax(event)">+</div>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                      <span class="btn me-3 border" onclick="$('.addcategory').toggleClass('d-none');$('.addcategoryinput').focus()">+</span>
+                      <!-- <span class="fa fa-refresh btn btn-dark me-3 border refreshmark"></span> -->
+                  </div>
+                  <select style="width: 100%;" class="form-select select2 notempty categoryselect" name="categoryinadd">
+                      <option value=""></option>
+                      {% for i in allcategories %}
+                      <option value="{{i.id}}">
+                          {{i.name.upper}}
+                      </option>
+                      {% endfor %}
+                  </select>
+
+              </div>
+              <div class="col-6">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <strong>
+                      Marque (*)
+                    </strong>
+                    <div class="addmark col-4 d-none">
+                        <div class="my-1">
+                          <div class="input-group">
+                              <input type="text" class="form-control addmarkinput" placeholder="Marque">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text" onclick="addmarkajax(event)">+</div>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+                      <span class="btn me-3 border" onclick="$('.addmark').toggleClass('d-none');$('.addmarkinput').focus()">+</span>
+                      <!-- <span class="fa fa-refresh btn btn-dark me-3 refreshmark"></span> -->
+                  </div>
+                  <select style="width: 100%;" class="form-select markselect select2 notempty" type="text" name="markinadd">
+                      <option value=""></option>
+                      {% for i in allmarks %}
+                      <option value="{{i.id}}">
+                          {{i.name.upper}}
+                      </option>
+                      {% endfor %}
+                  </select>
+              </div>
+          </div>
+
+
+          <div class="row">
+              <div class="col-md-6
+              mb-3">
+                  <b class="text-center text-danger checkerror d-none">
+                      Deja existé
+                  </b>
+                  <div>
+                      <strong>
+                          Ref. (*)
+                      </strong>
+                      <input class="form-control checkrefinbase notempty" type="text" name="refinadd" >
+                  </div>
+
+              </div>
+              <div class="col-md-6
+              mb-3">
+                  <strong>
+                      Designation (*)
+                  </strong>
+                  <input  class="form-control notempty" type="text" name="carinadd" >
+              </div>
+          </div>
+          <!-- <div class="mb-3">
+              <strong>
+                  Article
+              </strong>
+              <input class="form-control" required type="text" name="name" >
+          </div> -->
+
+
+
+
+      <input type="hidden" name="dest" value="receive">
+      <button type="submit" class="btn btn-primary addoneproductbtn" disabled onclick="addoneproductinbase(event)">Ajouter</button>
+
+      </form>
+
+  </div>
+</div>
+
+<!-- add supplier -->
+<div class="shadow-lg d-none bg-white p-2 rounded position-absolute addsupplierholder"style="right:0; width:40vw; top:0; height: 100vh; z-index:999;">
+  <div class="bg-primary text-white d-flex justify-content-between">
+      <h2>
+          Ajouter Fournisseur
+      </h2>
+      <button onclick="$('.addsupplierholder').addClass('d-none')">X</button>
+  </div>
+
+      <br>
+      <label>
+          <strong>Nom (*)</strong>
+      </label>
+      <input type="text" class="form-control notempty" name="name" required>
+      <br>
+      <label>
+          <strong>Phone1 (*)</strong>
+      </label>
+      <input type="number" class="form-control notempty" name="phone1" required>
+      <br>
+      <label>
+          <strong>phone2</strong>
+      </label>
+      <input type="text" class="form-control" name="phone2">
+      <br>
+      <label>
+          <strong>Address</strong>
+      </label>
+      <input type="text" class="form-control" name="address">
+      <br>
+      <label>
+          <strong>Website</strong>
+      </label>
+      <input type="text" class="form-control" name="website">
+      <br>
+      <button class="btn w-100 btn-success addsuppliersubmitbtn">Ajouter</button>
+</div>
+
+<!-- add client -->
+<div class="shadow-lg d-none bg-white p-2 rounded position-absolute addclientholder"style="right:0; width:40vw; top:0; height: 100vh; z-index:999;">
+  <div class="bg-primary text-white d-flex justify-content-between mt-5">
+      <h2 >
+          Ajouter un client
+      </h2>
+      <button class="btn btn-danger" onclick="$('.addclientholder').addClass('d-none')">X</button>
+  </div>
+
+      <br>
+      <label>
+          <strong>Nom (*)</strong>
+      </label>
+      <input type="text" class="form-control notempty customername" name="customername" required>
+      <br>
+      <label>
+          <strong>Phone1</strong>
+      </label>
+      <input type="number" class="form-control notempty customerphone" name="customerphone">
+      <br>
+      <label>
+          <strong>phone2</strong>
+      </label>
+      <label>
+          <strong>Address</strong>
+      </label>
+      <input type="text" class="form-control customeraddress" name="customeraddress">
+      <br>
+      <label>
+          <strong>ice</strong>
+      </label>
+      <input type="text" class="form-control customerice" name="customerice">
+      <br>
+      <button class="btn w-100 btn-success addclientbtn">Ajouter</button>
+</div>
+
+<!-- search page -->
+<div class="searchpage d-none p-2 row" style="position: absolute;top:0; width: 100%; height: 100vh; background: #1f1a1aaa; z-index: 9999; border: 3px solid black;">
+  <div class="col-11">
+    <div class="bg-white p-2 rounded mb-2">
+      <input type="text" class="form-control searchglobalinbase" placeholder="Rechercher Global" autocomplete="off">
+    </div>
+    <!-- this was a quik search for items -->
+    <div class="rounded  position-relative">
+        <div class="loadertable justify-content-center align-items-center d-none" style="
+        position: absolute;
+        z-index: 9999;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: #0000007d;
+        ">
+            <div class="spinner-border text-white" role="status">
+  
+            </div>
+        </div>
+  
+        <div class="bg-white p-2 rounded" style="height: 80vh; overflow: scroll;">
+            <table class="mb-5 table table-bordered table-advance item-table">
+            <hr>
+            <thead>
+            <tr>
+                <th>Ref</th>
+                <th>Famille</th>
+                <th>Marque</th>
+                <th>Designation</th>
+                <th>Stock</th>
+                <th>Pondiré (NET)</th>
+                <th>Prix acht</th>
+                <th>Remise</th>
+                <th>P. vt gro</th>
+                <th>P. vt compt.</th>
+                <!-- <th style="width: 10%;">Sortie</th> -->
+            </tr>
+            </thead>
+            <tbody class="product-table-body text-center product_search_resultglobal">
+  
+            </tbody>
+        </table>
+        </div>
+  
+  
+    </div>
+  </div>
+  <div class="col-1" type="button" onclick="$('.searchpage').addClass('d-none')"></div>
+
+</div>
+<!-- js placed at the end of the document so the pages load faster -->
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script src="{% static 'js/alertify.min.js' %}"></script>
+
+
+
+<script>
+  function bonachatdata(id){
+        $('.bondataholder').removeClass('d-none')
+        $.post(`/product/bonentree/${id}`,{
+            'csrfmiddlewaretoken':'{{csrf_token}}'
+        },
+        function(data){
+            $('.bondata').html(data.data)
+        })
+    }
+  function populateavoirclient(event){
+    tr=$(event.target).closest('tr')
+    priceofout=tr.find('.priceofout').text()
+    qtyofout=tr.find('.qtyofout').text()
+    console.log('>> price', priceofout, qtyofout, tr)
+    // get the first tr in  .itemsbon
+    firsttr=$('.itemsbon tr').first()
+    // set the value of the first tr in .itemsbon
+    firsttr.find('.stock').text(qtyofout)
+    firsttr.find('.price').val(priceofout)
+  }
+  function bondata(id){
+    
+    $('.bondataholder').removeClass('d-none')
+    $('.bondata').html('<div class="spinner-grow text-primary" role="status"><span class="sr-only">Loading...</span></div>')
+        $.post("{% url 'product:bondata' %}",{id:id},function(data){
+            $('.bondata').html(data.data)
+        })
+    }
+  function checkformode(event){
+    if ($('.mode').val()=='cheque' || $('.mode').val()=='effet'){
+      console.log('echeance')
+    }
+  }
+  $('.addclientbtn').on('click', ()=>{
+    console.log({
+      'name':$('.customername').val(),
+      'phone':$('.customerphone').val(),
+      'ice':$('.customerice').val(),
+      'address':$('.customeraddress').val(),
+    })
+            if($('.customername').val() == ''){
+              $('.customername').addClass('is-invalid')
+                return false;
+            }else{
+
+                $('.addclientbtn').addClass('disabled')
+                $.get(
+                    '/product/addclient',
+                    {
+                        'name':$('.customername').val(),
+                        'phone':$('.customerphone').val(),
+                        'ice':$('.customerice').val(),
+                        'address':$('.customeraddress').val(),
+                    },
+                    function(data){
+                      alertify.success('>> Client ajouté avec succès');
+                      $('.customername').val('')
+                      $('.customerphone').val('')
+                      $('.customerice').val('')
+                      $('.customeraddress').val('')
+                      $('.addclientbtn').removeClass('disabled')
+                        //location.reload();
+                    }
+                )
+            }
+        })
+        $('.searchglobalinbase').on('change', function(){
+            $('.loadertable').removeClass('d-none')
+            if ($(this).val()==''){
+                $('.loadertable').addClass('d-none')
+                $('.product_search_resultglobal').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/searchglobal",
+                    type: "POST",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'global': $('.searchglobalinbase').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').addClass('d-none')
+                        $('.product_search_resultglobal').html(data.data)
+                        //updatestock()
+                        //displayimage()
+                    }
+                })
+            }
+        })
+        $('.searchglobal').on('change', function(){
+            $('.loadertable').removeClass('d-none')
+            if ($(this).val()==''){
+                $('.loadertable').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/searchglobal",
+                    type: "POST",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'global': $('.searchglobal').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        })
+  
+        function addpaymentbon(event, bonid){
+    amount=$('.paidamount').val()
+    mode=$('.mode').val()
+    npiece=$('.npiece').val()
+    echeance=$('.echeance').val()
+    if (amount==''||amount==0){
+      alertify.error('Mantant')
+      return
+    }
+    $(event.target).addClass('disabled')
+    $.get('/product/addpaymentbon', {
+      'amount':amount,
+      'mode':mode,
+      'mode':mode, 
+      'npiece':npiece,
+      'echeance':echeance,
+      'bonid':bonid
+    }, (data)=>{
+      if (data.success){
+        location.reload()
+      }
+    })
+  }
+  
+  function addpaymentfacture(event, factureid){
+    amount=$('.paidamount').val()
+    mode=$('.mode').val()
+    npiece=$('.npiece').val()
+    echeance=$('.echeance').val()
+    if (amount==''||amount==0){
+      alertify.error('Mantant')
+      return
+    }
+    $(event.target).addClass('disabled')
+    $.get('/product/addpaymentfacture', {
+      'amount':amount,
+      'mode':mode,
+      'mode':mode, 
+      'npiece':npiece,
+      'echeance':echeance,
+      'factureid':factureid
+    }, (data)=>{
+      if (data.success){
+        location.reload()
+      }
+    })
+  }
+  
+  // function isTokenValid() {
+  //   const authToken = localStorage.getItem("authToken");
+  //   const tokenExpiration = localStorage.getItem("tokenExpiration");
+
+  //   if (!authToken || !tokenExpiration) {
+  //     return false;
+  //   }
+
+  //   return Date.now() < parseInt(tokenExpiration, 10);
+  // }
+
+  // if (isTokenValid()) {
+  //   console.log('ok');
+  // } else {
+  //   // Inform the user and handle session expiration
+  //   document.body.innerHTML = "Session expired";
+
+  //   $.get('/product/notworking', response => {
+  //     console.log(response);
+  //   });
+  // }
+
+  function modeReglementChange(event){
+    mode=$(event.target).val()
+    npiece=$("[name='npiece']")
+    echeance=$("[name='echeance']")
+    if (mode=='effet' || mode=='cheque' || mode=='echeanceEspece'){
+      npiece.attr('required', true)
+      echeance.attr('required', true)
+      return
+    }
+    npiece.attr('required', false)
+    echeance.attr('required', false)
+  }
+  function printfacture(bonid){
+
+url = window.location.pathname.split( '/' );[0]
+var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/factureprint?id='+bonid, '', 'width=900,height=900');
+
+ myWindow.focus();
+
+ myWindow.addEventListener('load', function() {
+console.log('New window loaded.');
+
+// Wait for 5 seconds before printing
+setTimeout(function() {
+ try {
+   myWindow.print();
+   console.log('Print command issued.');
+   myWindow.close();
+   console.log('New window closed.');
+ } catch (e) {
+   console.error('Failed to print and close the window:', e);
+ }
+}, 300); // 1000 milliseconds = 1 seconds
+}, false);
+}
+  function printdevis(bonid){
+
+    url = window.location.pathname.split( '/' );[0]
+    var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/devisprint/'+bonid, '', 'width=900,height=900');
+
+    myWindow.focus();
+
+    myWindow.addEventListener('load', function() {
+    console.log('New window loaded.');
+
+    // Wait for 5 seconds before printing
+    setTimeout(function() {
+    try {
+      myWindow.print();
+      console.log('Print command issued.');
+      myWindow.close();
+      console.log('New window closed.');
+    } catch (e) {
+      console.error('Failed to print and close the window:', e);
+    }
+    }, 300); // 1000 milliseconds = 1 seconds
+    }, false);
+  }
+
+  function printbon(bonid){
+
+url = window.location.pathname.split( '/' );[0]
+var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/bonprint/'+bonid, '', 'width=900,height=900');
+
+ myWindow.focus();
+
+ myWindow.addEventListener('load', function() {
+console.log('New window loaded.');
+
+// Wait for 5 seconds before printing
+setTimeout(function() {
+ try {
+   myWindow.print();
+   console.log('Print command issued.');
+   myWindow.close();
+   console.log('New window closed.');
+ } catch (e) {
+   console.error('Failed to print and close the window:', e);
+ }
+}, 300); // 1000 milliseconds = 1 seconds
+}, false);
+}
+  function avoirprint(bonid){
+
+    url = window.location.pathname.split( '/' );[0]
+    var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/avoirprint/'+bonid, '', 'width=900,height=900');
+
+    myWindow.focus();
+
+    myWindow.addEventListener('load', function() {
+    console.log('New window loaded.');
+
+    // Wait for 5 seconds before printing
+    setTimeout(function() {
+    try {
+      myWindow.print();
+      console.log('Print command issued.');
+      myWindow.close();
+      console.log('New window closed.');
+    } catch (e) {
+      console.error('Failed to print and close the window:', e);
+    }
+    }, 300); // 1000 milliseconds = 1 seconds
+    }, false);
+}
+
+let inactivityTime=0;
+
+  function checkForInactivity(t) {
+    var inactivityInterval = setInterval(function() {
+      inactivityTime += 1;
+      if (inactivityTime > t) {
+        // set inactive to 1 1 means True
+        console.log('set inactivity')
+        localStorage.setItem('inactive', '1')
+        clearInterval(inactivityInterval);
+        $('.passwordscreen').removeClass('d-none')
+        $('.passwordinput').focus()
+        $('.passwordinput').on('keyup', function(){
+          if ($(this).val()=='oussama'){
+            $('.passwordinput').val('')
+            $('.passwordscreen').addClass('d-none')
+            inactivityTime=0
+            console.log('set inactivity')
+            localStorage.setItem('inactive', '0')
+            //checkForInactivity(10)
+          }
+        })
+
+      }
+
+
+    }, 1000);
+  }
+  $(document).on('mousemove keydown', ()=>inactivityTime=0);
+  $('.checkrefinbase').on('change', ()=>{
+      if ($('[name="refinadd"]').val()!='' && $('[name="markinadd"]').val()!='' && $('[name="categoryinadd"]').val()!=''){
+          console.log('checking')
+          $.get('/product/checkref/', {
+              'ref': $('[name="refinadd"]').val().toLowerCase(),
+              'mark': $('[name="markinadd"]').val().toLowerCase(),
+              'categoryid':$('[name="categoryinadd"]').val()
+      }, (data)=>{
+        console.log(data)
+              if (data.exist){
+                  $('.checkerror').removeClass('d-none')
+                  $('.addoneproductbtn').attr('disabled', true)
+              }
+              else{
+                  $('.checkerror').addClass('d-none')
+                  $('.addoneproductbtn').attr('disabled', false)
+              }
+          })
+
+      }else{
+        console.log('eeee')
+      }
+  })
+  
+  $('.checkref').on('change', ()=>{
+      if ($('[name="ref"]').val()!='' && $('[name="mark"]').val()!='' && $('[name="category"]').val()!=''){
+          console.log('checking')
+          $.get('/product/checkref/', {
+              'ref': $('[name="ref"]').val().toLowerCase(),
+              'mark': $('[name="mark"]').val().toLowerCase(),
+              'categoryid':$('[name="category"]').val()
+      }, (data)=>{
+        console.log(data)
+              if (data.exist){
+                  $('.checkerror').removeClass('d-none')
+                  $('.addoneproductbtn').attr('disabled', true)
+              }
+              else{
+                  $('.checkerror').addClass('d-none')
+                  $('.addoneproductbtn').attr('disabled', false)
+              }
+          })
+
+      }else{
+        console.log('eeee')
+      }
+  })
+  
+  function addoneproduct(e){
+    // category=$('.categoryselect').val()
+    // supplier=$('.supplierselect').val() || null
+    // mark=$('.markselect').val()
+    // ref=$('.refinput').val()
+    // image=$('.imagein').val()
+    // car=$('.carinput').val()
+    // prachat=$('.prachatinput').val()
+    // remise=$('.remiseinput').val()
+    // stock=$('.stockinput').val()
+    // minstock=$('.minstockinput').val()
+    e.preventDefault()
+    if ($('[name="ref"]').val()=='' || $('[name="car"]').val()=='' || $('[name="category"]').val()=='' || $('[name="mark"]').val()==''){
+      alertify.error('Veuillez remplir les champs obligatoires');
+      return
+    }
+    $(this).attr('disabled', true)
+    // check all required fields are filled update: aleady sisnce we only care about ref, cat, mark, name
+    // var isAnyEmpty = $('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+    // if (isAnyEmpty){
+    //     let emptyInputs = $('input.notempty').filter(function() {
+    //         return !this.value.trim();
+    //     });
+    //
+    //     // Add a red border to all empty input elements
+    //     emptyInputs.css('border', '1px solid red');
+    //     $('input.notempty').not(emptyInputs).css('border', '');
+    //     alertify.error('Veuillez remplir tous les champs obligatoires')
+    //     $(this).attr('disabled', false)
+    //     return false
+    // }
+    //$('.addoneproductform').submit()
+    //console.log(category, mark, supplier, ref, car)
+    var formData = new FormData($('.addoneproductform')[0]);
+      $.ajax({
+          url: '{% url "product:addoneproduct" %}',
+          type: 'POST',
+
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(data) {
+            if (data.success){
+              alertify.success('OK')
+              if ($('[name="dest"]').val()=='receive'){
+                $('.addoneproductform')[0].reset();
+                return
+              }
+              location.reload()
+            }else{
+              alertify.success('ERROR')
+            }
+          }
+      })
+  }//end addproductfunctio
+  
+  function addoneproductinbase(e){
+    // category=$('.categoryselect').val()
+    // supplier=$('.supplierselect').val() || null
+    // mark=$('.markselect').val()
+    // ref=$('.refinput').val()
+    // image=$('.imagein').val()
+    // car=$('.carinput').val()
+    // prachat=$('.prachatinput').val()
+    // remise=$('.remiseinput').val()
+    // stock=$('.stockinput').val()
+    // minstock=$('.minstockinput').val()
+    e.preventDefault()
+    if ($('[name="refinadd"]').val()=='' || $('[name="carinadd"]').val()=='' || $('[name="categoryinadd"]').val()=='' || $('[name="markinadd"]').val()==''){
+      alertify.error('Veuillez remplir les champs obligatoires');
+      return
+    }
+    $(this).attr('disabled', true)
+    // check all required fields are filled update: aleady sisnce we only care about ref, cat, mark, name
+    // var isAnyEmpty = $('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+    // if (isAnyEmpty){
+    //     let emptyInputs = $('input.notempty').filter(function() {
+    //         return !this.value.trim();
+    //     });
+    //
+    //     // Add a red border to all empty input elements
+    //     emptyInputs.css('border', '1px solid red');
+    //     $('input.notempty').not(emptyInputs).css('border', '');
+    //     alertify.error('Veuillez remplir tous les champs obligatoires')
+    //     $(this).attr('disabled', false)
+    //     return false
+    // }
+    //$('.addoneproductform').submit()
+    //console.log(category, mark, supplier, ref, car)
+    var formData = new FormData($('.addoneproductforminbase')[0]);
+      $.ajax({
+          url: '{% url "product:addoneproductinbase" %}',
+          type: 'POST',
+
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(data) {
+            if (data.success){
+              alertify.success('OK')
+              if ($('[name="dest"]').val()=='receive'){
+                $('.addoneproductforminbase')[0].reset();
+                $('[name="categoryinadd"]').select2().val("").trigger('change')
+                $('[name="markinadd"]').select2().val("").trigger('change')
+                return
+              }
+              location.reload()
+            }else{
+              alertify.success('ERROR')
+            }
+          }
+      })
+  }//end addproductfunctio
+  
+
+  function addmarkajax(e){
+        e.preventDefault()
+        let mark = $('.addmarkinput').val()
+        if (mark.trim()==''){
+            alertify.error('Veuillez remplir le champ')
+            return false
+        }
+        $.get("{% url 'product:addmarkajax' %}",{'mark': mark},(data)=>{
+                if (data.success){
+                    $('.markselect').append(`<option value="${data.id}">${mark.toUpperCase()}</option>`)
+                    $('.markselect').val(data.id)
+                    $('.addmark').toggleClass('d-none')
+                    $('.addmarkinput').val('')
+                }else{
+                    alertify.error(data.error)
+                }
+            }
+        )
+    }
+    function addcategoryajax(e){
+        e.preventDefault()
+        let category = $('.addcategoryinput').val()
+        if (category.trim()==''){
+            alertify.error('Veuillez remplir le champ')
+            return false
+        }
+        $.get("{% url 'product:addcategoryajax' %}",{'category': category},(data)=>{
+                if (data.success){
+                  $('[name="categoryinadd"]').append(`<option value="${data.id}">${category.toUpperCase()}</option>`)
+                  $('[name="categoryinadd"]').val(data.id)
+                  $('[name="category"]').append(`<option value="${data.id}">${category.toUpperCase()}</option>`)
+                    $('[name="category"]').val(data.id)
+                    $('.addcategory').toggleClass('d-none')
+                    $('.addcategoryinput').val('')
+                }else{
+                    alertify.error(data.error)
+                }
+            }
+        )
+    }
+    function checkmax(event, max){
+        console.log(max)
+        if(parseFloat($(event.target).val()) > parseFloat(max) || parseFloat($(event.target).val()) == 0){
+            $(event.target).addClass('is-invalid');
+            //$('[type="submit"]').attr('disabled', 'disabled');
+        }else{
+            $(event.target).removeClass('is-invalid');
+            //$('[type="submit"]').removeAttr('disabled');
+        }
+        if ($(event.target).val() == '' || $(event.target).val() == 0){
+            $('[type="submit"]').attr('disabled', 'disabled');
+        }else{
+            $('[type="submit"]').removeAttr('disabled');
+        }
+    }
+  function checkmin(event){
+    console.log('checking min')
+    inpval=parseFloat($(event.target).val())
+    min=parseFloat($(event.target).attr('min'))
+    console.log(inpval, min)
+    if (inpval<min){
+        $(event.target).addClass('border-danger')
+        $('.addbtn').addClass('disabled')
+    }else{
+        $(event.target).removeClass('border-danger')
+        $('.addbtn').removeClass('disabled')
+    }
+  }
+  function checkpassword(event){
+    var password=$(event.target).val()
+    if (password=='adashi'){
+      $('.passwordscreen').addClass('d-none')
+      checkForInactivity(120)
+      console.log('set inactivity')
+      localStorage.setItem('inactive', '0')
+    }
+  }
+
+
+  // Call resetInactivityTimer on any user activity to restart the timer
+
+  function updateproduct(event, pdctid){
+    console.log('submitting')
+    $('product-submit-btn').attr('disabled', true)
+    event.preventDefault()
+    form=$('.update-product-form')
+    const formData = new FormData(document.querySelector('.update-product-form'));
+    // const fileInput = $('[name="updateimage"]');
+    // formData.append('image', fileInput[0].files[0]);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    $.ajax({
+        url: form.attr('action'),
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            if (data.status){
+              console.log($(`tr[pdctid="${pdctid}"]`).find('.productref'))
+              console.log($(`tr[pdctid="${pdctid}"]`).find('.productref'))
+              $(`tr[pdctid="${pdctid}"]`).find('.productref').text(data.ref)
+              $(`tr[pdctid="${pdctid}"]`).find('.product_name').html(data.category)
+              $(`tr[pdctid="${pdctid}"]`).find('.mark').text(data.mark)
+              $(`tr[pdctid="${pdctid}"]`).find('.car').text(data.car)
+              $('.bondataholder').addClass('d-none')
+                // categoryid=$('[name="thiscategory"]').val()
+                // //getproductsbycategory(categoryid)
+                // location.reload()
+                // $('[name="updatemark"]').val('')
+                // $('[name="updateoriginsupp"]').val('')
+                // $('#exampleModal').modal('hide')
+
+
+            }
+            else{
+                $('.updatepdcterror').removeClass('d-none').text(data.error)
+            }
+        }
+    })
+  }
+  const productdata= (id)=>{
+    $('.bondata').html()
+    $('.bondataholder').removeClass('d-none')
+    $.get("{% url 'product:productdata' %}",{id:id},function(data){
+      $('.bondata').html(data.data)
+    })
+    
+  }
+  $(function(){
+
+    $('.clientselect').select2({
+
+      ajax: {
+        type:'get',
+        dataType: 'json',
+        url: '/products/searchclient',
+        data: function (params) {
+          var query = {
+            term: params.term,
+          }
+          // Query parameters will be ?search=[term]&type=public
+          return query;
+        },
+        proccessresults: function (data) {
+            return {
+              results:data.results
+            }
+        },
+        cache:true
+      },
+      minimumInputLength: 1,
+      placeholder:'Chercher client',
+      templateResult: formatclient,
+      templateSelection: formatclientSelection,
+    });
+    function formatclient (client) {
+        if (client.loading) {
+          return client.text;
+        }
+
+        var $container = $(
+          `<strong>${client.text}</strong>`
+          );
+
+
+
+          return $container;
+      }
+
+      function formatclientSelection (client) {
+        return client.text;
+      }
+
+  })
+  function updatepdctcmnd(event, pdctid){
+    supplier=$(event.target).parent().find('select').val()
+    selectedsupplier=$('[name="supplierfilter"]').val()
+    if (supplier==""){
+      alertify.error('Fournisseur')
+      $(event.target).parent().find('select').addClass('border-danger')
+      return
+    }
+    $(event.target).parent().find('select').removeClass('border-danger')
+    $.get('/product/updatecommande', {
+      'itemid':pdctid,
+      'supplier':supplier
+    }, (data)=>{
+      if (supplier !== selectedsupplier){
+        // remove tr if supplier is not selected supplier
+        $(event.target).parent().parent().parent().parent().remove()
+      }
+    })
+  }
+
+  function cancelcommand(event, pdctid, ...args){
+
+    const commandepage = args[0] === true;
+    $.get('/product/cancelcommande', {
+      'id':pdctid
+    }, (data)=>{
+      console.log($(event.target).parent())
+      if (commandepage){
+        $(event.target).parent().parent().remove()
+      }else{
+        $(event.target).parent().html(`
+        <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="commandepdct(event, '${pdctid}')"></div>
+        `)
+      }
+
+    })
+
+  }
+
+
+  function commandepdct(event, pdctid){
+        let supplier=$('[name="supplier"]').val()
+        if(supplier==0){
+            $(event.target).css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $(event.target).css({
+                'border': '1px solid green'
+            })
+        qty=$(event.target).val()
+        if (qty=='' || qty==0){
+            $(event.target).css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $.ajax({
+            url: "{% url 'product:commandproduct' %}",
+            type: "POST",
+            data: {
+                'itemid': pdctid,
+                'qty': qty,
+                'supplier': supplier,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if(data.valid){
+                    $('.ordered').text(parseInt($('.ordered').text())+1)
+                    //getlowbycategory(categoryid)
+                $(event.target).parent().html(`<i class="fa fa-check text-success fa-2x"></i><button class="fa fa-times text-danger fa-2x " id="${pdctid}" onclick="cancelcommand(event, '${pdctid}')"></button> ${$('[name="supplier"] option:selected').text().trim()}`)
+                }
+                else{
+                    alert('Erreur')
+                }
+            }
+        })
+  }
+
+  function ajaxtabs(tabid, url){
+    $('.loading').removeClass('d-none')
+    $(`.${tabid}`).addClass('categoryactive')
+    $.get(url,function(data){
+        $('.sectionwithajax').html(data)
+        $('.loading').addClass('d-none')
+      })
+  }
+  function filterlow(event){
+    target=$(event.target).val()
+    if (target==""){
+      $('.lowstockbody > tr').removeClass('d-none')
+    }else{
+      $('.lowstockbody > tr').addClass('d-none')
+      $(`.mark${target}`).removeClass('d-none')
+    }
+  }
+  function hidebondata(){
+        $('.bondataholder').addClass('d-none')
+    }
+  function prt(){
+            var printContents = document.getElementById('print').innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            document.querySelector('.table').classList.add('h6')
+            document.body.classList.add('p-3')
+            window.print();
+            location.reload()
+        }
+
+const darkmode=()=>{
+    let darkMode = localStorage.getItem('darkMode');
+    console.log(darkMode)
+      // check if dark mode is enabled
+      // if it's enabled, turn it off
+      // if it's disabled, turn it on
+      if(darkMode=='true'){
+        $('body').css('background-color', '#1a1a1a');
+        $('table').removeClass('table-striped').css('color', 'white')
+        $('.bg-white').removeClass('bg-white').addClass('bg-dark text-white')
+        $('.black-bg').css('background-color', '#333333')
+        $('.btn').addClass('btn-dark text-white border')
+        $('input').addClass('bg-dark text-white')
+        $('select').addClass('bg-dark text-white')
+      }else{
+        $('body').css('background-color', 'white');
+        $('table').css('color', 'black').removeClass('table-dark')
+        $('.bg-dark').removeClass('bg-dark text-white').addClass('bg-white')
+        $('.black-bg').css('background-color', 'blue')
+        $('.btn').removeClass('btn-dark text-white')
+      }
+  }
+
+    $(document).ready(function(){
+
+      //darkmode()
+      $('.themetoggler').on('click', ()=>{
+          var darkMode = localStorage.getItem('darkMode') === 'true';
+          // toggle between true and false
+          darkMode = !darkMode;
+          // set darkMode value to local storage
+          localStorage.setItem('darkMode', darkMode);
+          darkmode()
+      })
+
+
+
+      $('.select2').select2();
+      //   function backupDatabase() {
+      //     var currentTime = new Date().getHours();
+      //     if (currentTime == 16) { // check if it's 4:00 PM
+      //         $.ajax({
+      //             type: "POST",
+      //             url: "/makebackup",
+      //             success: function(response) {
+      //                 console.log("Database backed up successfully.");
+      //             },
+      //             error: function(response) {
+      //                 console.log("An error occurred while trying to backup the database.");
+      //             }
+      //         });
+      //     }
+      // }
+
+      // setInterval(backupDatabase, 60000); // call the function every minute
+      $(".search-invoice").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $(".product-table-body tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+    $(function(){
+      $('.productslist').select2({
+          minimumInputLength: 1,
+          placeholder:'Chercher Produit',
+          ajax: {
+          type:'get',
+          dataType: 'json',
+          url: '/product/searchproduct',
+          data: function (params) {
+              var query = {
+              term: params.term,
+              }
+              // Query parameters will be ?search=[term]&type=public
+              return query;
+          },
+          proccessresults: function (data) {
+              return {
+                  results:data.results
+              }
+          },
+          cache:true
+          }
+      });
+
+      $('.supplierslist').select2({
+          minimumInputLength: 1,
+          placeholder:'Chercher Fournisseur',
+          ajax: {
+          type:'get',
+          dataType: 'json',
+          url: '/product/searchsupplier',
+          data: function (params) {
+              var query = {
+              term: params.term,
+              }
+              // Query parameters will be ?search=[term]&type=public
+              return query;
+          },
+          proccessresults: function (data) {
+              return {
+                  results:data.results
+              }
+          },
+          cache:true
+          }
+      });
+        $('.clientsearch').select2({
+
+          ajax: {
+            type:'get',
+            dataType: 'json',
+            url: '/product/searchclient',
+            data: function (params) {
+              var query = {
+                term: params.term,
+              }
+              // Query parameters will be ?search=[term]&type=public
+              return query;
+            },
+            proccessresults: function (data) {
+                return {
+                  results:data.results
+                }
+            },
+            cache:true
+          },
+          minimumInputLength: 1,
+          placeholder:'Chercher client',
+          templateResult: formatclient,
+          templateSelection: formatclientSelection,
+        });
+        function formatclient (client) {
+            if (client.loading) {
+              return client.text;
+            }
+
+            var $container = $(
+              `<strong style="color:${client.diver>0?"red":""};">${client.text}</div>`
+              );
+
+
+
+              return $container;
+          }
+
+          function formatclientSelection (client) {
+            return client.text;
+          }
+
+      })
+    $(document).keydown(function(e) {
+      // Use e.which to determine which key was pressed
+      if (e.which === 226 && e.ctrlKey) {
+        // used to show add product modal
+        // var modal = new bootstrap.Modal(document.getElementById('addoneproductmodal'), {
+        // keyboard: false
+        // })
+        // modal.show()
+        window.location.href='/product/items/productslistbycategory/'
+      }
+      if (e.which === 91 && e.ctrlKey) {
+        // used to show add product modal
+        // var modal = new bootstrap.Modal(document.getElementById('addoneproductmodal'), {
+        // keyboard: false
+        // })
+        // modal.show()
+        window.location.href='/'
+      }
+      if (e.which === 16 && e.ctrlKey) {
+        // Perform action when Ctrl+S is pressed
+        window.location.href='/product/items/lowstock/'
+      }
+      if (e.which === 18 && e.ctrlKey) {
+        // Perform action when Ctrl+S is pressed
+        window.location.href='/product/supply/'
+      }
+    });
+
+</script>
+{% block scripts %}
+{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+
+
+{% block content %}
+<div class="row bg-white">
+        <!-- <form action="{% url 'product:addcategory' %}" class="mb-5" method="post">
+            {% csrf_token %}
+            <input name="category" type="text" class="form-control" placeholder="أضف Categories" required>
+            <button class="btn col-2 btn btn-success w-100">Ajouter</button>
+        </form> -->
+    <div class="row">
+        <!-- {% for i in cc %}
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                  <b>{{i.name}}</b>
+                  <p>
+                    {{i.total_products}}
+                  </p> -->
+                  <!-- <a class="fa fa-trash-o text-danger" href="{% url 'product:deletecategory' id=i.id %}"></a> -->
+                <!-- </div>
+                <div class="card-body">
+                    <form enctype="multipart/form-data" action="{% url 'product:addbulkcategory' id=i.id %}" method="post" class="">
+                        {% csrf_token %}
+                        <input class="form-control" type="file" name="productsfile" id="formFile" required>
+                        <button class="btn btn-primary submitbulk w-100">
+                            Ajouter un produitsات
+                        </button>
+                    </form>
+                </div>
+              </div>
+        </div>
+        {% endfor %} -->
+        <div class="row">
+            <div class="col-md-6">
+                <select class="form-select" required type="number" name="category">
+                    {% for i in cc %}
+                    <optgroup label="{{i.name}}">
+                        
+                        {% for j in i.category_subcategory.all %}
+                        <option value="{{j.id}}">{{j.name}}</option>
+                        {% endfor %}
+                    </optgroup>
+                    
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <form enctype="multipart/form-data" action="/product/items/addbulkcategory/1" method="post" class="addbulk">
+                    {% csrf_token %}
+                    <input class="form-control" type="file" name="productsfile" id="formFile" required>
+                    <button class="btn btn-primary submitbulk">
+                        Ajouter un produitsات
+                    </button>
+                </form>
+            </div>
+            
+        </div>
+        
+        
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    
+
+$('[name="category"]').on('change', ()=>{
+    console.log('changed')
+    $('.addbulk').attr('action', '/product/items/addbulkcategory/'+$('[name="category"]').val())
+
+})
+</script>
+{% endblock %}

@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<!-- for accountant -->
+<div class="row mb-5 p-2">
+    <div class="col-6 row">
+        <div class=" row">
+            <h3 class="bg-white p-2">Client</h3>
+            
+            <div class="col-6">
+                <div class="bg-white bg-white d-flex justify-content-between p-2 align-items-center rounded">
+                    <a href="/product/listfactures">
+                        <h4>List factures</h4>
+                    </a>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="bg-white bg-white d-flex justify-content-between p-2 align-items-center rounded">
+                    <a href="/product/factureview">
+                        <h4>+ Facture client</h4>
+                    </a>
+                </div>
+                
+            </div>
+            
+            
+        </div>
+        <strong>
+            Total tva client:
+            {{total_tva_client}} DH
+        </strong>
+        
+    </div>
+    <div class="col-6">
+        <div class=" row">
+            <h3 class="bg-white p-2">Fournisseur</h3>
+            
+            <div class="col-6">
+                <div class="bg-white bg-white d-flex justify-content-between p-2 align-items-center rounded">
+                    <a href="/product/bonsentrees?facture=1">
+                        <h4>List factures</h4>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="bg-white bg-white d-flex justify-content-between p-2 align-items-center rounded">
+                    <a href="/product/supply?facture=1">
+                        <h4>+ Facture achat</h4>
+                    </a>
+                </div>
+            </div>
+            
+            
+        </div>
+        <strong>
+            Total tva fournisseur:
+            {{total_tva_fournisseur}} DH
+        </strong>
+    </div>
+</div>
+<h1 style="text-align: center; font-size: 8em;" class="text-primary">
+    {{ request.user.retailer_user.retailer.name }}  (Facturation)
+</h1>
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    $(function () {
+        $('.searchref').focus()
+        const displayimage=()=>{
+            $('.imagedisplaybtn').each((i, el)=>{
+                $(el).on('click', ()=>{
+
+                    img=$(el).find('.imgproduct').attr('src')
+                    console.log(img)
+                    $('.imgproductmodal').attr('src', img)
+                })
+            })
+        }
+
+        $(".product-sub-btn").on ('click', function(){
+                $(this).addClass('disabled');
+                $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                var error= false;
+
+                if ($('.product-error').val() == ""){
+                    $('.product-error').show();
+                    error = true;
+                }
+                else {
+                    $('.product-error').hide();
+                }
+                if ($('.quantity').val () == ""){
+                    $('.item-error').show();
+                    error = true;
+                }
+                else {
+                    $('.item-error').hide();
+                }
+                if (error == true) {
+                    $(this).removeClass('disabled');
+                    $(this).html('Enregister');
+                    return;
+                }
+                else
+                {
+                    $('.product_item_form').submit();
+
+                }
+
+            });
+        // edit product handler
+        // edit product handler
+
+
+        // update stock
+        const updatestock = () =>{
+            $('.updatestockbtn').each((i, el)=>{
+                $(el).on('click', ()=>{
+                    $('.loadertable').toggleClass('d-none')
+                    inp=$(el).parent().find('.sortieinput')
+                    priceinput=parseFloat($(el).parent().find('.priceinput').val())
+                    max=parseFloat(inp.attr('max'))
+                    var prices = [];
+                    $(el).parent().parent().find('.prices').each(function() {
+                        prices.push(parseFloat($(this).text()));
+                    });
+                    var qtyofprice = [];
+                    $(el).parent().parent().find('.qtyofprice').each(function() {
+                        qtyofprice.push(parseInt($(this).text()));
+                    });
+                    console.log(prices, qtyofprice)
+                    let index=prices.indexOf(priceinput)
+                    console.log(qtyofprice[index])
+                    if (inp.val()>max || inp.val()==0 || inp.val()==''|| !prices.includes(priceinput) || inp.val()>qtyofprice[index]){
+                        $('.loadertable').toggleClass('d-none')
+                        console.log('false')
+                        inp.css("border", "3px solid red")
+                        return
+                    }
+                    else{
+
+                        console.log('sending')
+                        // disable the button
+                        $(el).addClass('disabled')
+                        // send ajax to product:updatestock
+                        $.ajax({
+                            url: "{% url 'product:updatestock' %}",
+                            type: "POST",
+                            data: {
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                'id': $(el).attr('id'),
+                                'categoryid': $(el).attr('categoryid'),
+                                'sortieqty': inp.val(),
+                                'price': priceinput,
+                                'ref': $('.searchref').val(),
+                                'car': $('.searchcar').val(),
+                                'category': $('.searchcategory').val(),
+                            },
+                            success: function (data) {
+                                $('.loadertable').toggleClass('d-none')
+                                $('.product_search_result').html(data.data)
+
+                                if (data.zerostock){
+                                    $('.zerostock').text(parseInt($('.zerostock').text())+1)
+                                }
+                                updatestock()
+
+                            },
+                            error: function (data) {
+                                // undisable the button
+                                $(el).removeClass('disabled')
+                                alert('error, Contacter developpeur')
+                            }
+                        })
+                    }
+                })
+            })
+        }
+        $('.searchglobal').on('change', function(){
+            $('.loadertable').removeClass('d-none')
+            if ($(this).val()==''){
+                $('.loadertable').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/searchglobal",
+                    type: "POST",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'global': $('.searchglobal').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        })
+        function liveSearch() {
+
+            if ($('.searchref').val()=='' && $('.searchcar').val()=='' && $('.searchcategory').val()==''){
+                $('.loadertable').removeClass('d-flex').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                console.log('ajax')
+                $.ajax({
+                    url: "/product/product_search",
+                    type: "POST",
+                    data: {
+                        'ref': $('.searchref').val(),
+                        'car': $('.searchcar').val(),
+                        'category': $('.searchcategory').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').removeClass('d-flex').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        }
+
+    //A little delay
+    let typingTimer;
+    let typeInterval = 2000;
+    let searchInput = $('.search-input');
+
+    searchInput.on('input', () => {
+        $('.loadertable').removeClass('d-none').addClass('d-flex')
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(liveSearch, typeInterval);
+    });
+        $('.searchcategory').on('change', function () {
+            $('.loadertable').removeClass('d-none').addClass('d-flex')
+            if ($('.searchref').val()=='' && $('.searchcar').val()=='' && $('.searchcategory').val()==''){
+                $('.loadertable').removeClass('d-flex').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/product_search",
+                    type: "POST",
+                    data: {
+                        'ref': $('.searchref').val(),
+                        'car': $('.searchcar').val(),
+                        'category': $('.searchcategory').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').removeClass('d-flex').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        });
+
+        $('.deleteproduct').each((i, el)=>{
+            $(el).on('click', ()=>{
+                t=$(el)
+                if (confirm('Supprimer ?')){
+                    $.ajax({
+                        url: "{% url 'product:delete_product' %}",
+                        type: "POST",
+                        data: {
+                            'id': t.attr('data-id'),
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            if (data.status == 'success'){
+                                t.parent().parent().remove()
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data)
+                        }
+                    });
+                }
+            })
+        })
+
+
+        // handle submit form update product
+        $('.add-product-form').on('submit', function (e) {
+            $('product-submit-btn').attr('disabled', true)
+            e.preventDefault()
+
+            const formData = new FormData(document.querySelector('.add-product-form'));
+            // const fileInput = $('[name="updateimage"]');
+            // formData.append('image', fileInput[0].files[0]);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                // data: {
+                //     'car': $('[name="updatecar"]').val(),
+                //     'ref': $('[name="updateref"]').val(),
+                //     'price': $('[name="updateprice"]').val(),
+                //     'pr_achat': $('[name="updatepr_achat"]').val(),
+                //     'originsupp': $('[name="updateoriginsupp"]').val(),
+                //     'mark': $('[name="updatemark"]').val(),
+                //     'category': $('[name="updatecategory"]').val(),
+                //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+                // },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.status){
+
+                        $('[name="updatemark"]').val('')
+                        $('[name="updateoriginsupp"]').val('')
+                        $('#exampleModal').modal('hide')
+                        // row=$('tr')[updateform.attr('id')]
+                        // $(row).find('.product_ref').text($('[name="updateref"]').val())
+                        // $(row).find('.product_price').text($('[name="updateprice"]').val())
+                        // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+                        // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+
+                        // $(row).find('.mark').text($('[name="updatemark"] option:selected').text())
+                        // $(row).find('.mark').attr('markid', $('[name="updatemark"] option:selected').val())
+
+                        // $(row).find('.pdct').find('.product_name').text($('[name="updatecategory"] option:selected').text())
+                        // $(row).find('.pdct').find('.product_name').attr('categoryid', $('[name="updatecategory"] option:selected').val())
+
+                        // $(row).find('.car').text($('[name="updatecar"]').val())
+
+                        // $(row).find('.originsupp').text($('[name="updateoriginsupp"] option:selected').text())
+                        // $(row).find('.originsupp').attr('suppid', $('[name="updateoriginsupp"] option:selected').val())
+
+
+                    }
+                    else{
+                        alert(data.error)
+                    }
+                }
+            })
+        })
+
+
+
+
+    });
+
+</script>
+{% endblock %}

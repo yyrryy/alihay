@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row align-items-center">
+        <div class="col-7">
+            <strong for="">Categorie</strong>
+            <select class="form-select categories select2" required name="pcategory">
+                <option value="0">Tous</option>
+                {% for i in categories %}
+                <option value="{{i.id}}">
+                    {{i.name}}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-3">
+            <strong for="">Type de stock</strong>
+            <select name="typestock" class="form-select">
+                <option value="0">Stock null</option>
+                <option value="1">Stock reel</option>
+		<option value="2">Tous</option>
+            </select>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary generateinventaire">
+                Generer
+            </button>
+        </div>
+    </div>
+    <button class="btn btn-primary mt-3" onclick="prt()">
+        print
+    </button>
+    <div class="bg-white border p-2 rounded shadow mt-2" id="print">
+        <div class="d-flex justify-content-between mb-5">
+            <strong class="text-center">Inventaire des <strong class="categoryholder"></strong> </strong>
+            <strong class="currentdate"></strong>
+        </div>
+        <table class="table table-bordered h6" style="font-size: 15px;">
+            <thead>
+                <th>
+                    Ref
+                </th>
+                <th>Designation</th>
+                <th>Stock</th>
+                <th>Prix pondiré</th>
+                <th>total</th>
+            </thead>
+            <tbody class="inventaire">
+                
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end">
+                        <strong>Total</strong>
+                    </td>
+                    <td class="totalstockvalue">
+                        0.00
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+     $('.generateinventaire').on('click', ()=>{
+        console.log('clicked')
+        var category = $('.categories').find('option:selected').text();
+        var typestock = $('select[name="typestock"]').val();
+        $('.categoryholder').html(category);
+        var id = $('.categories').val();
+        $.ajax({
+            url: "{% url 'product:inventaire' %}",
+            type: 'POST',
+            data: {
+                id: id,
+                'typestock':typestock,
+                'csrfmiddlewaretoken': '{{csrf_token}}'
+            },
+            success: function(data){
+                $('.inventaire').html(data.data);
+                $('.totalstockvalue').text(data.totalstockvalue);
+            }
+        })
+    })
+    $('.currentdate').html(new Date().toLocaleDateString());
+    // $('.categories').on('change', function(){
+    //     // display a spinning loader
+    //     $('.inventaire').html('<div class="d-flex justify-content-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+    //     // get the name of the category
+    //     var category = $(this).find('option:selected').text();
+    //     $('.categoryholder').html(category);
+    //     var id = $(this).val();
+    //     $.ajax({
+    //         url: "{% url 'product:inventaire' %}",
+    //         type: 'POST',
+    //         data: {
+    //             id: id,
+    //             'csrfmiddlewaretoken': '{{csrf_token}}'
+    //         },
+    //         success: function(data){
+    //             $('.inventaire').html(data.data);
+    //         }
+    //     })
+    // })
+   
+</script>
+{% endblock %}

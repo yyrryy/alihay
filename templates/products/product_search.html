@@ -1,0 +1,119 @@
+{% for item in products %}
+<!--
+
+ -->
+ <tr class="pdct-row" pdctid="{{item.id}}">
+    <td class="productref">
+        <b>
+            {{item.ref.upper}}
+        </b>
+    </td>
+    <td class="pdct">
+        {% if item.image %}
+        <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" class="imagedisplaybtn">
+            <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+        </button>
+        {% endif %}
+        {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+        {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %}
+        <span class="product_name" categoryid="{{item.category.id}}">
+            <b>
+            {{ item.category.name.upper}}
+         </b>
+        </span>
+    </td>
+    <td class="mark" markid="{{item.mark.id}}">
+        <b>{{item.mark.name.upper}}</b>
+    </td>
+    <td class="car">
+        <b>
+            {{ item.car.upper }}
+        </b>
+    </td>
+    <td class="product_stock" style="background: {%if item.stock == 0%}red{%elif item.stock < 0%}#0d6efd59{%elif item.stock <= item.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
+        <b>
+            {{item.stock|floatformat:-2}}
+        </b>
+    </td>
+    <td class="pondire" suppid="{{item.originsupp.id}}">
+      <b>
+        {{ item.pondire }}
+      </b>
+    </td>
+    <td hidden class="minstock">
+      <b>
+        {{item.minstock|floatformat:-2}}
+      </b>
+    </td>
+    <td class="product_pr_achat">
+        <!-- prices here price1 then price2 ... -->
+        <b>
+
+            {{item.pr_achat}}
+        </b>
+        <!-- {% for i in item.getprices %}
+            <span class="prices">
+                {{i.0|floatformat:2}}
+            </span>
+            (<span class="qtyofprice">
+                {{i.1|floatformat:-2}}
+            </span>) <br>
+        {% endfor %} -->
+        <!-- {{item.pr_achat}} -->
+    </td>
+    <td class="product_remise">
+        <!-- prices here price1 then price2 ... -->
+        <b>
+            {{item.remise}}
+        </b>
+        <!-- {% for i in item.getprices %}
+            <span class="prices">
+                {{i.0|floatformat:2}}
+            </span>
+            (<span class="qtyofprice">
+                {{i.1|floatformat:-2}}
+            </span>) <br>
+        {% endfor %} -->
+        <!-- {{item.pr_achat}} -->
+    </td>
+    <td class="product_price">
+        <b>
+            {{item.prvente}}
+        </b>
+    </td>
+    <td class="product_price">
+        <b>
+            {{item.price}}
+        </b>
+    </td>
+    {% if not home %}
+    <td>
+        <!-- <button type="button" class="btn btn-success update fa fa-edit" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{item.id}}" title="modifier"> -->
+        <button type="button" class="btn btn-success fa fa-edit" data-id="{{item.id}}" title="modifier" onclick="productdata('{{item.id}}')">
+
+        </button>
+        <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
+
+        
+    </td>
+    {% endif %}
+
+    {% if home %}
+    <td>
+        <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
+    </td>
+        {% if item.stock != 0 %}
+        <!-- <td>
+            <input type="number" class="form-control priceinput" placeholder="Prix" {% if item.getprices|length == 1 %} hidden {% endif %} value="{{item.pr_achat}}">
+            <input class="form-control sortieinput" type="number" min="0" max="{{item.stock}}" name="sortieqty" placeholder="Qty">
+            <button class="btn btn-primary updatestockbtn fa fa-check w-100" id="{{item.id}}" categoryid="{{item.category.id}}"></button>
+        </td> -->
+    {% endif %}
+    {% endif %}
+</tr>
+{% empty %}
+    <tr>
+        <td colspan="6">No products found</td>
+    </tr>
+
+{% endfor %}

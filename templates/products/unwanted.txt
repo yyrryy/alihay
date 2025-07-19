@@ -1,0 +1,248 @@
+this used in editing bon entree lines not used anymore cause the bon can be deleted and recreated again
+<script>
+    function calculate(t){
+        $('.calculate').each((i, el)=>{
+            $(el).on('keyup', ()=>{
+                
+                price=$('.price').val()
+                qty=$('.qty').val()
+                remise=$('.remise').val()
+                remiseamount=(price*remise)/100
+                afterremise=price-remiseamount
+                finalamount=(qty*afterremise).toFixed(2)
+                total=$('.total')
+                total.val(finalamount)
+                t.text(finalamount)
+                var totalSum = 0;
+                $('.totalholder').each(function() {
+                    totalSum += parseFloat($(this).text());
+                });
+                $('#grandTotal').text(totalSum.toFixed(2))
+            })
+        })
+    }
+
+    function PrintInvoice(divName){
+         var printContents = document.getElementById(divName).innerHTML;
+         var originalContents = document.body.innerHTML;
+         document.body.innerHTML = printContents;
+         $('body').css('font-size', '12px')
+         $('.head').addClass('')
+         $('table').css('font-size', '9px');
+         $("table > thead > tr > th").css('padding', '0px');
+         $("table > tbody > tr > td").css('padding', '0px');
+         $('body').addClass('d-flex flex-column vh-100 p-3')
+         $('.foooterfacture').addClass('mt-auto');
+         window.print();
+         document.body.innerHTML = originalContents;
+    }
+    
+    $('.editlinebtn').each((i, el)=>{
+        $(el).on('click', ()=>{
+            totalholder=$(el).parent().parent().find('.totalholder')
+            console.log(totalholder)
+            article=$(el).data('article')
+            qty=$(el).data('qty')
+            price=$(el).data('price')
+            remise=$(el).data('remise')
+            total=$(el).data('total')
+            itemid=$(el).data('itemid')
+            console.log(itemid)
+            $('.article').val(article)
+            $('.qty').val(qty)
+            $('.price').val(price)
+            $('.remise').val(remise)
+            $('.total').val(total)
+            $('.itemid').val(itemid)
+            calculate(totalholder)
+        })
+    })
+
+    $('.addpaymentbtn').on ('click', function () {
+        if ($('.amount').val()=='' || $('.details').val()==''){
+            console.log('err')
+            $('.error').show()
+        }
+        else{
+            $(this).addClass('disabled');
+            $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+            
+            $.post('/product/addpaymentsupplier/{{bon.id}}', {
+                'amount':$('.amount').val(),
+                'details':$('.details').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                alert('تمت الاضافة')
+                location.reload()
+            })
+        }
+        
+});
+
+</script>
+
+new sidebar
+.sidebar {
+      width: 8vw;
+      background-color: aliceblue;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .nav-item {
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .nav-item i {
+      font-size: 20px;
+      transition: color 0.3s;
+    }
+
+    .nav-item:hover i {
+      color: #4b66b7;
+    }
+    .nav-item:hover strong {
+      color: #4b66b7;
+    }
+
+    .submenu {
+      position: absolute;
+      top: 12px;
+      left: 60px;
+      text-align: start;
+      background: #000;
+      padding: 10px;
+      border-radius: 6px;
+      /* box-shadow: 2px 2px 10px rgba(0,0,0,0.2); */
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-8px);
+      transition: 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover .submenu {
+      opacity: 1;
+      transform: translateX(17px);
+      pointer-events: auto;
+      z-index: 999;
+    }
+
+    .submenu a {
+      display: block;
+      padding: 2px;
+      color: #fff;
+      font-size: 14px;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .submenu a:hover {
+      border-left: 2px solid rgb(227, 160, 13);
+    }
+
+    .version {
+      margin-top: auto;
+      color: #aaa;
+      font-size: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .version strong {
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .adachiinfo {
+      font-size: 12px;
+      color: #ccc;
+      display: none;
+      margin-top: 5px;
+    }
+
+<div class="sidebar">
+    <!-- <div class="nav-item">
+      <a href="/" class="fa fa-dashboard text-white h2"></a href="/">
+      
+    </div> -->
+
+    <div class="nav-item">
+      <i class="fa fa-gift"></i><br><strong>STOCK</strong>
+      <div class="submenu">
+        <a href="/product/items/productslistbycategory/">List des produits</a>
+        <a href="/product/addproduct">Ajouter un produit</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <i class="fa fa-truck"></i>
+      <div class="submenu">
+        <a href="{% url 'product:supplierslist' %}">List fournisseurs</a>
+        <a href="{% url 'product:supply' %}">Bon achat</a>
+        <a href="{% url 'product:avoirsupp' %}">Avoir Fournisseur</a>
+        <a href="{% url 'product:bonsentrees' %}">List bon achat</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <i class="fa fa-globe"></i>
+      <div class="submenu">
+        <a href="{% url 'product:sorticontoir' %}">Sortie Comptoir</a>
+        <a href="{% url 'product:avoircomptoirpage' %}">Avoir Comptoir</a>
+        <a href="{% url 'sales:create_invoice' %}">Bon sortie</a>
+        <a href="{% url 'sales:avoirclient' %}">Bon avoir</a>
+        <a href="{% url 'sales:invoice_list' %}">List des bons</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <i class="fa fa-user"></i>
+      <div class="submenu">
+        <a href="/ledger/list/customer/">Clients</a>
+      </div>
+    </div>
+
+    <!-- <div class="nav-item">
+      <i class="fa fa-exclamation-circle" onclick="window.location.href='{% url 'product:lowstock' %}'"></i> <br> <strong></strong>
+      <div class="submenu">
+        <a class="text-danger" href="{% url 'product:lowstock' %}">Alert stock ({{p_n}})</a>
+      </div>
+    </div>
+
+    <div class="nav-item" onclick="window.location.href='/product/items/productscommande/'">
+      <i class="fa fa-shopping-cart"></i> <br> <strong>COMMANDES</strong>
+      
+    </div> -->
+
+    <div class="nav-item" onclick="window.location.href='/product/inventaire'">
+      <i class="fa fa-list"></i>
+      <br>
+      <strong>INVENTAIRE</strong>
+      
+    </div>
+
+    <div class="nav-item">
+      <i class="fa fa-chart-line" onclick="window.location.href='/product/reports'"></i> <br> <strong>RAPPORTS</strong>
+      
+    </div>
+
+    <div class="nav-item" onclick="window.location.href='/product/facturation'">
+      <i class="fa fa-file-invoice"></i> <br> <strong>FACTURATION</strong>
+      
+    </div>
+
+    <div class="version">
+      Version: 1.2.0 <strong onclick="document.querySelector('.adachiinfo').classList.toggle('d-none')">@Adachi Systems</strong>
+      <div class="adachiinfo d-none">
+        Abdelwahed <br>
+        06 88 52 43 20
+      </div>
+    </div>
+  </div>

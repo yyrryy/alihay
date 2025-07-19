@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+{% block content %}
+
+
+<div class="table-responsive row">
+
+    <!-- products -->
+    <div class="col-md-9 position-relative">
+        <div class="bg-white shadow rounded p-2">
+            <div class="loadertable d-none d-flex justify-content-center align-items-center" style="
+            position: absolute;
+            z-index: 9999;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000007d;
+        ">
+            <div class="spinner-border text-white" role="status">
+
+            </div>
+            </div>
+            <div class="d-flex justify-content-between bg-white rounded shadow p-2">
+                <!-- <div class="rounded text-white p-2" style="background: black;">
+                    <h5>
+                        Alert de stock
+                    </h5>
+                </div> -->
+                <div class="col-3">
+                    <select name="supplier" class="form-select select2">
+                        <option value="0">
+                            Fournisseur
+                        </option>
+                        {% for i in suppliers %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                        {%  endfor %}
+                    </select>
+                </div>
+                <div class="col-5">
+                    <input type="text" class="form-control search-invoice" placeholder="Rechercher " data-catgoryid="1">
+                </div>
+            </div>
+            <div class="product-table-body">
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="bg-white shadow rounded p-2 position-fixed">
+            <input type="text" class="form-control searchref mb-5" placeholder="Chercher REF ZERO stock">
+            <ul id="compositions-list" class="pure-tree main-tree" style="
+    height: 67vh;
+    overflow-y: scroll;
+">
+                <input type="text" class="form-control searchcategories sticky-top" placeholder="Chercher les categories">
+                <div class="searchresults">
+
+                </div>
+                    {% for i in categories %}
+                    <li class="pure-tree_link">
+
+                        <a href="#" class="categoriesbtn  d-flex justify-content-between" data-catgoryid="{{i.id}}">
+                            <b>
+                                {{i.name}} ({{i.total_products }})
+                            </b>
+                            <button class=" btn-xs btn text-danger fa fa-exclamation-circle" child="{{i.name}}" id="{{i.id}}" parent="{{i.parent}}" data-bs-toggle="modal" data-bs-target="#updatecategorymodal"></button>
+                        </a>
+
+                    </li>
+                    {% endfor %}
+            </ul>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    $('[name="supplier"]').on('change', function () {
+        if ($(this).val() == 0) {
+          $('.product-table-body').html('')
+            $('.qtycommand').attr('disabled', true)
+        }else{
+          $('.loadertable').removeClass('d-none')
+            $('.qtycommand').removeAttr('disabled')
+            // get low of this supplier
+            $.get("{% url 'product:getsupplierlow' %}", {"supplierid":$(this).val()}, (data)=>{
+              $('.loadertable').addClass('d-none')
+              $('.product-table-body').html(data.data)
+              command()
+              $('.select2').select2()
+            })
+        }
+    })
+    $('.searchref').focus()
+    const command=()=>{
+        $('.qtycommand').each((i, el)=>{
+
+       $(el).on('change', ()=>{
+        let itemid=$(el).data('id')
+        let categoryid=$(el).data('categoryid')
+        let supplier=$('[name="supplier"]').val()
+        if(supplier==0){
+            $(el).css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $(el).css({
+                'border': '1px solid green'
+            })
+        qty=$(el).parent().find('.qtycommand').val()
+        if (qty=='' || qty==0){
+            $(el).parent().find('.qtycommand').css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $.ajax({
+            url: "{% url 'product:commandproduct' %}",
+            type: "POST",
+            data: {
+                'itemid': itemid,
+                'qty': qty,
+                'supplier': supplier,
+                'categoryid': categoryid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if(data.valid){
+                    $('.ordered').text(parseInt($('.ordered').text())+1)
+                    //getlowbycategory(categoryid)
+                $(el).parent().html(`<i class="fa fa-check text-success fa-2x"></i><button class="fa fa-times text-danger fa-2x " id="${itemid}" categoryid="${categoryid}" onclick="cancelcommand(event, "${itemid}")"></button> ${$('[name="supplier"] option:selected').text().trim()}`)
+                }
+                else{
+                    alert('Erreur')
+                }
+            }
+        })
+    })
+    })
+    }
+
+   function getlowbycategory(categoryid){
+    if ($('[name="supplier"]').val()==0){
+        alertify.error('Veuillez choisir un fournisseur')
+        return
+    }
+    console.log($('[name="supplier"]').val())
+    $('.loadertable').removeClass('d-none')
+    $.ajax({
+    url: "{% url 'product:getlowbycategory' %}",
+    type: "POST",
+    data: {
+        'category': categoryid,
+        'supplierid': $('[name="supplier"]').val(),
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    success: function (data) {
+        $('.loadertable').addClass('d-none')
+        $('.product-table-body').html(data.data)
+        command()
+        $('.select2').select2()
+        if ($('[name="supplier"]').val()==0){
+            console.log('is zero')
+            $('.qtycommand').attr('disabled', true)
+        }else{
+            console.log('not zero')
+            $('.qtycommand').removeAttr('disabled')
+        }
+        }
+    })
+
+}
+
+    $(document).ready(()=>{
+        let cards = document.querySelectorAll('.pure-tree_link')
+        $('.searchref').on('change', ()=>{
+            // ajax call to searchrefinlow
+            if ($('[name="supplier"]').val()==0){
+                alertify.error('Veuillez choisir un fournisseur')
+                return
+            }
+            let ref=$('.searchref').val()
+            if(ref==''){
+                return
+            }
+            $('.loadertable').removeClass('d-none')
+
+            $.ajax({
+                url: "{% url 'product:searchrefinlow' %}",
+                type: "POST",
+                data: {
+                    'ref': ref,
+                    'supplierid':$('[name="supplier"]').val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    console.log(data)
+                    $('.loadertable').addClass('d-none')
+                    $('.product-table-body').html(data.data)
+                    command()
+                    $('.select2').select2()
+                    if ($('[name="supplier"]').val()==0){
+                        console.log('is zero')
+                        $('.qtycommand').attr('disabled', true)
+                    }else{
+                        console.log('not zero')
+                        $('.qtycommand').removeAttr('disabled')
+                    }
+                }
+                })
+        })
+        function liveSearch() {
+            let search_query = document.querySelector(".searchcategories").value;
+            console.log(search_query)
+            //Use innerText if all contents are visible
+            //Use textContent for including hidden elements
+            for (var i = 0; i < cards.length; i++) {
+                if(cards[i].textContent.toLowerCase()
+                        .includes(search_query.toLowerCase())) {
+                            console.log(cards[i])
+                            cards[i].classList.remove("d-none");
+                } else {
+                    cards[i].classList.add("d-none");
+                }
+            }
+        }
+
+    //A little delay
+    let typingTimer;
+    let typeInterval = 500;
+    let searchInput = document.querySelector('.searchcategories');
+
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(liveSearch, typeInterval);
+    });
+        // show only li with showthis (old method)
+        // $('.pure-tree_link').each((i, el)=>{
+        //     let btn = $(el).find('.showthis')
+        //     if (btn.length){
+        //         $(el).show()
+        //     }else $(el).hide()
+        // })
+
+// function to get products by category
+
+
+    $('.categoriesbtn').first().addClass('categoryactive')
+    $('.categorynameholder').text($('.categoriesbtn').first().text())
+    // get the first category products
+    //getlowbycategory($('.categoriesbtn').first().data('catgoryid'))
+
+    // old code to command
+    /$(window).on('click', (e)=>{
+        console.log(e.target.value)
+    //     if(e.target.classList.contains('rrr')){
+    //         el=$(e.target)
+    //         let itemid=el.data('id')
+    //         let categoryid=el.data('categoryid')
+    //         let supplier=el.parent().find('[name="supplier"]').val()
+
+    //         if(supplier==0){
+    //             el.parent().find('select').css({
+    //                 'border': '1px solid red'
+    //             })
+    //             return
+    //         }
+    //         el.parent().find('select').css({
+    //                 'border': '1px solid green'
+    //             })
+    //         $.ajax({
+    //             url: "{% url 'product:commandproduct' %}",
+    //             type: "POST",
+    //             data: {
+    //                 'itemid': itemid,
+    //                 'supplier': supplier,
+    //                 'categoryid': categoryid,
+    //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //             },
+    //             success: function (data) {
+    //                 if(data.valid){
+    //                     $('.ordered').text(parseInt($('.ordered').text())+1)
+    //                     getlowbycategory(categoryid)
+    //                     // el.parent().html(`<i class="fa fa-check text-success fa-2x"></i><button class="fa fa-times text-danger fa-2x cancelcommand" id="${itemid}"></button>`)
+    //                 }
+    //                 else{
+    //                     alert('Erreur')
+    //                 }
+    //             }
+    //         })
+    //     }
+        if(e.target.classList.contains('cancelcommand')){
+            el=$(e.target)
+            id=el.attr('id')
+            categoryid=el.attr('categoryid')
+            $.ajax({
+                url: "{% url 'product:cancelcommande' %}",
+                type: "POST",
+                data: {
+                    'id': id,
+                    'categoryid': categoryid,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if(data.valid){
+                        $('.ordered').text(parseInt($('.ordered').text())-1)
+                        getlowbycategory(categoryid)
+                        // el.parent().html(`
+                        // <div class="d-flex">
+                        //         <select name="supplier" class="form-select select2">
+                        //             <option value="0">
+                        //                 Fournisseur
+                        //             </option>
+                        //             {% for i in suppliers %}
+                        //             <option value="{{i.id}}">
+                        //                 {{i.name}}
+                        //             </option>
+                        //             {%  endfor %}
+                        //         </select>
+                        //         <button class="btn btn-info btn-xs commande" data-id="${id}" data-categoryid="${categoryid}">Commande</button>
+                        //     </div>
+                        // `)
+                        //
+                    }
+                    else{
+                        alert('Erreur')
+                    }
+                }
+            })
+        }
+    })
+
+
+
+
+// categories btns handler
+
+// to szich categories
+$('.categoriesbtn').each((i, el)=>{
+    $(el).on('click', ()=>{
+        $('.categoriesbtn').removeClass('categoryactive')
+        let catgoryid=$(el).data('catgoryid')
+        $('.categorynameholder').text($(el).text())
+        $('.name_search').data('catgoryid', catgoryid)
+        $(el).addClass('categoryactive')
+        // ajax to get low by category
+        getlowbycategory(catgoryid)
+
+    })
+})
+
+
+// function to get products by category
+function getproductsbycategory(categoryid){
+            $('.loadertable').removeClass('d-none')
+            $.ajax({
+            url: "{% url 'product:getlowbycategory' %}",
+            type: "POST",
+            data: {
+                'category': categoryid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                $('.loadertable').addClass('d-none')
+                $('.product-table-body').html(data.data)
+                }
+            })
+
+        }
+
+
+
+})
+
+</script>
+{% endblock %}

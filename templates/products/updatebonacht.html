@@ -1,0 +1,656 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-white">
+
+            <div class="modal-body">
+                <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:addsupplier' %}" method="post" autocomplete="off">
+                    <div class="form-group">
+                            {% csrf_token %}
+                            <label>
+                                <strong>Nom</strong>
+                            </label>
+                            <input type="text" class="form-control customer" name="name" >
+                            <br>
+                            <label>
+                                <strong>Details</strong>
+                            </label>
+                            <textarea type="text" class="form-control customer_phone" name="details" ></textarea>
+                            <br>
+
+                            <br>
+
+                            <br>
+                            <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+                            <button type="button" id="save" class="btn btn-primary ledger-submit-btn" style="float: right" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        </div>
+    </div>
+</div>
+
+<div class="">
+    <div class="col-4">
+        <div class="rounded p-2 bg-white shadow">
+            <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+                Remplir les champs
+            </div>
+            <div class="">
+                <!-- modal btn add supplier
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Ajouter +
+                </button> -->
+                <div class="">
+                    <span class="item-error" style="color: red; display: none">
+                        Remplir les chanps
+                    </span>
+                    <div class="mb-3">
+                        <button class="mb-3 btn btn-primary addsupplierbtn" onclick="$('.addsupplierholder').removeClass('d-none')">
+                            Ajouter un fournisseur
+                        </button>
+                        <select name="supplier" class="form-select supplierslist">
+                            <option value="{{bon.supplier.id}}">
+                                {{bon.supplier.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <input type="text" class="form-control" id="invoice_number" placeholder="N° facture / N° Bon" value="{{bon.nbon}}">
+                    <div class="mt-2">
+
+                        <small>Date Facture/bon {{bon.bondate|date:'d/m/Y'}}</small>
+                        <input type="date" class="form-control" name="bondate" placeholder="Date BL" value="{{bon.bondate|date:'Y-m-d'}}">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-12 mt-5">
+        <div class="bg-white rounded shadow p-2">
+            <div class="col-4 mb-3">
+
+                <button class="btn btn-success col-6" onclick="$('.addproductholder').removeClass('d-none')">
+                    Ajouter un produit
+                </button>
+                <select class="productslist form-control col-6"></select>
+            </div>
+                <!-- button for addsupplier modal -->
+
+            <table class="table table-bordered supplytable">
+                <thead>
+                <tr class="">
+                    <th style="width: 60%;">Article</th>
+                    <th hidden>Stock</th>
+                    <th style="width: 10%;">Quantité</th>
+                    <th style="width: 10%;">Prix unit.</th>
+                    <th style="width: 10%;">Remise</th>
+                    <th style="width: 10%;">Total</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="itemsbon">
+                    {% for i in items %}
+                    <tr class="item-row">
+                        <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">{{i.product.ref}} - {{i.product.car}}</div></div></td>
+                        <td class="stock" hidden>{{i.product.stock|floatformat:-2}}</td>
+                        <td><input class="form-control qty calculate" placeholder="Quantity" type="number" value="{{i.quantity|floatformat:-2}}"></td>
+                        <td><input class="form-control price calculate" placeholder="Price" type="number" step=0.01 value="{{i.price}}"> </td>
+                        <td><input class="form-control remise calculate" placeholder="Rmise" type="number" value="{{i.remise|floatformat:-2}}"> </td>
+                        <td><span class="total">{{i.total}}</span></td>
+                        <input type="hidden" class="productid" value={{i.product.id}}><td><i class="btn btn-danger" onclick="deleterow(event, '{{i.product.id}}')" title="Supprimer">X</i></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <button id="addsuplly" class="btn btn-success">
+                    Valider
+                </button>
+                <div class="d-flex flex-column">
+                    <!-- <button class="btn btn-info tva">TVA</button> -->
+                    <strong id="grandTotal" style="color:red">
+                        {{bon.total}}
+                    </strong>
+                </div>
+
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                <tbody>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Sub Total</strong></td>
+                    <td><span id="subtotal">0.00</span></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Discount</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Shipping</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/jquery.invoice.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.scannerdetection.js' %}"></script>
+    <script>
+        // checkref
+        calculate()
+        localStorage.removeItem('pdctsinupdatebonachat')
+        var productIds = [];
+        {% for i in items %}
+        productIds.push('{{ i.product.id }}');
+        {% endfor %}
+        localStorage.setItem('pdctsinupdatebonachat', JSON.stringify(productIds));
+        function deleterow(event, produtid){
+            $(event.target).parent().parent().remove()
+            total=parseFloat($(event.target).parent().parent().find('.total').text())
+
+            index=productIds.indexOf(produtid)
+            productIds.splice(index, 1)
+            localStorage.setItem('pdctsinupdatebonachat', JSON.stringify(productIds));
+            grandtotal=parseFloat($('#grandTotal').text())
+            newtotal=(grandtotal-total).toFixed(2)
+            $('#grandTotal').text(newtotal)
+        }
+        $('.checkref').on('change', ()=>{
+            if ($('[name="ref"]').val()!='' && $('[name="mark"]').val()!='' && $('[name="pcategory"]').val()!=''){
+                console.log('checking')
+                $.post('/product/checkref/', {
+                    'ref': $('[name="ref"]').val().toLowerCase(),
+                    'mark': $('[name="mark"]').val().toLowerCase(), 'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val(),
+                    'categoryid':$('[name="pcategory"]').val()
+            }, (data)=>{
+                    if (data.status){
+                        $('.checkerror').removeClass('d-none').addClass('d-flex')
+                        $('.addoneproductbtn').attr('disabled', true)
+                    }
+                    else{
+                        $('.checkerror').removeClass('d-flex').addClass('d-none')
+                        $('.addoneproductbtn').attr('disabled', false)
+                    }
+                })
+
+            }
+        })
+        // add product
+        $('.addoneproductbtn').on('click', function(){
+
+        })
+        $('.addsuppliersubmitbtn').on('click', function(){
+            let parentdiv=$('.addsupplierholder')
+            var isAnyEmpty = parentdiv.find('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+            if (isAnyEmpty){
+                let emptyInputs = parentdiv.find('.notempty').filter(function() {
+                    return !this.value.trim();
+                });
+
+                // Add a red border to all empty input elements
+                alertify.error('Veuillez remplir tous les champs obligatoires')
+                emptyInputs.css('border', '1px solid red');
+                parentdiv.find('input.notempty').not(emptyInputs).css('border', '');
+                $(this).attr('disabled', false)
+                return
+            }
+            $('this').addClass('disabled')
+            // ajax
+            console.log()
+            $.post('/product/addsupplier/',
+            {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'name':parentdiv.find('[name="name"]').val(),
+                'phone1':parentdiv.find('[name="phone1"]').val(),
+                'phone2':parentdiv.find('[name="phone2"]').val(),
+                'address':parentdiv.find('[name="address"]').val(),
+                'website':parentdiv.find('[name="website"]').val(),
+                'dest':'recevoir'
+            },
+            (data)=>{
+                $('.addsupplierholder').addClass('d-none')
+                alertify.success('OK')
+            }
+            )
+        })
+        $(function(){
+            $('.productslist').select2({
+                minimumInputLength: 2,
+                placeholder:'Chercher Produit',
+                ajax: {
+                type:'get',
+                dataType: 'json',
+                url: '/product/searchproduct',
+                data: function (params) {
+                    var query = {
+                    term: params.term,
+                    }
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                proccessresults: function (data) {
+                    return {
+                        results:data.results
+                    }
+                },
+                cache:true
+                }
+            });
+
+            $('.supplierslist').select2({
+                minimumInputLength: 1,
+                placeholder:'Chercher Fournisseur',
+                ajax: {
+                type:'get',
+                dataType: 'json',
+                url: '/product/searchsupplier',
+                data: function (params) {
+                    var query = {
+                    term: params.term,
+                    }
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                proccessresults: function (data) {
+                    return {
+                        results:data.results
+                    }
+                },
+                cache:true
+                }
+            });
+        })
+        $('.productslist').on('change', function(){
+            // get product client id
+            let [ref, car, p, stock, productid, remise, prnet]=$(this).val().split('§')
+            // get supplier price
+            productsinstorage=JSON.parse(localStorage.getItem('pdctsinupdatebonachat'))
+            if (productsinstorage.includes(productid)){
+                alertify.error('Deja')
+                return
+            }
+            productsinstorage.push(productid)
+            localStorage.setItem('pdctsinupdatebonachat', JSON.stringify(productsinstorage))
+            $('.itemsbon').prepend(`<tr class="item-row">
+                    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${car}</div></div></td>
+
+                    <td><input class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+                    <td><input class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+                    <td><input class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+                    <td><span class="total">0.00</span></td>
+                    <input type="hidden" class="productid" value=${productid}><td><i class="btn btn-danger delete" title="Supprimer">X</i></td>
+                    </tr>`);
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+                });
+                calculate()
+            // add product row with client rice
+
+
+        })
+        function updatetotal(){
+            var totalSum = 0;
+            $('.total').each(function() {
+                totalSum += parseFloat($(this).text());
+            });
+            $('#grandTotal').text(totalSum.toFixed(2))
+        }
+        function calculate(){
+            $('.calculate').each((i, el)=>{
+                $(el).on('input', ()=>{
+                    price=$(el).parent().parent().find('.price').val()
+                    qty=$(el).parent().parent().find('.qty').val()
+                    remise=$(el).parent().parent().find('.remise').val()
+                    remiseamount=(price*remise)/100
+                    afterremise=price-remiseamount
+                    finalamount=(qty*afterremise).toFixed(2)
+                    total=$(el).parent().parent().find('.total')
+                    total.text(finalamount)
+                    updatetotal()
+                })
+            })
+        }
+        $(window).on('click', function (e) {
+            if (e.target.classList.contains('addexeptionbtn')) {
+                console.log('add exeption')
+                el=$(e.target)
+                el.removeClass('fa-plus').addClass('fa-check')
+                item=el.attr('item')
+                id=el.attr('id')
+                stock=el.attr('stock')
+                $('.itemsbon').append(`<tr class="item-row">
+                    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${item}</div></div></td>
+                    <td class="stock ${stock > 0 ? 'bg-success ' : 'bg-danger '}text-white">${stock}</td>
+                    <td><input value="0" class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+                    <td><input value="0" class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+                    <td><input value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+                    <td><span class="total">0.00</span></td>
+                    <input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer">X</i></td>
+                    </tr>`);
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+                    updatetotal()
+                });
+                calculate()
+            }
+        })
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // $('.loading').removeClass('d-none').addClass('d-flex');
+
+        // add supplier
+
+
+    $(document).ready(function () {
+        $('.tva').on('click', function(){
+            $('.price').each((i, el)=>{
+                let price=$(el).val()
+                $(el).val((price*1.2).toFixed(2))
+                let tt=parseFloat($('#grandTotal').text())
+                $('#grandTotal').text((tt*1.2).toFixed(2))
+            })
+        })
+        //  $('[name=supplier]').on('change', ()=>{
+        //      if ($('[name=supplier]').val()!=0){
+        //          let supplier=$('[name=supplier]').val()
+        //          $('.loading').removeClass('d-none').addClass('d-flex');
+        //          $.post('{% url "product:getsupplierproducts" %}', {
+        //              'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //              'supplier': $('[name="supplier"]').val(),
+        //          },function (result, status) {
+        //              console.log(result.enteredpdcts)
+        //               $('.itemsbon').html(result.enteredpdcts)
+        //              $('.loading').removeClass('d-flex').addClass('d-none');
+        //              calculate()
+        //              })
+        //             }
+
+        //         })
+        //             $('.itemsselectholder').html(result.data)
+        //             $('.refexeption').on('change', function(){
+        //                 let ref=$('.refexeptioninp').val()
+        //                 if (ref!=''){
+        //                     $.ajax({
+        //                         url:'{% url "product:refexeption" %}',
+        //                         type:'POST',
+        //                         data:{
+        //                             'ref':ref,
+        //                             'invoice':0,
+        //                             'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //                             'categoryid':$('.refexeptioncategory').val()
+        //                         },
+        //                         success:(data)=>{
+        //                             $('.exeptionresults').html(data.data)
+        //                         }
+        //                     })
+        //                 }
+        //             })
+        //             $('.refreshitemssupplier').on('click', ()=>{
+        //                 console.log('refresh')
+        //                 $.ajax({
+        //                     url:'{% url "product:refreshitemssupplier" %}',
+        //                     type:'POST',
+        //                     data:{
+        //                         'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //                         'supplier':$('.supplierselect').val()
+        //                     },
+        //                     success:(data)=>{
+        //                         $('.articlesselect').html(data.data)
+        //                         $('.articleslen').text(data.len)
+        //                     }
+
+        //                 })
+        //             })
+        //         }
+        //         ).fail(function (xhr, status, errors) {
+        //             $('.loading').removeClass('d-flex').addClass('d-none');
+        //             alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+        //         });
+        //     }
+        // })
+
+
+
+
+
+        $(function () {
+
+
+
+
+            $('#all-items').on('change', function(){
+                if ($(this).val()==0){
+                    return
+                }
+                var item=$(this).find(':selected').val()
+                // var prachat=$(this).find(':selected').data('prachat')
+                var stock = $(this).find(':selected').data('stock')
+                var id = $(this).find(':selected').data('id')
+                $('.itemsbon').append(`<tr class="item-row">
+                    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${item}</div></div></td>
+                    <td class="stock ${stock > 0 ? 'bg-success ' : 'bg-danger '}text-white">${stock}</td>
+                    <td><input value="0" class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+                    <td><input value="0" class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+                    <td><input value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+                    <td><span class="total">0.00</span></td>
+                    <input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer">X</i></td>
+                    </tr>`);
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+			updatetotal()
+                });
+                // jQuery().invoice().init
+                calculate()
+            });
+
+
+            $('#addsuplly').on('click', function () {
+                if (($.inArray(true, $('.price').map((t, i)=>$(i).val()=="")) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()=="")) !== -1) || ($.inArray(true, $('.price').map((t, i)=>$(i).val()==0)) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()==0)) !== -1)) {
+
+                    showerror();
+                    $('.price').css('border-color', 'red');
+                    $('.qty').css('border-color', 'red');
+                    return
+                }
+                if ($('#item-name').hasClass('item-name') == false || $('[name=supplier]').val()==0 || $('#invoice_number').val()=='') {
+                    showerror();
+                    return;
+                }
+                else {
+                $('.item-error').hide();
+                $('.price').css('border', 'none');
+                }
+                if (confirm('Confirmer ?')){
+                    $(this).attr('disabled', true)
+
+                    var items = [];
+                    for (var i=0; i<$('.item-row').length; i++) {
+                        var products = {};
+
+                        products['name'] = $($('.item-row')[i]).find('#invoice-item').text();
+                        products['productid'] = $($('.item-row')[i]).find('productid').val();
+                        products['remise'] = $($('.item-row')[i]).find('.remise').text();
+                        products['item_id'] = $($('.item-row')[i]).find('.productid').val();
+                        products['price'] = parseFloat($($('.item-row')[i]).find('.price').val());
+                        products['qty'] = $($('.item-row')[i]).find('.qty').val();
+                        products['remise'] = $($('.item-row')[i]).find('.remise').val();
+                        products['total'] = parseFloat($($('.item-row')[i]).find('.total').text());
+                        items.push(products);
+                    }
+                    console.log(items)
+
+                    const itemIds = items.map(item => item.item_id);
+                    const uniqueItemIds = Array.from(new Set(itemIds));
+
+                    if (itemIds.length > uniqueItemIds.length) {
+                    showerror("منتوجات متكررة");
+                    $(this).attr('disabled', false)
+                    } else {
+                        console.log(items)
+                        $.post("/product/updatebonachat/{{bon.id}}", {
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                items: JSON.stringify(items),
+                                'supplier': $('[name="supplier"]').val(),
+                                'bondate': $('[name="bondate"]').val(),
+                                'total': parseFloat($('#grandTotal').text()),
+                                'nbon':$('#invoice_number').val(),
+                                'facture':'{{facture}}'
+                            }, function (result, status) {
+                                //refresh the page
+                                //location.reload()
+                                {% if user.groups.all.0.name == 'account' %}
+                                window.location.href='/product/bonsentrees?facture={{facture}}'
+                                {% else %}
+                                window.location.href='/product/bonsentrees'
+                                {% endif %}
+                            }
+                        ).fail(function (xhr, status, errors) {
+                            alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                        });
+                    }
+                }
+            });
+
+
+        });
+
+    });
+    </script>
+    <script>
+
+
+        $('.addoneproductbtn').on('click', function(){
+            $(this).attr('disabled', true)
+
+            // check all required fields are filled
+            var isAnyEmpty = $('.addoneproductform').find('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+            if (isAnyEmpty){
+
+                alertify.alert('Alert','Veuillez remplir tous les champs obligatoires')
+                $(this).attr('disabled', false)
+                return false
+            }
+            var formData = $('.addoneproductform').serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'product:addoneproduct' %}",
+                data: formData,
+                success: function(response) {
+                    $('.addproductholder').addClass('d-none')
+                    alertify.success('OK')
+                    // Handle the successful response from the server here
+                    // For example, you can display a success message or redirect to another page
+                    console.log("Success: ", response);
+                },
+                error: function(xhr, status, error) {
+                    // Handle errors here, display an error message, or log the error
+                    console.error("Error: " + error);
+                }
+            });
+
+            // ajax
+
+            // display none holder
+
+            // alaertify success
+
+        })
+
+        $('.refreshmark').on('click', ()=>{
+            $.ajax({
+                url: "{% url 'product:refreshmark' %}",
+                type: "GET",
+                success: (data)=>{
+                    $('.markselect').html(data.data)
+                }
+            })
+        })
+        $('#create-invoice').on('click', function() {
+            var $this = $(this);
+            $this.button('loading');
+            setTimeout(function() {
+                $this.button('reset');
+            }, 1000);
+        });
+
+        $('.ledger-submit-btn').on ('click', function () {
+            $(this).addClass('disabled');
+            $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+            var error = false;
+
+            if ($('.customer').val() ==""){
+                $('.customer-error').show();
+                error= true;
+            }
+            else {
+                $('.customer-error').hide();
+                error=false;
+            }
+
+            if (error == true ) {
+                $(this).html('Valid');
+                $(this).removeClass('disabled');
+                return;
+            }
+            if (error == false) {
+                $.ajax({
+                    url: "{% url 'product:addsupplier' %}",
+                    type: "POST",
+                    data: {
+                        'name': $('[name="name"]').val(),
+                        'details': $('[name="details"]').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+
+                        $('.addsupplierform').trigger('reset')
+                        $('#exampleModal').modal('hide')
+                        alert(data.data)
+                        // refresh
+                        location.reload()
+
+                    },
+                })
+            }
+    });
+    </script>
+
+{% endblock %}

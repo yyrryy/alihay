@@ -1,0 +1,231 @@
+﻿
+<div class="btn-group mb-3" role="group" aria-label="Default button group">
+   <!-- this used to be how to do avoir direcly from the facture -->
+    <!-- <a type="button" class="btn btn-primary" href="/sales/avoirclient/{{facture.id}}">
+        Avoir
+    </a> -->
+    {% if avoir %}
+    <a onclick="avoirprint('{{facture.id}}')" type="button" class="btn btn-primary">
+        facture
+    </a>
+    {% else %}
+    {% if not facture.paid_amount > 0 %}
+    <a href="/product/modifierfacture?id={{facture.id}}" type="button" class="btn btn-primary me-5">
+        Modifier
+    </a>
+    {%endif%}
+    <button type="button" class="btn btn-primary fa fa-download" onclick="printfacture('{{facture.id}}')">
+        facture
+    </button>
+    <!-- <button onclick="printfacture({{facture.id}})" type="button" class="btn btn-primary">
+        Factuer
+    </button> -->
+    {% endif %}
+  </div>
+<div class="bg-white rounded shadow" id="print-invoice" style="padding: 10px">
+    <div class="row">
+        <div class="d-flex justify-content-between head align-itmes-center">
+            <div>
+
+
+                <strong class="f-size">Client: {{ facture.client.customer_name }} </strong>
+            </div>
+            <div>
+                <strong>
+                        {{facture.facture_no}}
+                </strong>
+            </div>
+            <h6 style="font-size:14px">{{ facture.datefacture|date:"d/m/Y"}}</h6>
+
+        </div>
+        <div class="col-xs-12 col-md-12">
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="col-md-12 ">
+
+                </div>
+                    <!-- {% if facture.customer.shop %}
+                        <label><strong class="f-size">Shop Name:</strong></label> <span class="f-size">{{ facture.customer.shop }}</span><br>
+                    {% endif %} -->
+                    <div class="col-md-12 pull-left">
+
+                </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <div class="">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="">
+                        <th >Article</th>
+                        <th style="width: 12%;">Prix</th>
+                        <th style="width: 12%;">Qté</th>
+                        <th style="width: 12%;">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% if avoir %}
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                            </td>
+                            <td>
+                                {{ item.price|floatformat:2}}
+                            </td>
+                            <td >
+                                {{ item.qty|floatformat:-2}}
+                            </td>
+                            <td >
+                                {{ item.total|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {{ item.product.ref}} {{ item.product.category}} {{ item.product.car}} {{ item.product.mark}}
+                            </td>
+                            <td>
+                                {{ item.price|floatformat:2}}
+                            </td>
+                            <td >
+                                {{ item.qty|floatformat:-2}}
+                            </td>
+                            <td >
+                                {{ item.total|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                        <tr >
+                            <td colspan="3" class="text-end">
+                                Total TTC
+                            </td>
+                            <td>
+                                <b id="grandTotal" style="color: red;">
+                                    {{ facture.total|floatformat:2 }} Dh
+                                </b>
+                            </td>
+
+                        </tr>
+                        <tr >
+                            <td colspan="3" class="text-end">
+                                TVA 20%
+                            </td>
+                            <td>
+                                <b id="grandTotal" style="color: red;">
+                                    {{ facture.thistva|floatformat:2 }} Dh
+                                </b>
+                            </td>
+
+                        </tr>
+                        <tr >
+                            <td colspan="3" class="text-end">
+                                Total HT
+                            </td>
+                            <td>
+                                <b id="grandTotal" style="color: red;">
+                                    {{ facture.ht|floatformat:2 }} Dh
+                                </b>
+                            </td>
+
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% if not avoir %}
+{% if facture.paid_amount > 0 %}
+    <h1 class="bg-dark p-2 rounded text-white">
+        Mantant Payé: {{facture.paid_amount}}
+    </h1>
+{% endif %}
+</div>
+{% if not facture.paid_amount >= facture.total %}
+<div class="mt-5 rounded bg-white row">
+    <strong> ajouter payment</strong><br>
+    <div class="col-3">
+        Mantant <br>
+        <input type="number" class="form-control paidamount  me-2" placeholder="mantant">
+    </div>
+    <div class="col-3">
+        Mode <br>
+        <select class="form-control mode  me-2">
+            <option value="espece">espece</option>
+            <option value="cheque">Cheque</option>
+            <option value="effet">Effet</option>
+            <option value="virement">Virement</option>
+        </select>
+    </div>
+    <div class="col-3">
+        N° piece <br>
+        <input type="text" class="form-control npiece  me-2" placeholder="N° piece">
+    </div>
+    <div class="col-3">
+        Echeance <br>
+        <input type="date" class="form-control echeance  me-2" placeholder="mantant">
+    </div>
+    <button onclick="addpaymentfacture(event, '{{facture.id}}')" class="btn btn-primary w-
+    100 mt-3">Ajouter</button>
+</div>
+{% endif %}
+{% endif %}
+<!-- {% if not avoir %}
+<div class="bg-white shadow rounded mt-5">
+    <h5>
+        list avoirs
+    </h5>
+    {% for i in avoirs %}
+    N°: {{i.facture_no}} <br>
+    <table class="table table-bordered">
+        <thead>
+        <tr class="">
+            <th >Article</th>
+            <th style="width: 12%;">Prix</th>
+            <th style="width: 12%;">Qté</th>
+            <th style="width: 12%;">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            {% for item in i.returneditems.all %}
+            <tr>
+                <td>
+                    {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                </td>
+                <td>
+                    {{ item.price|floatformat:2}}
+                </td>
+                <td >
+                    {{ item.qty|floatformat:-2}}
+                </td>
+                <td >
+                    {{ item.total|floatformat:2 }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr >
+                <td colspan="3" class="text-end">
+                    Total
+                </td>
+                <td>
+                    <b id="grandTotal" style="color: red;">
+                        {{ i.grand_total|floatformat:2 }} Dh
+                    </b>
+                </td>
+            </tr>
+        </tbody>
+    {% endfor %}
+</div>
+{% endif %} -->

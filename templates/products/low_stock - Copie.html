@@ -1,0 +1,147 @@
+{% for item in products %}
+                    <tr style="background:{%if item.disponibleinother%}greenyellow{% elif not item.rcommand %}#ffedb8;{%endif%}">
+                        <td>
+                            {{item.mark}}
+                        </td>
+                        <td class="product_name">
+                            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+                            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %}  {{item.ref}} - {{ item.category}} - {{ item.car }}
+                        </td>
+                        <!-- <td class="#">{{ item.unit_type }}</td> -->
+                        <td>{{ item.originsupp.name }}</td>
+			<td>{{ item.stock }}</td>
+                        <!-- <td>{{ item.product_purchased_items|floatformat:-2 }}</td>
+                        <td>{{ item.bar_code}}</td> -->
+                        <td>
+                            <!-- new code -->
+                            <!-- <a href="{% url 'product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a> -->
+                            {% if item.command %}
+                            <i class="fa fa-check text-success fa-2x"></i> <button class="fa fa-times text-danger fa-2x cancelcommand" id="{{item.id}}" categoryid="{{item.category.id}}"></button>
+                            {% elif item.disponibleinother %}
+                                disponible
+                                    <div class="d-flex">
+                                        <select name="supplier" class="form-select select2" data-id="{{item.id}}" data-categoryid="{{item.category.id}}">
+                                            <option value="0">
+                                                Fournisseur
+                                            </option>
+                                            {% for i in suppliers %}
+                                            <option value="{{i.id}}">
+                                                {{i.name}}
+                                            </option>
+                                            {%  endfor %}
+                                        </select>
+                                        
+                                    </div>
+                            {% elif not item.rcommand %}
+                            commandé
+                                <div class="d-flex">
+                                    <select name="supplier" class="form-select select2" data-id="{{item.id}}" data-categoryid="{{item.category.id}}">
+                                        <option value="0">
+                                            Fournisseur
+                                        </option>
+                                        {% for i in suppliers %}
+                                        <option value="{{i.id}}">
+                                            {{i.name}}
+                                        </option>
+                                        {%  endfor %}
+                                    </select>
+                                    
+                                </div>
+                                
+                                
+                            {% else %}
+                            <div class="d-flex">
+                                <select name="supplier" class="form-select select2" data-id="{{item.id}}" data-categoryid="{{item.category.id}}">
+                                    <option value="0">
+                                        Fournisseur
+                                    </option>
+                                    {% for i in suppliers %}
+                                    <option value="{{i.id}}">
+                                        {{i.name}}
+                                    </option>
+                                    {%  endfor %}
+                                </select>
+                                
+                            </div>
+                            {% endif %}
+                            <!-- delete item is commented for now cause of the factorizaation -->
+                            <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+    
+                            <!-- old code 
+                            <a href="{% url 'product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                            <a href="{% url 'product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+                        </td>
+                    </tr>
+        {% endfor %}
+<script>
+   
+    // $('.commande').each((i, el)=>{
+    //         $(el).on('click', ()=>{
+    //             let itemid=$(el).data('id')
+    //             let supplier=$(el).parent().find('[name="supplier"]').val()
+    //             if(supplier==0){
+    //                 $(el).parent().find('select').css({
+    //                     'border': '1px solid red'
+    //                 })
+    //                 return
+    //             }
+    //             $(el).parent().find('select').css({
+    //                     'border': '1px solid green'
+    //                 })
+    //             $.ajax({
+    //                 url: "{% url 'product:commandproduct' %}",
+    //                 type: "POST",
+    //                 data: {
+    //                     'itemid': itemid,
+    //                     'supplier': supplier,
+    //                     'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //                 },
+    //                 success: function (data) {
+    //                     if(data.valid){
+    //                         $(el).parent().html('<i class="fa fa-check text-success fa-2x"></i>')
+    //                         $('.ordered').text(parseInt($('.ordered').text())+1)
+    //                     }
+    //                     else{
+    //                         alert('Erreur')
+    //                     }
+    //                 }
+    //             })
+    //     })
+    //     })
+    // $('.cancelcommand').each((i, el)=>{
+    //     $(el).on('click', ()=>{
+    //         $.ajax({
+    //             url: "{% url 'product:cancelcommande' %}",
+    //             type: "POST",
+    //             data: {
+    //                 'id': $(el).attr('id'),
+    //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //             },
+    //             success: function (data) {
+    //                 if(data.valid){
+    //                     $(el).parent().html(`
+    //                     <div class="d-flex">
+    //                             <select name="supplier" class="form-select select2">
+    //                                 <option value="0">
+    //                                     Fournisseur
+    //                                 </option>
+    //                                 {% for i in suppliers %}
+    //                                 <option value="{{i.id}}">
+    //                                     {{i.name}}
+    //                                 </option>
+    //                                 {%  endfor %}
+    //                             </select>
+    //                             <button class="btn btn-info btn-xs commande" data-id="{{item.id}}">Commande</button>
+    //                         </div>
+    //                     `)
+    //                     $('.ordered').text(parseInt($('.ordered').text())-1)
+    //                     }
+    //                 else{
+    //                     alert('Erreur')
+    //                 }
+    //             }
+    //         })
+    //     })
+    // })
+
+</script>

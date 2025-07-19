@@ -1,0 +1,536 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+
+
+<div class="container mb-5">
+    <div class="p-2 d-flex justify-content-between">
+        <!-- <form enctype="multipart/form-data" action="{% url 'product:addbulk' %}" method="post" class="d-flex">
+            <input class="form-control" type="file" name="productsfile" id="formFile" required>
+            <button class="btn btn-primary submitbulk">
+                Ajouter un produitsات
+            </button>
+        </form> -->
+
+    </div>
+
+    <!-- this was a quik search for items -->
+    <div class="rounded shadow p-2 bg-white position-relative">
+        <div class="loadertable justify-content-center align-items-center d-none" style="
+        position: absolute;
+        z-index: 9999;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: #0000007d;
+        ">
+            <div class="spinner-border text-white" role="status">
+
+            </div>
+        </div>
+        <table class="mb-5 table table-bordered table-advance item-table">
+            <div class="row" style="padding: 5px">
+                <div class="mb-5">
+                    <strong for="">Global</strong>
+                    <input type="text" class="form-control searchglobal" placeholder="Rechercher Global">
+                </div>
+                <div class="col-md-4">
+                    <strong for="">Ref</strong>
+                    <input type="text" class="form-control search-input searchref" placeholder="Rechercher" >
+                </div>
+                <div class="col-md-4">
+                    <strong for="">Designation</strong>
+                    <input type="text" class="form-control search-input searchcar" placeholder="Rechercher " >
+                </div>
+                <div class="col-md-4">
+                    <strong for="">Categories</strong>
+                    <select class="form-select search-input select2 searchcategory">
+                        <option value=""></option>
+                        {% for i in cc %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+            <hr>
+            <thead>
+            <tr>
+                <th style="width: 25%;">Ref</th>
+                <th>Famille</th>
+                <th>Marque</th>
+                <th>Designation</th>
+                <th>Frn.</th>
+                <th>Stock</th>
+                <th>Prix acht</th>
+                <th>Remise</th>
+                <th hidden>Prix ventes</th>
+                <!-- <th style="width: 10%;">Sortie</th> -->
+            </tr>
+            </thead>
+            <tbody class="product-table-body text-center product_search_result">
+
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="shadow rounded mt-3 p-3 d-flex justify-content-between bg-white">
+
+        <a class="text-danger" href=" {% url 'product:lowstock' %} ">
+            Rupture Stock <span class="bg-danger rounded px-3 text-white">{{p_n}}</span>
+        </a>
+        <p>
+            total facture aujourd'hui {{today_sales_count}}
+        </p>
+        <p>
+            Total produits: {{length}}
+        </p>
+    </div>
+    <br><br>
+
+    <div class="row text-center">
+        <!-- {% if request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_LEDGER_VIEW or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_OWNER or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_VIEW_ACCOUNT %}
+        <div class="col-lg-4 col-md-6 ">
+            <a href="{% url 'ledger:customer_ledger_list' %}">
+                <div class="panel panel_bg_color">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <i class="fa fa-group fa-4x" style="color:#fff"></i>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <div class="panel_txt">Clients</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %} -->
+        <!--add product div -->
+        <!-- {% if request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_DATA_ENTRY_USER or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_OWNER or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_VIEW_ACCOUNT %}
+        <div class="col-lg-4 col-md-6 ">
+            <a href="{% url 'product:stock_items_list' %}">
+                <div class="panel panel_bg_color">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <i class="fa fa-shopping-cart fa-4x" style="color:#fff"></i>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <div class="panel_txt">Produits</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %} -->
+        {% if request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_SALESMAN or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_OWNER or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_VIEW_ACCOUNT %}
+
+        {% endif %}
+        <!--add sales div -->
+        <!-- {% if request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_SALESMAN or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_OWNER or request.user.retailer_user.role_type == request.user.retailer_user.ROLE_TYPE_VIEW_ACCOUNT %}
+        <div class="col-lg-4 col-md-6 ">
+            <a href="{% url 'sales:create_invoice' %}">
+                <div class="panel panel_bg_color">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <i class="fa fa-dollar fa-4x" style="color:#fff"></i>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <div class="panel_txt">
+                                    + Bon/Facture
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endif %} -->
+        <!-- !!! Adding a url tpo modeify company-s data -->
+        <!-- <div class="col-lg-4 col-md-6  mt-2">
+            <a href="/editdata">
+                <div class="panel panel_bg_color">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <i class="fa fa-list fa-4x" style="color:#fff"></i>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <div class="panel_txt">Donnée</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div> -->
+        <!-- <div class="col-lg-4 col-md-6 ">
+            <a href="{% url 'product:productslistbycategory' %}">
+                <div class="panel panel_bg_color">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <i class="fa fa-list fa-4x" style="color:#fff"></i>
+                            </div>
+                            <div class="col-xs-12 text-center">
+                                <br>
+                                <br>
+                                <div class="panel_txt">
+                                    Produits
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div> -->
+    </div>
+     <!--add logs div -
+     <div class="col-lg-4 col-md-6 ">
+        <a href="{% url 'product:daily_stock_logs' %}">
+            <div class="panel panel_bg_color">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <br>
+                            <br>
+                            <i class="fa fa-sign-in fa-4x" style="color:#fff"></i>
+                        </div>
+                        <div class="col-xs-12 text-center">
+                            <br>
+                            <br>
+                            <div class="panel_txt">LOGS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    col-div end here--->
+
+    <br>
+
+<!--col-div end here--->
+</div>
+
+
+
+{% endblock %}
+
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    $(function () {
+        $('.searchref').focus()
+        const displayimage=()=>{
+            $('.imagedisplaybtn').each((i, el)=>{
+                $(el).on('click', ()=>{
+                    
+                    img=$(el).find('.imgproduct').attr('src')
+                    console.log(img)
+                    $('.imgproductmodal').attr('src', img)
+                })
+            })
+        }
+
+        $(".product-sub-btn").on ('click', function(){
+                $(this).addClass('disabled');
+                $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                var error= false;
+
+                if ($('.product-error').val() == ""){
+                    $('.product-error').show();
+                    error = true;
+                }
+                else {
+                    $('.product-error').hide();
+                }
+                if ($('.quantity').val () == ""){
+                    $('.item-error').show();
+                    error = true;
+                }
+                else {
+                    $('.item-error').hide();
+                }
+                if (error == true) {
+                    $(this).removeClass('disabled');
+                    $(this).html('Enregister');
+                    return;
+                }
+                else
+                {
+                    $('.product_item_form').submit();
+
+                }
+
+            });
+        // edit product handler
+        // edit product handler
+
+
+        // update stock
+        const updatestock = () =>{
+            $('.updatestockbtn').each((i, el)=>{
+                $(el).on('click', ()=>{
+                    $('.loadertable').toggleClass('d-none')
+                    inp=$(el).parent().find('.sortieinput')
+                    priceinput=parseFloat($(el).parent().find('.priceinput').val())
+                    max=parseFloat(inp.attr('max'))
+                    var prices = [];
+                    $(el).parent().parent().find('.prices').each(function() {
+                        prices.push(parseFloat($(this).text()));
+                    });
+                    var qtyofprice = [];
+                    $(el).parent().parent().find('.qtyofprice').each(function() {
+                        qtyofprice.push(parseInt($(this).text()));
+                    });
+                    console.log(prices, qtyofprice)
+                    let index=prices.indexOf(priceinput)
+                    console.log(qtyofprice[index])
+                    if (inp.val()>max || inp.val()==0 || inp.val()==''|| !prices.includes(priceinput) || inp.val()>qtyofprice[index]){
+                        $('.loadertable').toggleClass('d-none')
+                        console.log('false')
+                        inp.css("border", "3px solid red")
+                        return
+                    }
+                    else{
+
+                        console.log('sending')
+                        // disable the button
+                        $(el).addClass('disabled')
+                        // send ajax to product:updatestock
+                        $.ajax({
+                            url: "{% url 'product:updatestock' %}",
+                            type: "POST",
+                            data: {
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                'id': $(el).attr('id'),
+                                'categoryid': $(el).attr('categoryid'),
+                                'sortieqty': inp.val(),
+                                'price': priceinput,
+                                'ref': $('.searchref').val(),
+                                'car': $('.searchcar').val(),
+                                'category': $('.searchcategory').val(),
+                            },
+                            success: function (data) {
+                                $('.loadertable').toggleClass('d-none')
+                                $('.product_search_result').html(data.data)
+                               
+                                if (data.zerostock){
+                                    $('.zerostock').text(parseInt($('.zerostock').text())+1)
+                                }
+                                updatestock()
+                               
+                            },
+                            error: function (data) {
+                                // undisable the button
+                                $(el).removeClass('disabled')
+                                alert('error, Contacter developpeur')
+                            }
+                        })
+                    }
+                })
+            })
+        }
+        $('.searchglobal').on('change', function(){
+            $('.loadertable').removeClass('d-none')
+            if ($(this).val()==''){
+                $('.loadertable').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/searchglobal",
+                    type: "POST",
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'global': $('.searchglobal').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        })
+        function liveSearch() {
+            
+            if ($('.searchref').val()=='' && $('.searchcar').val()=='' && $('.searchcategory').val()==''){
+                $('.loadertable').removeClass('d-flex').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                console.log('ajax')
+                $.ajax({
+                    url: "/product/product_search",
+                    type: "POST",
+                    data: {
+                        'ref': $('.searchref').val(),
+                        'car': $('.searchcar').val(),
+                        'category': $('.searchcategory').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').removeClass('d-flex').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        }
+
+    //A little delay
+    let typingTimer;
+    let typeInterval = 2000;  
+    let searchInput = $('.search-input');
+
+    searchInput.on('input', () => {
+        $('.loadertable').removeClass('d-none').addClass('d-flex')
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(liveSearch, typeInterval);
+    });
+        $('.searchcategory').on('change', function () {
+            $('.loadertable').removeClass('d-none').addClass('d-flex')
+            if ($('.searchref').val()=='' && $('.searchcar').val()=='' && $('.searchcategory').val()==''){
+                $('.loadertable').removeClass('d-flex').addClass('d-none')
+                $('.product_search_result').html('')
+                return
+            }
+            else{
+                $.ajax({
+                    url: "/product/product_search",
+                    type: "POST",
+                    data: {
+                        'ref': $('.searchref').val(),
+                        'car': $('.searchcar').val(),
+                        'category': $('.searchcategory').val(),
+                    },
+                    success: function (data) {
+                        $('.loadertable').removeClass('d-flex').addClass('d-none')
+                        $('.product_search_result').html(data.data)
+                        updatestock()
+                        displayimage()
+                    }
+                })
+            }
+        });
+
+        $('.deleteproduct').each((i, el)=>{
+            $(el).on('click', ()=>{
+                t=$(el)
+                if (confirm('Supprimer ?')){
+                    $.ajax({
+                        url: "{% url 'product:delete_product' %}",
+                        type: "POST",
+                        data: {
+                            'id': t.attr('data-id'),
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            console.log(data)
+                            if (data.status == 'success'){
+                                t.parent().parent().remove()
+                            }
+                        },
+                        error: function (data) {
+                            console.log(data)
+                        }
+                    });
+                }
+            })
+        })
+
+
+        // handle submit form update product
+        $('.add-product-form').on('submit', function (e) {
+            $('product-submit-btn').attr('disabled', true)
+            e.preventDefault()
+
+            const formData = new FormData(document.querySelector('.add-product-form'));
+            // const fileInput = $('[name="updateimage"]');
+            // formData.append('image', fileInput[0].files[0]);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            $.ajax({
+                url: $(this).attr('action'),
+                type: "POST",
+                // data: {
+                //     'car': $('[name="updatecar"]').val(),
+                //     'ref': $('[name="updateref"]').val(),
+                //     'price': $('[name="updateprice"]').val(),
+                //     'pr_achat': $('[name="updatepr_achat"]').val(),
+                //     'originsupp': $('[name="updateoriginsupp"]').val(),
+                //     'mark': $('[name="updatemark"]').val(),
+                //     'category': $('[name="updatecategory"]').val(),
+                //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+                // },
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data.status){
+
+                        $('[name="updatemark"]').val('')
+                        $('[name="updateoriginsupp"]').val('')
+                        $('#exampleModal').modal('hide')
+                        // row=$('tr')[updateform.attr('id')]
+                        // $(row).find('.product_ref').text($('[name="updateref"]').val())
+                        // $(row).find('.product_price').text($('[name="updateprice"]').val())
+                        // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+                        // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+
+                        // $(row).find('.mark').text($('[name="updatemark"] option:selected').text())
+                        // $(row).find('.mark').attr('markid', $('[name="updatemark"] option:selected').val())
+
+                        // $(row).find('.pdct').find('.product_name').text($('[name="updatecategory"] option:selected').text())
+                        // $(row).find('.pdct').find('.product_name').attr('categoryid', $('[name="updatecategory"] option:selected').val())
+
+                        // $(row).find('.car').text($('[name="updatecar"]').val())
+
+                        // $(row).find('.originsupp').text($('[name="updateoriginsupp"] option:selected').text())
+                        // $(row).find('.originsupp').attr('suppid', $('[name="updateoriginsupp"] option:selected').val())
+
+
+                    }
+                    else{
+                        alert(data.error)
+                    }
+                }
+            })
+        })
+
+
+
+
+    });
+
+</script>
+{% endblock %}

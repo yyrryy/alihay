@@ -1,0 +1,13 @@
+{% for i in products %}
+<div class="d-flex justify-content-between p-2 border-bottom">
+    <div class="product">
+        {{i.ref.upper}} - {{i.category.name.upper}} - {{i.mark.name.upper}} ({{i.stock|floatformat:-2}})
+    </div>
+    <button class="btn btn-primary addexeptionbtn fa fa-plus" item="{{i.ref}} - {{i.category.name.upper}} - {{i.mark}}" stock="{{i.stock|floatformat:-2}}" id="{{i.id}}" prachat="{{i.pr_achat}}" price="{{i.price}}"></button>
+    
+</div>
+{% empty %}
+<div class="product">
+    No product
+</div>
+{% endfor %}

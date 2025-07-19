@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% block menu_ledger %}active{% endblock %}
+{% block submenu_customer_ledger %}active{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="/static/css/datepicker.css">
+{% endblock %}
+
+{% block content %}
+<!-- payments modal -->
+<div class="modal fade" id="paymentssuppmodal" tabindex="-1" aria-labelledby="editsuppmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-white">
+
+
+            <div class="modal-footer">
+              <button type="button" class="w-100 btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- add one client model -->
+<!-- bon entree data holder -->
+
+
+<div class="row">
+    <div class="bg-white rounded shadow p-2 col-md-3">
+        <div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>Fournisseur</th>
+                    <th>{{supplier.name.upper}}</th>
+                </tr>
+                <tr>
+                    <th>phone1</th>
+                    <th>{{supplier.phone1}}</th>
+                </tr>
+                {% if supplier.phone2 %}
+                <tr>
+                    <th>phone2</th>
+                    <th>{{supplier.phone2}}</th>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>Total transactions</th>
+                    <th>{{supplier.total|floatformat:2}} DH</th>
+
+                </tr>
+                <tr>
+                    <th>Total payements</th>
+                    <th>{{totalpayments|floatformat:2}} DH</th>
+
+                </tr>
+                <tr>
+                    <th>Avoirs</th>
+                    <th>{{ totalavoirs|floatformat:2 }} DH</th>
+                </tr>
+                <tr>
+                  <th>Rest</th>
+                  <th>{{ supplier.rest|floatformat:2 }} DH</th>
+                </tr>
+		 <tr>
+                    <th>Inventaire</th>
+                    <th>{{ currentvalue|floatformat:2 }} DH</th>
+                </tr>
+                
+
+            </table>
+            <div class="mt-3">
+                <div class="mb-3">
+                    <button class="btn btn-success w-100" onclick="$('.addreglsuppformholder').toggleClass('d-none')">
+                        + Reglement
+                    </button>
+                    <div class="addreglsuppformholder d-none bg-white p-2 rounded border">
+                        <form action="{% url 'product:addpaymentssupp' %}" method="post" autocomplete="off">
+                            <div class="form-group">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="supplier" value="{{supplier.id}}">
+                                    <label>
+                                        <strong>Date reglement (*)</strong>
+                                    </label>
+                                    <input type="date" class="form-control" name="date" required>
+                                    <br>
+                                    <label>
+                                        <strong>Mantant (*)</strong>
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control" name="mantant" min="0" required>
+                                    <br>
+                                    <label>
+                                        <strong>Mode (*)</strong>
+                                    </label>
+                                    <select name="mode" class="form-select" required onchange="modeReglementChange(event)">
+                                        <option></option>
+                                        <option value="espece">ESPECE</option>
+                                        <option value="effet">EFFET</option>
+                                        <option value="cheque">CHEQUE</option>
+                                        <option value="echeanceEspece">ECHEANCE ESPECE</option>
+                                        <option value="verment">VEREMENT</option>
+                                    </select>
+                                    <br>
+                                    <label>
+                                        <strong>N° Piece</strong>
+                                    </label>
+                                    <input type="text" class="form-control" name="npiece"> <br>
+                                    <label>
+                                        <strong>Echeance</strong>
+                                    </label>
+                                    <input type="date" class="form-control" name="echeance" value="dd/mm/yyyy">
+                                    <br>
+                                    <label>
+                                        <strong>Remarque</strong>
+                                    </label>
+                                    <input type="text" class="form-control" name="note">
+                                    <br>
+
+
+                                    <br>
+                                    <button class="w-100 btn btn-primary">Ajouter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="mt-3" id="reportrange" style="cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+                    <i class="fa fa-calendar"></i>&nbsp;
+                    <span class="filterdate"></span> <i class="fa fa-caret-down"></i>
+                </div>
+                <button type="button" class="btn btn-primary relvesupp w-100">
+                    Relevé
+                </button>
+            </div>
+            <!-- <h2 class="text-center">
+                {{supplier.name.upper}}
+            </h2>
+            <div>
+                <h2>
+                    <span class="totalholder">
+
+                    </span> DH
+                </h2>
+            </div> -->
+        </div>
+    </div>
+    <div class="row col-md-9">
+        <!-- <br>
+        <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Ajouter+
+        </button>
+        <br><br><br> -->
+        <!-- bons -->
+        <div class="col-md-6">
+            <div class="bg-white shadow rounded p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4>Bon</h4>
+                    <strong>
+                        {{nbrbons}}
+                    </strong>
+                </div>
+                <table class="table table-bordered p-2">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Numéro</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bon in bons %}
+                        <tr onclick="bonachatdata({{bon.id}})" style="cursor: pointer;">
+                            <td>{{bon.bondate|date:'d/m/Y'}}</td>
+                            <td>{{bon.nbon}}</td>
+                            <td>{{bon.total|floatformat:2}}</td>
+                        </tr>
+                        {% endfor %}
+                </table>
+                <!--  -->
+            </div>
+        </div>
+
+        <!-- payments -->
+        <div class="col-md-6">
+            <div class="bg-white shadow rounded p-2">
+                <div class="p-2 d-flex justify-content-between align-items-center">
+                    <h4>Les paiments</h4>
+                    <strong>
+                        {{nbrpayments}}
+                    </strong>
+                </div>
+                <table class="table table-bordered p-2">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Mode</th>
+                            <th>Montant</th>
+				<th>N° piece</th>
+                            <th>Echeance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bon in payments %}
+                        <tr>
+                            <td ondblclick="$('.deletereglsupp{{bon.id}}').toggleClass('d-none')">{{bon.date|date:'d/m/Y'}}</td>
+                            <td>{{bon.mode}}</td>
+                            <td>{{bon.amount|floatformat:2}}</td>
+				            {% if bon.npiece %}
+				            <td>{{bon.npiece}}</td>
+				            {% else %}
+                            <td>--</td>
+                            {% endif %}
+                            <td>
+                                {% if bon.mode == 'espece' %}
+                                --
+                                {% else %}
+                                {{bon.echeance|date:'d/m/Y'}}
+                                {% endif %}
+                                <button class="btn btn-danger d-none deletereglsupp{{bon.id}}" ondblclick="deletereglsupp('{{bon.id}}')"></button>
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                </table>
+                <!--  -->
+            </div>
+        </div>
+
+        <!-- avoirs -->
+        <div class="mt-2">
+            <div class="bg-white rounded shadow p-2">
+                <div class="p-2 d-flex justify-content-between align-items-center">
+                    <h4>Les avoirs</h4>
+                    <strong>
+                        {{navoirs}}
+                    </strong>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {% for i in avoirs %}
+                        <tr onclick="avoirsupdata({{i.id}})" >
+                            <td>{{i.date|date:'d/m/Y'}}</td>
+                            <td>{{i.total|floatformat:2}}</td>
+                            <!-- <td>
+                                {{i.items}}
+                            </td> -->
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="mt-2">
+
+</div>
+<script src="/static/js/moment.js"></script>
+<script src="/static/js/datepicker.js"></script>
+<script>
+  function setclient(event){
+    clientid=$(event.target).val()
+    $.get('/product/setclient', {
+      'clientid':clientid,
+      'supplierid':'{{supplier.id}}'
+    }, (data)=>{
+      location.reload()
+    })
+  }
+    function deletereglsupp(reglid){
+        console.log('starting deleteregsupp function')
+        alertify.confirm('Supprimer', 'Voulez vous vraiment supprimer ce reglement ?', function(){
+            $.get('/product/deletereglsupp/',{
+                'reglid':reglid,
+            },
+            function(data){
+                if(data.success){
+                    location.reload()
+                }
+            })
+        }, function(){})
+    }
+	const avoirsupdata = (id)=>{
+        $('.bondataholder').removeClass('d-none')
+        $.post(`/product/avoirsupdata/`,{
+            'id':id,
+            'csrfmiddlewaretoken':'{{csrf_token}}'
+        },
+        function(data){
+            $('.bondata').html(data.data)
+        })
+    }
+    $('.relvesupp').on('click', ()=>{
+        date=$('.filterdate').text()
+        // $.post("{% url 'product:relveclient' %}",
+        //     {date:date},
+        //     (date)=>{
+        //         console.log(date)
+        //     }
+        // )
+        date=$('.filterdate').text().split(' - ')
+        window.location.href = "{% url 'product:relvesupp' %}?start="+date[0]+"&end="+date[1]+"&supplier="+{{supplier.id}}
+    })
+    
+
+// serch in tables instead of sending ajax request
+        $(".name_search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                // $(".product_search_result tr").filter(function() {
+                //   $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                // });
+                // search only in the first td ot each tr
+                $(".products tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+              });
+    // $(function() {
+    // $('input[name="daterange"]').daterangepicker({
+    //     opens: 'left',
+    //     locale: {
+    //         format: 'D/MM/Y'
+    //     }
+    // }, function(start, end, label) {
+    //     console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    // });
+    // });
+    $(function() {
+
+var start = moment().subtract(29, 'days');
+var end = moment();
+
+function cb(start, end) {
+    $('#reportrange span').html(start.format('DD/MM/Y') + ' - ' + end.format('DD/MM/Y'));
+}
+
+$('#reportrange').daterangepicker({
+    startDate: start,
+    endDate: end,
+    ranges: {
+       'Cette mois': [moment().startOf('month'), moment().endOf('month')],
+       'Dernier mois': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    }
+}, cb);
+
+cb(start, end);
+
+});
+</script>
+<script>
+
+
+</script>
+{% endblock %}

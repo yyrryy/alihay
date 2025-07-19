@@ -1,0 +1,834 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% load static %}
+
+
+{% block content %}
+<style>
+
+</style>
+
+
+
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-white">
+
+            <div class="modal-body">
+                <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:addsupplier' %}" method="post" autocomplete="off">
+                    <div class="form-group">
+                            {% csrf_token %}
+                            <label>
+                                <strong>Nom</strong>
+                            </label>
+                            <input type="text" class="form-control customer" name="name" >
+                            <br>
+                            <label>
+                                <strong>Details</strong>
+                            </label>
+                            <textarea type="text" class="form-control customer_phone" name="details" ></textarea>
+                            <br>
+
+                            <br>
+
+                            <br>
+                            <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+                            <button type="button" id="save" class="btn btn-primary ledger-submit-btn" style="float: right" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-3">
+        <div class="rounded p-2 bg-white shadow">
+            <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+                Remplir les champs
+            </div>
+            <div class="">
+                <!-- modal btn add supplier
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Ajouter +
+                </button> -->
+                <div class="">
+                    <span class="item-error" style="color: red; display: none">
+                        Remplir les chanps
+                    </span>
+                    <div class="mb-3">
+                        <button class="mb-3 btn btn-primary addsupplierbtn" onclick="$('.addsupplierholder').removeClass('d-none')">
+                            Ajouter un fournisseur
+                        </button>
+                        <select name="supplier" class="form-select supplierslist">
+
+                        </select>
+                    </div>
+                    <input type="text" class="form-control" id="invoice_number" placeholder="N° facture / N° Bon">
+                    <div class="mt-2">
+                        <small>Date Facture/bon</small>
+                        <input type="date" class="form-control" name="bondate" placeholder="Date BL">
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="rounded p-2 bg-white shadow mt-2">
+            <div class="d-flex">
+                <button class="btn btn-success" onclick="$('.addproductholder').removeClass('d-none')">
+                +
+            </button>
+            <select class="productslist form-control"></select>
+            </div>
+
+            <div class="bg-dark p-2 text-white mt-2 rounded">
+                Stock: <span class="pdctselectedstock"></span>
+            </div>
+    
+            <div class="bg-dark p-2 text-white mt-2 rounded">
+                Dernier prix d'achat: <span class="pdctselecedprachat"></span> <br>
+                Prix achat moins chere <span class="lowpdctselecedprachat"></span>
+            </div>
+            <hr>
+                <div class="form-group">
+                    <label for="name" class="form-label">Quantité</label>
+                    <input type="number" class="addqtyinp form-control" placeholder="Qty">
+                    <div class="addstock"></div>
+                </div>
+                <div class="form-group">
+
+                    <label for="name" class="form-label">Prix</label>
+                    <input type="number" class="addpriceinp form-control" placeholder="Prix">
+
+                    <div class="addprice">  </div>
+                    <div class="addprnet"></div>
+                </div>
+                <div class="form-group" hidden>
+
+                    <label for="name" class="form-label">Remise</label>
+                    <input value="0" type="number" class="addremiseinp form-control" placeholder="Remise">
+                    <div class="addremise">  </div>
+                    <div class="addprnet"></div>
+                </div>
+
+                 <div class="form-group" hidden>
+
+                    <label for="name" class="form-label">Prix vente compt.</label>
+                    <input type="number" class="addprventemaginp form-control" placeholder="prventemag">
+                    <div class="addprventemag">  </div>
+                    <div class="addprnet"></div>
+                </div>
+                <div class="form-group" hidden>
+
+                    <label for="name" class="form-label">Prix vente gro</label>
+                    <input type="number" class="addprventegroinp form-control" placeholder="prventegro">
+                    <div class="addprventegro">  </div>
+                    <div class="addprnet"></div>
+                </div>
+                <div class="col-12">
+
+                    <button class="btn btn-primary w-100 addbtn" onclick="addrow()">+</button>
+                </div>
+                <input type="text" class="addname" hidden>
+        </div>
+
+    </div>
+
+    <div class="col-9">
+        <div class="bg-white rounded shadow p-2">
+            <div class="mb-3 d-flex justify-content-between">
+
+                
+
+            </div>
+                <!-- button for addsupplier modal -->
+
+            <table class="table table-bordered supplytable">
+                <thead>
+                <tr class="">
+                    <th style="width: 30%;">Article</th>
+
+                    <th>Quantité</th>
+                    <th>Prix unit.</th>
+                    <th>Remise</th>
+                    <th>Total</th> 
+                    <th>Pr. vente compt..</th>
+                    <th>Pr. vente GRO</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody class="itemsbon">
+
+                </tbody>
+            </table>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <button id="addsuplly" class="btn btn-success">
+                    Valider
+                </button>
+                <div class="d-flex flex-column">
+                    <!-- <button class="btn btn-info tva">TVA</button> -->
+                    <span id="grandTotal" style="color:red">0</span>
+                </div>
+
+            </div>
+
+            <table class="table table-bordered">
+                <thead>
+                <tbody>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Sub Total</strong></td>
+                    <td><span id="subtotal">0.00</span></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Discount</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                </tr>
+                <tr hidden>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right"><strong>Shipping</strong></td>
+                    <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                </tr>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/jquery.invoice.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.scannerdetection.js' %}"></script>
+    <script>
+        $('.productslist').on('change', function(){
+            // get product client id
+            let [ref, car, p, stock, productid, remise, prnet]=$(this).val().split('§')
+            // get supplier price
+            idsinbon=JSON.parse(localStorage.getItem('pdctsinbonsortieachat')) || []
+            if (idsinbon.includes(productid)){
+                alertify.error('Deja ajouté')
+            }
+            $('.pdctselectedstock').text(stock)
+            $('.pdctselecedprachat').text(p)
+            $.get('/product/getproductdata', {
+                'id':productid
+            }, (data)=>{
+                $('.lowpdctselecedprachat').text(data.lowpriceachat)
+            })
+            // else{
+            // $('.itemsbon').prepend(`<tr class="item-row">
+            //         <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${ref} - ${car}</div></div></td>
+
+            //         <td><input class="form-control qty calculate" placeholder="Quantity" type="number" onkeyup="saverow(event)"></td>
+            //         <td><input class="form-control price calculate" placeholder="Price" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+            //         <td><input class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+            //         <td><span class="total">0.00</span></td>
+            //         <td><input class="form-control prventmag" placeholder="Pr. vente. mag" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+            //         <td><input class="form-control prventgro" placeholder="Pr. vente. gro" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+            //         <input type="hidden" class="productid" value=${productid}><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event, '${productid}')">X</i></td>
+            //         </tr>`);
+
+            //     calculate()
+            // // add product row with client rice
+            // }
+
+        })
+        
+        function addrow(){
+            pdcts=JSON.parse(localStorage.getItem('pdctsinbonsortieachat'))||[]
+            bonitems=JSON.parse(localStorage.getItem('bonitemsachat'))||[]
+            grandtotal=parseFloat(localStorage.getItem('grandtotal')) || 0
+            
+            parentdiv=$(this).parent().parent()
+            if ($('.productslist').val()==''){
+                return
+            }
+            var [ref, car, pr_achat, stock, id, remise, prnet] = $('.productslist').val().split('§');
+            if (pdcts.includes(id)){
+                alertify.error('Deja ajouté')
+                return
+            }
+             // first time adding to localstorg
+             $('.pdctselectedstock').text(stock)
+             $('.pdctselecedprachat').text(pr_achat)
+            qtyinpadd=$('.addqtyinp').val()
+            priceinpadd=$('.addpriceinp').val()
+            remiseinpadd=$('.addremiseinp').val()
+            prventemag=$('.addprventemaginp').val()
+            prventegro=$('.addprventegroinp').val()
+            net=parseFloat(priceinpadd)-(parseFloat(priceinpadd)*parseFloat(remiseinpadd)/100)
+            if (qtyinpadd=='' || priceinpadd==''){
+                alertify.error('Champ vide')
+                return
+            }
+            totalrow=(qtyinpadd*net).toFixed(2)
+            grandtotal+=parseFloat(totalrow)
+            localStorage.setItem('grandtotal', grandtotal)
+            $('#grandTotal').text(grandtotal.toFixed(2))
+        console.log('>> total', totalrow)
+          row={
+                'article':ref+ ' - '+car,
+                'stock':stock,
+                'prnet':prnet,
+                'prachat':pr_achat,
+                'price':priceinpadd,
+                'remise':remiseinpadd,
+                'qty':qtyinpadd,
+                'productid':id,
+                'total':totalrow,
+                'prventemag':prventemag,
+                'prventegro':prventegro,
+                'prices':[(parseFloat(priceinpadd)*parseInt(qtyinpadd)).toFixed(2)]
+            }
+        
+            pdcts.push(id)
+            localStorage.setItem('pdctsinbonsortieachat', JSON.stringify(pdcts))
+            // add it to items localstorage
+            console.log(bonitems)
+            bonitems.push(row)
+            localStorage.setItem('bonitemsachat',JSON.stringify(bonitems))
+            $('.itemsbon').prepend(`<tr class="item-row">
+                    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${ref} - ${car}</div></div></td>
+                    <td><input class="form-control qty calculate" placeholder="Quantity" type="number" onkeyup="saverow(event)" value="${qtyinpadd}"></td>
+                    <td><input class="form-control price calculate" placeholder="Price" type="number" step=0.01 onkeyup="saverow(event)" value="${priceinpadd}"> </td>
+                    <td><input readonly value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01 onkeyup="saverow(event)" value="${remiseinpadd}"> </td>
+                    <td><span class="total">${totalrow}</span></td>
+                    <td><input class="form-control prventmag" placeholder="Pr. vente. mag" type="number" step=0.01 onkeyup="saverow(event)" value="${prventemag}"> </td>
+                    <td><input class="form-control prventgro" placeholder="Pr. vente. gro" type="number" step=0.01 onkeyup="saverow(event)" value="${prventegro}"> </td>
+                    <input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event, '${id}')">X</i></td>
+                    </tr>`);
+
+            calculate()
+            // add product row with client rice
+            
+            //jQuery().invoice().init
+            $('.productslist').empty()
+            $('.productslist').select2('open'); //open
+            $('.addqtyinp').val('')
+            $('.addpriceinp').val('')
+            $('.addstock').text('')
+            $('.addprnet').text('')
+            // updatestock
+            
+        
+
+
+        }
+
+        
+        function removeline(event, productid){
+            console.log('deletting;;;', productid)
+            $(event.target).closest('tr').remove();
+            qtyinpadd=$(event.target).closest('tr').find('.qty').val()
+            bonitems=JSON.parse(localStorage.getItem('bonitemsachat'))
+            idsinbon=JSON.parse(localStorage.getItem('pdctsinbonsortieachat'))
+            dx=idsinbon.indexOf(productid)
+            idsinbon.splice(dx, 1)
+            bonitems.splice(dx, 1)
+            console.log(dx, idsinbon, bonitems)
+            localStorage.setItem('bonitemsachat', JSON.stringify(bonitems))
+            localStorage.setItem('pdctsinbonsortieachat', JSON.stringify(idsinbon))
+            sum=0
+            $('.total').each(function() {
+                sum += parseFloat($(this).text());
+            });
+            $('#grandTotal').text(sum.toFixed(2))
+            localStorage.setItem('grandtotal', sum.toFixed(2))
+
+        }
+
+        
+        function saverow(event){
+            console.log('saving row')
+            tr=$(event.target).parent().parent()
+            article=tr.find('.invoice-item').text()
+            total=tr.find('.total').text()
+            grandtotal=$('#grandTotal').text()
+            price=tr.find('.price').val()?tr.find('.price').val():0
+            qty=tr.find('.qty').val()?tr.find('.qty').val():0
+            remise=tr.find('.remise').val()?tr.find('.remise').val():0
+            prventmag=tr.find('.prventmag').val()?tr.find('.prventmag').val():0
+            prventgro=tr.find('.prventgro').val()?tr.find('.prventgro').val():0
+            productid=tr.find('.productid').val()
+
+            bonitems=JSON.parse(localStorage.getItem('bonitemsachat')) || []
+            idsinbon=JSON.parse(localStorage.getItem('pdctsinbonsortieachat')) || []
+            // get index of id
+            if (idsinbon){
+                dx=idsinbon.indexOf(productid)
+                console.log(dx)
+            }
+            row={
+                'article':article,
+                'price':price,
+                'qty':qty,
+                'remise':remise,
+                'productid':productid,
+                'total':total,
+                'prventmag':prventmag,
+                'prventgro':prventgro,
+            }
+            if (dx > -1){
+                bonitems[dx]=row
+                // insert it in index to remain the same order, order is important here
+                localStorage.setItem('bonitemsachat',JSON.stringify(bonitems))
+                localStorage.setItem('grandtotal', grandtotal)
+            }else{
+                idsinbon.push(productid)
+                bonitems.push(row)
+                localStorage.setItem('pdctsinbonsortieachat',JSON.stringify(idsinbon))
+                localStorage.setItem('bonitemsachat',JSON.stringify(bonitems))
+                localStorage.setItem('grandtotal', grandtotal)
+
+            }
+        }
+
+        // checkref
+        // $('.checkref').on('change', ()=>{
+        //     if ($('[name="ref"]').val()!='' && $('[name="mark"]').val()!='' && $('[name="category"]').val()!=''){
+        //         console.log('checking')
+        //         $.post('/product/checkref/', {
+        //             'ref': $('[name="ref"]').val().toLowerCase(),
+        //             'mark': $('[name="mark"]').val().toLowerCase(), 'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val(),
+        //             'categoryid':$('[name="category"]').val()
+        //     }, (data)=>{
+        //             if (data.status){
+        //                 $('.checkerror').removeClass('d-none').addClass('d-flex')
+        //                 $('.addoneproductbtn').attr('disabled', true)
+        //             }
+        //             else{
+        //                 $('.checkerror').removeClass('d-flex').addClass('d-none')
+        //                 $('.addoneproductbtn').attr('disabled', false)
+        //             }
+        //         })
+        //
+        //     }
+        // })
+        // add product
+        $('.addoneproductbtn').on('click', function(){
+
+        })
+        $('.addsuppliersubmitbtn').on('click', function(){
+            let parentdiv=$('.addsupplierholder')
+            var isAnyEmpty = parentdiv.find('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+            if (isAnyEmpty){
+                let emptyInputs = parentdiv.find('.notempty').filter(function() {
+                    return !this.value.trim();
+                });
+
+                // Add a red border to all empty input elements
+                alertify.error('Veuillez remplir tous les champs obligatoires')
+                emptyInputs.css('border', '1px solid red');
+                parentdiv.find('input.notempty').not(emptyInputs).css('border', '');
+                $(this).attr('disabled', false)
+                return
+            }
+            $('this').addClass('disabled')
+            // ajax
+            console.log()
+            $.post('/product/addsupplier/',
+            {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'name':parentdiv.find('[name="name"]').val(),
+                'phone1':parentdiv.find('[name="phone1"]').val(),
+                'phone2':parentdiv.find('[name="phone2"]').val(),
+                'address':parentdiv.find('[name="address"]').val(),
+                'website':parentdiv.find('[name="website"]').val(),
+                'dest':'recevoir'
+            },
+            (data)=>{
+                $('.addsupplierholder').addClass('d-none')
+                alertify.success('OK')
+            }
+            )
+        })
+        // $(function(){
+        //
+        // })
+        function updatetotal(){
+            var totalSum = 0;
+            $('.total').each(function() {
+                totalSum += parseFloat($(this).text());
+            });
+            $('#grandTotal').text(totalSum.toFixed(2))
+        }
+        function calculate(){
+            $('.calculate').each((i, el)=>{
+                $(el).on('input', ()=>{
+                    price=$(el).parent().parent().find('.price').val()
+                    qty=$(el).parent().parent().find('.qty').val()
+                    remise=$(el).parent().parent().find('.remise').val()
+                    remiseamount=(price*remise)/100
+                    afterremise=price-remiseamount
+                    finalamount=(qty*afterremise).toFixed(2)
+                    console.log('>> finalamount in calculate function', finalamount)
+                    total=$(el).parent().parent().find('.total')
+                    total.text(finalamount)
+                    updatetotal()
+                })
+            })
+        }
+        $(window).on('click', function (e) {
+            // if (e.target.classList.contains('addexeptionbtn')) {
+            //     console.log('add exeption')
+            //     el=$(e.target)
+            //     el.removeClass('fa-plus').addClass('fa-check')
+            //     item=el.attr('item')
+            //     id=el.attr('id')
+            //     stock=el.attr('stock')
+            //     $('.itemsbon').append(`<tr class="item-row">
+            //         <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${item}</div></div></td>
+            //         <td class="stock ${stock > 0 ? 'bg-success ' : 'bg-danger '}text-white">${stock}</td>
+            //         <td><input value="0" class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+            //         <td><input value="0" class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+            //         <td><input value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+            //         <td><span class="total">0.00</span></td>
+            //         <input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event, '${id}')">X</i></td>
+            //         </tr>`);
+            //     $('.delete').on('click', function () {
+            //         $(this).closest('tr').remove();
+            //         updatetotal()
+            //     });
+            //     calculate()
+            // }
+        })
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // $('.loading').removeClass('d-none').addClass('d-flex');
+
+        // add supplier
+
+
+    $(document).ready(function () {
+        bonitems=JSON.parse(localStorage.getItem('bonitemsachat')) || []
+        for (i of bonitems){
+            $('.itemsbon').prepend(`<tr class="item-row">
+                    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${i.article}</div></div></td>
+
+                    <td><input class="form-control qty calculate" placeholder="Quantity" type="number"
+                    value="${i.qty}"
+                    onkeyup="saverow(event)"></td>
+                    <td>
+                        <input
+                        value="${i.price}"
+                        class="form-control price calculate" placeholder="Price" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+                    <td><input readonly
+                        value="${i.remise}"
+                        class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01 onkeyup="saverow(event)"> </td>
+                    <td><span class="total">${i.total}</span></td>
+                    <td><input class="form-control prventmag" placeholder="Pr. vente. gro" type="number" step=0.01 onkeyup="saverow(event)" value="${i.prventemag}"> </td>
+                    <td><input class="form-control prventgro" placeholder="Pr. vente. gro" type="number" step=0.01 onkeyup="saverow(event)" value="${i.prventegro}"> </td>
+                    <input type="hidden" class="productid" value=${i.productid}><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event, '${i.productid}')">X</i></td>
+                    </tr>`);
+
+        calculate()
+        }
+
+        grandtotal=localStorage.getItem('grandtotal') || 0
+        $('#grandTotal').text(grandtotal)
+        $('.tva').on('click', function(){
+            $('.price').each((i, el)=>{
+                let price=$(el).val()
+                $(el).val((price*1.2).toFixed(2))
+                let tt=parseFloat($('#grandTotal').text())
+                $('#grandTotal').text((tt*1.2).toFixed(2))
+            })
+        })
+        // fill table with pdcts of supplier
+        //  $('[name=supplier]').on('change', ()=>{
+        //      if ($('[name=supplier]').val()!=0){
+        //          let supplier=$('[name=supplier]').val()
+        //          $('.loading').removeClass('d-none').addClass('d-flex');
+        //          $.post('{% url "product:getsupplierproducts" %}', {
+        //              'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //              'supplier': $('[name="supplier"]').val(),
+        //          },function (result, status) {
+        //              console.log(result.enteredpdcts)
+        //               $('.itemsbon').html(result.enteredpdcts)
+        //              $('.loading').removeClass('d-flex').addClass('d-none');
+        //              calculate()
+        //              })
+        //             }
+
+        //         })
+        //             $('.itemsselectholder').html(result.data)
+        //             $('.refexeption').on('change', function(){
+        //                 let ref=$('.refexeptioninp').val()
+        //                 if (ref!=''){
+        //                     $.ajax({
+        //                         url:'{% url "product:refexeption" %}',
+        //                         type:'POST',
+        //                         data:{
+        //                             'ref':ref,
+        //                             'invoice':0,
+        //                             'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //                             'categoryid':$('.refexeptioncategory').val()
+        //                         },
+        //                         success:(data)=>{
+        //                             $('.exeptionresults').html(data.data)
+        //                         }
+        //                     })
+        //                 }
+        //             })
+        //             $('.refreshitemssupplier').on('click', ()=>{
+        //                 console.log('refresh')
+        //                 $.ajax({
+        //                     url:'{% url "product:refreshitemssupplier" %}',
+        //                     type:'POST',
+        //                     data:{
+        //                         'csrfmiddlewaretoken': '{{ csrf_token }}',
+        //                         'supplier':$('.supplierselect').val()
+        //                     },
+        //                     success:(data)=>{
+        //                         $('.articlesselect').html(data.data)
+        //                         $('.articleslen').text(data.len)
+        //                     }
+
+        //                 })
+        //             })
+        //         }
+        //         ).fail(function (xhr, status, errors) {
+        //             $('.loading').removeClass('d-flex').addClass('d-none');
+        //             alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+        //         });
+        //     }
+        // })
+
+
+
+
+
+        $(function () {
+
+
+
+
+            // $('#all-items').on('change', function(){
+            //     if ($(this).val()==0){
+            //         return
+            //     }
+            //     var item=$(this).find(':selected').val()
+            //     // var prachat=$(this).find(':selected').data('prachat')
+            //     var stock = $(this).find(':selected').data('stock')
+            //     var id = $(this).find(':selected').data('id')
+            //     $('.itemsbon').append(`<tr class="item-row">
+            //         <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">${item}</div></div></td>
+            //         <td class="stock ${stock > 0 ? 'bg-success ' : 'bg-danger '}text-white">${stock}</td>
+            //         <td><input value="0" class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+            //         <td><input value="0" class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+            //         <td><input value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+            //         <td><span class="total">0.00</span></td>
+            //         <input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer" onclick="removeline(event, '${id}')">X</i></td>
+            //         </tr>`);
+            //     $('.delete').on('click', function () {
+            //         $(this).closest('tr').remove();
+			// updatetotal()
+            //     });
+            //     // //
+            //     calculate()
+            // });
+
+
+            $('#addsuplly').on('click', function () {
+                if (($.inArray(true, $('.price').map((t, i)=>$(i).val()=="")) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()=="")) !== -1) || ($.inArray(true, $('.price').map((t, i)=>$(i).val()<=0)) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()<=0)) !== -1)) {
+
+                    showerror();
+                    $('.price').css('border-color', 'red');
+                    $('.qty').css('border-color', 'red');
+                    return
+                }
+                if ($('#item-name').hasClass('item-name') == false || $('[name=supplier]').val()==null || $('#invoice_number').val()=='' || $("[name=bondate]").val()=='') {
+                    showerror();
+                    return;
+                }
+                else {
+                $('.item-error').hide();
+                $('.price').css('border', 'none');
+                }
+                if (confirm('Confirmer ?')){
+                    $(this).attr('disabled', true)
+
+                    var items = [];
+                    for (var i=0; i<$('.item-row').length; i++) {
+                        var products = {};
+
+                        products['name'] = $($('.item-row')[i]).find('#invoice-item').text();
+                        products['productid'] = $($('.item-row')[i]).find('productid').val();
+                        products['remise'] = $($('.item-row')[i]).find('.remise').text();
+                        products['item_id'] = $($('.item-row')[i]).find('.productid').val();
+                        products['price'] = parseFloat($($('.item-row')[i]).find('.price').val());
+                        products['qty'] = $($('.item-row')[i]).find('.qty').val();
+                        products['prventmag'] = $($('.item-row')[i]).find('.prventmag').val();
+                        products['prventgro'] = $($('.item-row')[i]).find('.prventgro').val();
+                        products['remise'] = $($('.item-row')[i]).find('.remise').val();
+                        products['total'] = parseFloat($($('.item-row')[i]).find('.total').text());
+                        items.push(products);
+                    }
+                    console.log(items)
+
+                    const itemIds = items.map(item => item.item_id);
+                    const uniqueItemIds = Array.from(new Set(itemIds));
+
+                    if (itemIds.length > uniqueItemIds.length) {
+                    showerror("منتوجات متكررة");
+                    $(this).attr('disabled', false)
+                    } else {
+                        console.log(items)
+                        $.post("{% url 'product:addsupply' %}", {
+                                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                items: JSON.stringify(items),
+                                'supplier': $('[name="supplier"]').val(),
+                                'bondate': $('[name="bondate"]').val(),
+                                'total': parseFloat($('#grandTotal').text()),
+                                'nbon':$('#invoice_number').val(),
+                                'facture':'{{facture}}'
+                            }, function (data) {
+                                if (data.success){
+
+                                    localStorage.removeItem('pdctsinbonsortieachat')
+                                    localStorage.removeItem('bonitemsachat')
+                                    localStorage.removeItem('grandtotal')
+
+                                    //refresh the page
+                                    location.reload()
+                                }else{
+                                    $('#addsuplly').removeAttr('disabled')
+                                    alertify.error(data.error)
+                                }
+                                //window.location.href='/product/bonsentrees/'
+                            }
+                        ).fail(function (xhr, status, errors) {
+                            alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                        });
+                    }
+                }
+            });
+
+
+        });
+
+    });
+    </script>
+    <script>
+
+
+        // $('.addoneproductbtn').on('click', function(){
+        //     $(this).attr('disabled', true)
+        //
+        //     // check all required fields are filled
+        //     var isAnyEmpty = $('.addoneproductform').find('.notempty').filter(function() { return $(this).val() == ''; }).length > 0;
+        //     if (isAnyEmpty){
+        //
+        //         alertify.alert('Alert','Veuillez remplir tous les champs obligatoires')
+        //         $(this).attr('disabled', false)
+        //         return false
+        //     }
+        //     var formData = $('.addoneproductform').serialize();
+        //
+        //     $.ajax({
+        //         type: "POST",
+        //         url: "{% url 'product:addoneproduct' %}",
+        //         data: formData,
+        //         success: function(response) {
+        //             $('.addproductholder').addClass('d-none')
+        //             alertify.success('OK')
+        //             // Handle the successful response from the server here
+        //             // For example, you can display a success message or redirect to another page
+        //             console.log("Success: ", response);
+        //         },
+        //         error: function(xhr, status, error) {
+        //             // Handle errors here, display an error message, or log the error
+        //             console.error("Error: " + error);
+        //         }
+        //     });
+        //
+        //     // ajax
+        //
+        //     // display none holder
+        //
+        //     // alaertify success
+        //
+        // })
+
+        $('.refreshmark').on('click', ()=>{
+            $.ajax({
+                url: "{% url 'product:refreshmark' %}",
+                type: "GET",
+                success: (data)=>{
+                    $('.markselect').html(data.data)
+                }
+            })
+        })
+        $('#create-invoice').on('click', function() {
+            var $this = $(this);
+            $this.button('loading');
+            setTimeout(function() {
+                $this.button('reset');
+            }, 1000);
+        });
+
+        $('.ledger-submit-btn').on ('click', function () {
+            $(this).addClass('disabled');
+            $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+            var error = false;
+
+            if ($('.customer').val() ==""){
+                $('.customer-error').show();
+                error= true;
+            }
+            else {
+                $('.customer-error').hide();
+                error=false;
+            }
+
+            if (error == true ) {
+                $(this).html('Valid');
+                $(this).removeClass('disabled');
+                return;
+            }
+            if (error == false) {
+                $.ajax({
+                    url: "{% url 'product:addsupplier' %}",
+                    type: "POST",
+                    data: {
+                        'name': $('[name="name"]').val(),
+                        'details': $('[name="details"]').val(),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+
+                        $('.addsupplierform').trigger('reset')
+                        $('#exampleModal').modal('hide')
+                        alert(data.data)
+                        // refresh
+                        location.reload()
+
+                    },
+                })
+            }
+    });
+    </script>
+
+{%endblock%}

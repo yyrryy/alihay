@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+		.delete {
+			display: block;
+			color: #000;
+			text-decoration: none;
+			position: absolute;
+			background: #EEEEEE;
+			font-weight: bold;
+			padding: 0px 3px;
+			border: 1px solid;
+			top: -6px;
+			left: -6px;
+			font-family: Verdana;
+			font-size: 12px;
+		}
+	</style>
+
+	<div class="col-lg-10 col-md-10 col-sm-10">
+		<br>
+		<a href="{% url 'sales:invoice_list' %}"><button type="button" id="invoice" class="btn btn-primary fa fa-arrow-left id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a>
+		<br><br>
+		<div class="bg-white rounded shadowp-2" style="padding: 5px">
+			<div class="row">
+				<div class="col-xs-12 col-md-12">
+					<hr>
+					<div class="row">
+						<div class="col-xs-6 col-md-6">
+                            <input type="hidden" name="invoiceid" value="{{invoice.id}}">
+							<div><strong>Client:</strong> <span style="float: right" >{{ invoice.created_at.date|date:'d/m/Y' }}</span></div><br>
+                            
+							<div class="existing-customer">
+                               
+                                <input class="form-control customer" id="customer-id" placeholder="Customer" list="customer-list" value="{{ invoice.customer.customer_name }}" disabled>
+<!--                                <datalist id="customer-list">-->
+<!--                                    {% for customer in customers %}-->
+<!--                                        <option data-id="{{ customer.id }}" value="{{ customer.customer_name }}">{{ customer.customer_phone }}</option>-->
+<!--                                    {% endfor %}-->
+<!--                                </datalist><br>-->
+<!--                                <a class="new-customer" style="cursor: pointer;">New Customer</a><br>-->
+                                <br>
+                            </div>
+                            
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+							<tr>
+								<th>Article</th>
+								<th>Prix</th>
+                                <th>Quantité disponible</th>
+								<th>Quantité</th>
+								<th>Total</th>
+							</tr>
+							</thead>
+                                {% for item in invoice.purchased_items.all %}
+                                <tr>
+                                </tr>
+                                    <tr class="item-row">
+                                        
+                                        <td id="item-name" class="item-name">
+                                            <div class="delete-btn">
+                                                <input type="text" class="form-control invoice-item" id="invoice-item" name="all-items" list="all-items" placeholder="Select Item" value="{{ item.product.ref }} {{ item.product.category}} {{ item.product.mark }}" disabled>
+												<input type="hidden" class="item-id" id="item-id" value="{{ item.id }}">
+												<input type="hidden"  id="product-id" value="{{ item.product.id }}">
+<!--                                                <datalist id="all-items">-->
+<!--                                                    {% for product in products %}-->
+<!--                                                        <option data-value="{{ product.id }}" value="{{ product.name }}">{{ product.name }}</option>-->
+<!--                                                    {% endfor %}-->
+<!--                                                </datalist>-->
+<!--                                                <a class="delete" href="javascript:;" title="Remove row">X</a>-->
+                                            </div>
+                                        </td>
+                                        
+                                        <td>
+                                            <input class="form-control price" placeholder="Price" type="text" value="{{ item.price|floatformat:-2 }}" disabled>
+                                        </td>
+                                        <td class="stock">
+                                            {{item.product.stock|floatformat:-2}}
+                                        </td>
+                                        <td>
+                                            <input class="form-control qty" placeholder="Quantity" value="{{ item.quantity|floatformat:-2 }}" type="number" min="0" disabled></td>
+                                        
+                                        <td>
+                                            <span class="total">{{ item.total_quantity }}</span></td>
+									</tr>
+                                {% endfor %}
+									</thead>
+							<tbody>
+<!--							<tr id="hiderow">-->
+<!--								<td colspan="4">-->
+<!--									<a id="addRow" href="javascript:;" title="Add Item" class="btn btn-primary">Add Item</a> <span class="item-error" style="color: red; display: none">please add Item</span>-->
+<!--								</td>-->
+<!--							</tr>-->
+							<tr>
+								<td></td>
+								<td></td>
+								<td class="text-right"><strong>Total</strong></td>
+								<td><span id="subtotal">0.00</span></td>
+							</tr>
+							<tr hidden>
+								<td><strong>Total Quantity: </strong><span id="totalQty" style="color: red; font-weight: bold">{{ invoice.qty|floatformat:-2 }}</span> Units</td>
+								<td></td>
+								<td  class="text-right"><strong>Discount</strong></td>
+								<td><input class="form-control" id="discount" value="0" type="text"></td>
+							</tr>
+							<tr hidden>
+								<td></td>
+								<td></td>
+								<td class="text-right"><strong>Shipping</strong></td>
+								<td><input class="form-control" id="shipping" value="0" type="text"></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td class="text-right"><strong>Grand Total</strong></td>
+								<td><span id="grandTotal" style="color:red">0</span></td>
+							</tr>
+                            <tr>
+								<td></td>
+								<td></td>
+								<td class="text-right"><strong>Mantant payé</strong></td>
+								<td><input class="form-control" id="paidAmount" value="{{ invoice.paid_amount|floatformat:-2 }}" type="text"></td>
+							</tr>
+                            <tr>
+								<td></td>
+								<td></td>
+								<td class="text-right"><strong>Reste</strong></td>
+								<td><span id="remainingAmount">{{ invoice.remaining_amount|floatformat:-2 }}</span></td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-primary paid">
+                            Payé
+                        </button>
+                        <a id="invoice_update" href="javascript:;" title="Update Invoice" class="btn btn-primary pull-right">Enregistrer</a>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+	<script src="{% static 'js/jquery.invoice.js' %}"></script>
+	<script>
+        // $('.qty').each((i, el)=>{
+        //     inp=$(el)
+        //     oldqty=inp.val()
+        //     inp.attr('max', parseFloat($(el).parent().parent().text())+parseFloat($(el).val()))
+        //     inp.on('input', ()=>{
+        //         console.log('ttt')
+        //         max=parseFloat(inp.attr('max'))
+        //         if (inp.val()>max || inp.val()==''){
+
+        //             // inp.val(max)
+        //             inp.css({
+        //                 'border':'1px solid red'
+        //             })
+                    
+        //         }else{
+        //             inp.css({
+        //                 'border':'1px solid green'
+        //             })
+        //         }
+        //     })
+        // })
+        
+        
+        $('.paid').on('click', ()=>{
+            let total=$('#grandTotal').text()
+            // assign total to received
+            $('#paidAmount').val(total)
+        })
+		jQuery(document).ready(function(){
+			jQuery().invoice({
+				addRow : "#addRow",
+				delete : ".delete",
+				parentClass : ".item-row",
+
+				price : ".price",
+				qty : ".qty",
+				total : ".total",
+				totalQty: "#totalQty",
+
+				subtotal : "#subtotal",
+				discount: "#discount",
+				shipping : "#shipping",
+				grandTotal : "#grandTotal",
+
+                remainingAmount: '#remainingAmount',
+                paidAmount: '#paidAmount'
+			});
+
+		});
+        $(function () {
+
+           
+            $('#invoice_update').on('click', function () {
+                // $('.qty').each((i, e)=>{
+                //     max=parseFloat($(e).attr('max'))
+                //     if($(e).val()=='' || $(e).val()==oldqty || $(e).val()>max){
+                //         $(e).css({
+                //             'border':'1px solid red'
+                //         })
+                //         error=true
+                //     }
+                // })
+                // if ($('#item-name').hasClass('item-name') == false ) {
+                //     $('.item-error').show();
+                //     return;
+                // }
+                
+                // if (error == true){
+                //     return;
+                // }
+                // var customer_name = $('.customer_name').val();
+                // var customer_phone = $('.customer_phone').val();
+                // var items = [];
+                // var total_quantity = 0;
+                // for (var i=1; i<$('.item-row').length; i+=1) {
+                //     var products = {};
+                //     products['item_name'] = $('.item-row').eq(i).find('#invoice-item').val();
+                //     products['price'] = $('.item-row').eq(i).find('.price').val();
+                //     products['qty'] = $('.item-row').eq(i).find('.qty').val();
+                //     products['perdiscount'] = $('.item-row').eq(i).find('.perdiscount').val();
+                //     products['total'] = $('.item-row').eq(i).find('.total').text();
+                //     products['item_id'] = $('.item-row').eq(i).find('#item-id').val();
+                //     products['id'] = $('.item-row').eq(i).find('#product-id').val();
+                //     if ($('.item-row').eq(i).find('#invoice-item').val() != "") {
+                //         items.push(products);
+                //         total_quantity += Number(products['qty']);
+                //     }
+                // }
+                // var sub_total = $('#subtotal').text();
+                // var discount = $('#discount').val();
+                // var shipping = $('#shipping').val();
+                // var grand_total = $('#grandTotal').text();
+                var remaining_amount = $('#remainingAmount').text();
+                var paid_amount = $('#paidAmount').val();
+                // var totalQty = total_quantity;
+
+                $.post("{% url 'sales:update_invoice_api' %}", {
+                    remaining_amount: remaining_amount,
+                    paid_amount: paid_amount,
+                    invoice_id: $('[name=invoiceid]').val(),
+                    }, function (result, status) {
+                        window.location.href = '/sales/invoice/'+ result.invoice_id +/detail/;
+                    }
+                ).fail(function (xhr, status, errors) {
+                    alert('Something is wrong! please check all fields and try again');
+
+                });
+            });
+
+            $('.new-customer').on('click', function () {
+                $('.existing-customer').hide();
+                $('.new-customer-form').show();
+                $('.customer').val('');
+            });
+
+            $('.added-customer').on('click', function () {
+                $('.existing-customer').show();
+                $('.new-customer-form').hide();
+                $('.customer_name').val('');
+                $('.customer_phone').val('');
+            });
+
+        });
+        $('.btn-primary').on('click', function () {
+            $('.item-error').hide();
+        });
+
+	</script>
+<script>
+$('#create-invoice').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 1000);
+});
+
+$('.form-control').click (function () {
+    $('.list-error').hide();
+    checkDec(this);
+
+});
+
+function checkDec(el){
+	 var ex = /^[0-9]+\.?[0-9]*$/;
+	 if(ex.test(el.value)==false){
+		 el.value = el.value.substring(0,el.value.length - 1);
+	 }
+ }
+    </script>
+<script>
+
+$('#invoice').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+
+{% endblock %}

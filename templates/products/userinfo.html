@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+{% load static %}
+
+
+{% block content %}
+<div>
+    <div class="bg-white p-2 shadow row">
+        <div class="col-3">
+            <!-- add user form -->
+            <h3>
+                Modifeir utilisateur
+            </h3>
+            <form action="/product/edituseruser/{{user.id}}">
+                <div>
+                    <label>Username</label>
+                    <input type="text" class="form-control" name="username" value="{{user.username}}" required>
+                </div>
+                <div>
+                    <label>Mot de passe</label>
+                    <input type="text" class="form-control" name="password" required>
+                </div>
+                <button class="btn btn-success w-100">Ajouter</button>
+            </form>
+        </div>
+
+        <div class="col-9 row">
+            <!-- PRODUITS -->
+            <div class="col-6">
+                <h4>
+                    Produits
+                </h4>
+                <table style="font-size:17px;" class="table table-bordered table-dark">
+                    <tr>
+                        <td>Voir list produits</td>
+                        <td class="bg-{%if userprofile.canseeproduits%}success{%endif%}" ondblclick="updatepermission(event, 'canseeproduits')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir produit info</td>
+                        <td class="bg-{%if userprofile.canviewproduct%}success{%endif%}" ondblclick="updatepermission(event, 'canviewproduct')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter un produit</td>
+                        <td class="bg-{%if userprofile.canaddproduct%}success{%endif%}" ondblclick="updatepermission(event, 'canaddproduct')"></td>
+                    </tr>
+                    <tr>
+                        <td>Modifier les produits</td>
+                        <td class="bg-{%if userprofile.caneditproducts%}success{%endif%}" ondblclick="updatepermission(event, 'caneditproducts')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter les categories</td>
+                        <td class="bg-{%if userprofile.canaddcategory%}success{%endif%}" ondblclick="updatepermission(event, 'canaddcategory')"></td>
+                    </tr>
+                    <tr>
+                        <td>Supprimer les categories</td>
+                        <td class="bg-{%if userprofile.candeletecategory%}success{%endif%}" ondblclick="updatepermission(event, 'candeletecategory')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter excel categories</td>
+                        <td class="bg-{%if userprofile.canaddbulkcategory%}success{%endif%}" ondblclick="updatepermission(event, 'canaddbulkcategory')"></td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Voir List Marques</td>
+                        <td class="bg-{%if userprofile.canseelistmarks%}success{%endif%}" ondblclick="updatepermission(event, 'canseelistmarks')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir Alert stock</td>
+                        <td class="bg-{%if userprofile.canseealerts%}success{%endif%}" ondblclick="updatepermission(event, 'canseealerts')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir Produits commandée</td>
+                        <td class="bg-{%if userprofile.canseecommandes%}success{%endif%}" ondblclick="updatepermission(event, 'canseecommandes')"></td>
+                    </tr>
+                    
+                        
+                    
+                </table>
+            </div>
+            <!-- SUPPLIERS -->
+            <div class="col-6">
+                <h4>
+                    fournisseurs
+                </h4>
+                <table style="font-size:17px;" class="table table-bordered table-dark">
+                    <tr>
+                        <td>Voir fournisseurs</td>
+                        <td class="bg-{%if userprofile.canseesuppliers%}success{%endif%}" ondblclick="updatepermission(event, 'canseesuppliers')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir fournisseur info</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter un frournisseur</td>
+                        <td class="bg-{%if userprofile.canaddsupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canaddsupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Modifier fournisseur</td>
+                        <td class="bg-{%if userprofile.caneditsupplier%}success{%endif%}" ondblclick="updatepermission(event, 'caneditsupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Creer avoir fournisseur</td>
+                        <td class="bg-{%if userprofile.cancreateavoirsupp%}success{%endif%}" ondblclick="updatepermission(event, 'cancreateavoirsupp')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir List Bons Achat</td>
+                        <td class="bg-{%if userprofile.canseelistbonsachat%}success{%endif%}" ondblclick="updatepermission(event, 'canseelistbonsachat')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter reglement frournisseur</td>
+                        <td class="bg-{%if userprofile.canaddreglsupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canaddreglsupplier')"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Modifier les Bons Achat</td>
+                        <td class="bg-{%if userprofile.caneditbonachat%}success{%endif%}" ondblclick="updatepermission(event, 'caneditbonachat')"></td>
+                    </tr>
+                    <tr>
+                        <td>Creer les Bons Achat</td>
+                        <td class="bg-{%if userprofile.cancreatebonachat%}success{%endif%}" ondblclick="updatepermission(event, 'cancreatebonachat')"></td>
+                    </tr>
+                </table>
+            </div>
+            <!-- ventes -->
+            <div class="col-6">
+                <h4>
+                    Ventes
+                </h4>
+                <table style="font-size:17px;" class="table table-bordered table-dark">
+                    <tr>
+                        <td>Voir Liste des bons</td>
+                        <td class="bg-{%if userprofile.canseelistbons%}success{%endif%}" ondblclick="updatepermission(event, 'canseelistbons')"></td>
+                    </tr>
+                    <tr>
+                        <td>Creer bon comptoir</td>
+                        <td class="bg-{%if userprofile.cancreatecomptoir%}success{%endif%}" ondblclick="updatepermission(event, 'cancreatecomptoir')"></td>
+                    </tr>
+                    <tr>
+                        <td>Creer bon sortie</td>
+                        <td class="bg-{%if userprofile.cancreatebon%}success{%endif%}" ondblclick="updatepermission(event, 'cancreatebon')"></td>
+                    </tr>
+                    <tr>
+                        <td>Modifier bon sortie</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Creer Avoir client</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Modifeir Avoir client</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    
+                </table>
+            </div>
+            
+            <!-- clients -->
+            <div class="col-6">
+                <h4>
+                    Clients
+                </h4>
+                <table style="font-size:17px;" class="table table-bordered table-dark">
+                    <tr>
+                        <td>Voir Liste des client</td>
+                        <td class="bg-{%if userprofile.canseesuppliers%}success{%endif%}" ondblclick="updatepermission(event, 'canseesuppliers')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir client info</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Modifier client info</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    <tr>
+                        <td>Ajouter reglement client</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    
+                </table>
+            </div>
+
+            <!-- clients -->
+            <div class="col-6">
+                <h4>
+                    Caisse
+                </h4>
+                <table style="font-size:17px;" class="table table-bordered table-dark">
+                    <tr>
+                        <td>Voir Caisse interne</td>
+                        <td class="bg-{%if userprofile.canseesuppliers%}success{%endif%}" ondblclick="updatepermission(event, 'canseesuppliers')"></td>
+                    </tr>
+                    <tr>
+                        <td>Voir Caisse externe</td>
+                        <td class="bg-{%if userprofile.canseesuppliers%}success{%endif%}" ondblclick="updatepermission(event, 'canseesuppliers')"></td>
+                    </tr>
+                    <tr>
+                        <td>sortie caisse</td>
+                        <td class="bg-{%if userprofile.canseesupplier%}success{%endif%}" ondblclick="updatepermission(event, 'canseesupplier')"></td>
+                    </tr>
+                    
+                    
+                </table>
+            </div>
+            
+            
+
+            
+            
+            
+        </div>
+    </div>
+</div>
+{%endblock%}
+
+{% block scripts %}
+<script>
+    function updatepermission(event, permission){
+        $.get('/product/updatepermission',{
+            'permission':permission, 'userid':'{{user.id}}'}, (data)=>{
+            console.log($(this))
+            $(event.target).toggleClass('bg-success')
+        })
+    }
+</script>
+{% endblock %}

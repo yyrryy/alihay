@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block menu_sales %}active{% endblock %}
+{% block submenu_list_invoice %}active{% endblock %}
+
+{% block content %}
+    <style>
+        .item-row th {
+            background: #eee;
+        }
+        @media print {
+           .table>tbody>tr>td{
+            font-size: 8px;
+            }
+            .table{
+                border: 2px solid #000;
+            }
+        }
+    </style>
+
+    <div class="col-lg-10 col-md-10 col-sm-10">
+        <br>
+
+                                <a href="{% url 'sales:invoice_update' id=invoice.id %}"><button class="btn btn-primary btn-xs editbon" date="{{invoice.created_at|date:'d/m/Y'}}">Modifier</button></a>
+                                <!-- <a href="{% url 'sales:invoice_detail' invoice_id=invoice.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye" title="Invoice list"></i></button></a> -->
+                                <a href="{% url 'sales:facture' pk=invoice.id %}"><button class="btn btn-xs">Facture</button></a>
+                                <a href="{% url 'sales:bon' pk=invoice.id %}"><button class="btn btn-xs">Bon</i></button></a>
+                                
+        <br><br><br>
+        <div class="bg-white rounded shadow" id="print-invoice" style="padding: 10px">
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="d-flex justify-content-between head align-itmes-center">
+                        <div class="d-flex">
+                            
+                            <div>
+                                <h5>
+                                    {{ request.user.retailer_user.retailer.name }}
+                                </h5>
+                                <br>
+                                {% if invoice.customer %}
+                            <div class="pull-left">
+                                <label><strong class="f-size">Client:</strong></label> <span class="f-size">{{ invoice.customer.customer_name }}</span>
+                            </div>
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div>                     
+                        <h6 style="font-size:14px">{{ invoice.created_at|date:"d/m/Y"}}</h6>     
+                        </div>                   
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-12">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="col-md-12 ">
+                            
+                        </div>
+                            <!-- {% if invoice.customer.shop %}
+                                <label><strong class="f-size">Shop Name:</strong></label> <span class="f-size">{{ invoice.customer.shop }}</span><br>
+                            {% endif %} -->
+                            <div class="col-md-12 pull-left">
+                            
+                        </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr class="">
+                                <th >Article</th>
+                                <th style="width: 12%;">Prix unit</th>
+                                <th style="width: 12%;">Qté</th>
+                                <th style="width: 12%;">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in  invoice.purchased_items.all %}
+                                <tr id="hiderow">
+                                    <td >
+                                        {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                                    </td>
+                                    <td>
+                                        {{ item.price}} 
+                                    </td>
+                                    <td >
+                                        {{ item.quantity|floatformat:-2}}
+                                    </td>
+                                    <td >
+                                        {{ item.purchase_amount|floatformat:-2 }} 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% for extra_item in  invoice.extra_items.all %}
+                                <tr id="hiderow">
+                                    <td>
+                                        {{ extra_item.item_name}}
+                                    </td>
+
+                                    <td>
+                                        {{ extra_item.quantity|floatformat:-2}}
+                                    </td>
+                                    <td>
+                                        {{ extra_item.total|floatformat:-2 }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr><td colspan="4" style="color:white"></td></tr>
+{#                            <tr style="border-top: 3px solid">#}
+{#                                <td></td>#}
+{#                                <td class="text-right"><strong >Total</strong></td>#}
+{#                                <td><span id="subtotal">{{ invoice.sub_total|floatformat:-2 }}</span></td>#}
+{#                            </tr>#}
+{#                            <tr>#}
+{#                                <td><strong >Quantity: </strong><span id="totalQty" style="color: red; font-weight: bold; font-size: 8px">{{ invoice.total_quantity }}</span> </td>#}
+{#                                <td class="text-right"><strong >Discount</strong></td>#}
+{#                                <td>{{ invoice.discount|floatformat:-2 }}</td>#}
+{#                            </tr>#}
+{#                            <tr>#}
+{#                                <td></td>#}
+{#                                <td class="text-right" ><strong >Shipping</strong></td>#}
+{#                                <td>{{ invoice.shipping|floatformat:-2 }}</td>#}
+{#                            </tr>#}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <!-- <td class="text-left">
+                                    <span id="remainingAmount">   {{ invoice.remaining_payment|floatformat:-2 }} </span>
+                                    <p >Rest</p>
+                                </td> -->
+                                <!-- <td class="">
+                                    <b id="receivedAmount" >{{ invoice.paid_amount|floatformat:-2 }} Dh
+                                        
+                                    </b>
+                                    <p > المؤدى </p>
+                                </td> -->
+                                <td >
+                                    <b id="grandTotal" style="color: red;">
+                                        {{ invoice.grand_total|floatformat:-2 }} Dh 
+                                    </b>
+                                    <p>
+                                        Total
+                                    </p>
+                                </strong><span id="grandTotal" style="color: red;"></span></td>
+                            
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-auto">
+                
+                <div class="col-xs-12 col-md-12" style="text-align: center;">
+                    
+                </div>
+                <div class="col-lg-6 col-xs-12 border text-center">
+                    <span class="f-size">{{ request.user.retailer_user.retailer.name }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        editbonbtn=$('.editbon')
+        // check if the date of the invoice is today
+        editbonbtn.each(function(){
+            if($(this).attr('date') != new Date().toLocaleDateString()){
+                $(this).addClass('disabled')
+            }else{
+                $(this).removeClass('disabled')
+            }
+        })
+        function PrintInvoice(divName){
+             var printContents = document.getElementById(divName).innerHTML;
+             var originalContents = document.body.innerHTML;
+             document.body.innerHTML = printContents;
+             $('body').addClass('d-flex flex-column vh-100 p-3')
+             $('.head').addClass('')
+             $('table').css('font-size', '9px');
+             $("table > thead > tr > th").css('padding', '0px');
+            $("table > tbody > tr > td").css('padding', '0px');
+             
+             window.print();
+             document.body.innerHTML = originalContents;
+        }
+    </script>
+<script>
+
+$('#invoice').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

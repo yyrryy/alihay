@@ -1,0 +1,393 @@
+{% load template_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <style>
+      @media print {
+         .livraison-holder {
+             height: 27.5cm; /* Slightly less than the maximum printable height */
+             width: 21cm; /* Full width of A4 */
+             border: 1px solid black; /* For debugging and visibility */
+             page-break-after: always; /* Ensures each div starts on a new page */
+             box-sizing: border-box; /* Include padding and border in the element's total width and height */
+         }
+
+         /* Reset margins and paddings for printing */
+         body {
+             margin: 0;
+             padding: 0;
+         }
+         td > div{
+           margin:4px;
+         }
+
+         /* Optional: If you need to adjust margins more precisely */
+         @page {
+             margin: 0; /* Remove any default margins */
+         }
+     }
+    </style>
+    <script src="/static/js/jquery.min.1.7.js"></script>
+    <script src="/static/js/spellingnumbers.js"></script>
+    <link href="/static/css/bootstrap.css" rel="stylesheet" />
+</head>
+<body>
+<div id="printfc{{facture.id}}" style="position:relative;">
+
+  {% for i in orderitems %}
+  {% if forloop.counter == orderitems|length %}
+  <!-- last iteration -->
+  <div class="postion-relative px-5 facture{{facture.id}}holder p-3" style="min-height: 29.7cm;width: 21cm; border:1px solid;">
+    <div class="row border p-2 text-center">
+      <img class="col-3" src="{%if user.retailer_user.retailer.logo%}{{user.retailer_user.retailer.logo.url}}{%endif%}" style="width: 15%">
+      <!-- {{user.retailer_user.retailer.name}} -->
+      <div class="d-flex justify-content-between col-9">
+          <div>
+            <div
+              >Facture N°: <strong>{{facture.facture_no}}</strong>
+            </div>
+            <div>
+              Date: <strong>{{facture.date|date:"d/m/Y"}}</strong>
+            </div>
+          </div>
+          <div>
+            <div>
+              cleint: <strong>{{facture.client.customer_name.upper}} </strong>
+            </div>
+
+
+          </div>
+        </div>
+    </div>
+
+    <!-- facture header 
+    <div class="">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div
+              >Bon N°: <strong>{{facture.facture_no}}</strong>
+            </div>
+            <div>
+              Date: <strong>{{facture.datebon|date:"d/m/Y"}}</strong>
+            </div>
+          </div>
+          <div>
+            <div>
+              cleint: <strong>{{facture.client.customer_name.upper}} </strong>
+            </div>
+
+
+          </div>
+        </div>
+
+
+    </div>-->
+
+    <!-- facture items -->
+    <div class="orderitems mt-3 bg-white rounded p-2 position-relative">
+
+      <table class="table table-bordered fcitems" style="border-color: black;font-family: serif; font-size:13px;">
+        <thead style="font-size: 10px;
+        font-weight: 800;" class="text-center">
+          <tr>
+            <td>Ref</td>
+            <td>Designation</td>
+            <td>Qté</td>
+            <td>P.U</td>
+            <!-- <td style="width: 5%;">Rem</td> -->
+            <td>Mantant</td>
+          </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <td style="padding-left:3px">
+                      {% for v in i %}
+                      {{v.product.ref.upper}}
+                      {% if not forloop.counter == i|length %}<br>{% endif %}
+                      {% endfor %}
+                    </td>
+                  <td style="height: 190mm;white-space: nowrap;padding-left:3px">
+                      {% for v in i %}
+                        {{v.product.car.upper|slice:"50"}}
+                        {% if not forloop.counter == i|length %}<br>{% endif %}
+                      {% endfor %}
+                  </td>
+                  <td class="text-center">
+                    {% for v in i %}
+                    {{v.qty}}
+                    {% if not forloop.counter == i|length %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <td class="text-center">
+                    {% for v in i %}
+                    {{v.price|floatformat:2|intspace}}
+                    {% if not forloop.counter == i|length %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+                  <!-- <td class="text-center">
+                    {% for v in i %}
+                    {{v.remise}}%
+                    {% if not forloop.counter == i|length %}<br>{% endif %}
+                    {% endfor %}
+                  </td> -->
+                  <td class="text-center">
+                    {% for v in i %}
+                    {{v.total|floatformat:2|intspace}}
+                    {% if not forloop.counter == i|length %}<br>{% endif %}
+                    {% endfor %}
+                  </td>
+
+                </tr>
+        </tbody>
+        <tfoot class="text-center">
+
+        </tfoot>
+      </table>
+      
+
+    </div>
+    <div>
+      arrête la presente facture à la somme de: <br>
+        <strong class="frenchword text-uppercase"></strong>
+    </div>
+    <div class="text-center float-end">
+      <table class="table table-bordered">
+        
+        <tr style="font-size: 10px;
+        font-weight: 800;border: 1px solid">
+          <td colspan="10">
+            <strong style="font-size: 13px" >
+              Total HT
+            </strong>
+          </td>
+
+          <td>
+            <strong class="ttcgc{{facture.id}}" style="font-size: 15px">
+              {{facture.ht|floatformat:2|intspace}}
+            </strong>
+          </td>
+        </tr>
+        <tr style="font-size: 10px;
+        font-weight: 800;border: 1px solid">
+          <td colspan="10">
+            <strong style="font-size: 13px" >
+              TVA
+            </strong>
+          </td>
+
+          <td>
+            <strong class="ttcgc{{facture.id}}" style="font-size: 15px">
+              {{facture.tva|floatformat:2|intspace}}
+            </strong>
+          </td>
+        </tr>
+        <tr style="font-size: 10px;
+        font-weight: 800;border: 1px solid">
+          <td colspan="10">
+            <strong style="font-size: 13px" >
+              Total TTC
+            </strong>
+          </td>
+
+          <td>
+            <strong class="ttcgc{{facture.id}}" style="font-size: 15px">
+              {{facture.total|floatformat:2|intspace}} 
+            </strong>
+          </td>
+        </tr>
+      </table>
+      {{text}}
+      <!-- <small>Sold client: {{sold}}DH</small> -->
+    </div>
+    <hr>
+    {{user.retailer_user.retailer.name}} {{user.retailer_user.retailer.address}}<br>TEL: {{user.retailer_user.retailer.phone}} ICE: {{user.retailer_user.retailer.ice}} IF:{{user.retailer_user.retailer.id_fiscal}} TP:{{user.retailer_user.retailer.pt}}
+  </div>
+  {% else %}
+  <div class="postion-relative px-5 facture{{facture.id}}holder p-3" style="min-height: 29.7cm;width: 21cm; border:1px solid;">
+
+    <div class="row border p-2 text-center">
+      <img class="col-3" src="{%if user.retailer_user.retailer.logo%}{{user.retailer_user.retailer.logo.url}}{%endif%}" style="width: 15%">
+      <!-- {{user.retailer_user.retailer.name}} -->
+      <div class="d-flex justify-content-between col-9">
+          <div>
+            <div
+              >Bon N°: <strong>{{facture.facture_no}}</strong>
+            </div>
+            <div>
+              Date: <strong>{{facture.datebon|date:"d/m/Y H:i"}}</strong>
+            </div>
+          </div>
+          <div>
+            <div>
+              cleint: <strong>{{facture.client.customer_name.upper}} </strong>
+            </div>
+
+
+          </div>
+        </div>
+    </div>
+
+    <!-- facture header 
+    <div class="">
+        <div class="d-flex justify-content-between">
+          <div>
+            <div
+              >Bon N°: <strong>{{facture.facture_no}}</strong>
+            </div>
+            <div>
+              Date: <strong>{{facture.datebon|date:"d/m/Y"}}</strong>
+            </div>
+          </div>
+          <div>
+            <div>
+              cleint: <strong>{{facture.client.customer_name.upper}} </strong>
+            </div>
+
+
+          </div>
+        </div>
+
+
+    </div>-->
+
+    <!-- facture items -->
+    <div class="orderitems mt-3 bg-white rounded p-2 position-relative">
+
+      <table class="table table-bordered fcitems" style="border-color: black;font-family: serif; font-size:13px;">
+        <thead style="font-size: 10px;
+        font-weight: 800;" class="text-center">
+          <tr>
+            <td>Ref</td>
+            <td>Designation</td>
+            <td>Qté</td>
+            <td>P.U</td>
+            <!-- <td style="width: 5%;">Rem</td> -->
+            <td>Mantant</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+              <td style="padding-left:3px">
+                {% for v in i %}
+                {{v.product.ref.upper}}
+                {% if not forloop.counter == i|length %}<br>{% endif %}
+                {% endfor %}
+              </td>
+            <td style="height: 190mm;white-space: nowrap;padding-left:3px">
+                {% for v in i %}
+                  {{v.product.car.upper|slice:"50"}}
+                  {% if not forloop.counter == i|length %}<br>{% endif %}
+                {% endfor %}
+            </td>
+            <td class="text-center">
+              {% for v in i %}
+              {{v.qty}}
+              {% if not forloop.counter == i|length %}<br>{% endif %}
+              {% endfor %}
+            </td>
+            <td class="text-center">
+              {% for v in i %}
+              {{v.price|floatformat:2|intspace}}
+              {% if not forloop.counter == i|length %}<br>{% endif %}
+              {% endfor %}
+            </td>
+            <!-- <td class="text-center">
+              {% for v in i %}
+              {{v.remise}}%
+              {% if not forloop.counter == i|length %}<br>{% endif %}
+              {% endfor %}
+            </td> -->
+            <td class="text-center">
+              {% for v in i %}
+              {{v.total|floatformat:2|intspace}}
+              {% if not forloop.counter == i|length %}<br>{% endif %}
+              {% endfor %}
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- facture footer -->
+
+
+
+  </div>
+  {% endif %}
+  {% endfor %}
+
+</div>
+
+<script src="/static/js/spellingnumbers.js"></script>
+<script>
+
+  
+    $('.frenchword').text($.spellingNumber({{facture.total|floatformat:2}}, {
+    lang:'fr',
+    wholesUnit:"Dirhams",
+    fractionUnit:"cents",
+    digitsLengthW2F: 2,
+    decimalSeperator:"et"
+
+  }))
+    function entete(){
+      if ($('.factureheader').hasClass('show')) {
+        $('.factureheader').removeClass('show')
+        $('.factureheader').css('visibility', 'hidden')
+        $('.bgfacture').removeClass('show')
+        $('.bgfacture').css('visibility', 'hidden')
+        localStorage.setItem('showentete', false)
+      }
+      else{
+        $('.factureheader').addClass('show')
+        $('.factureheader').css('visibility', 'visible')
+        $('.bgfacture').addClass('show')
+        $('.bgfacture').css('visibility', 'visible')
+        localStorage.setItem('showentete', true)
+      }
+
+    }
+    showentete=localStorage.getItem('showentete')||true
+    if (showentete == 'true') {
+      $('.factureheader').addClass('show')
+      $('.factureheader').css('visibility', 'visible')
+      $('.bgfacture').addClass('show')
+      $('.bgfacture').css('visibility', 'visible')
+    }
+    else{
+      $('.factureheader').removeClass('show')
+      $('.factureheader').css('visibility', 'hidden')
+      $('.bgfacture').removeClass('show')
+      $('.bgfacture').css('visibility', 'hidden')
+    }
+    function separateThousands(number) {
+      console.log(number)
+    // Split the number into integer and decimal parts
+      const parts = number.toString().split('.');
+      const integerPart =  parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+      if (parts[1]) {
+        decimalpart=Number(parts[1]).toFixed(2)
+        return integerPart + '.' + parts[1];
+      } else {
+        return Number(integerPart).toFixed(2);
+      }
+  }
+    /*$('.ttcgc{{facture.id}}').text(separateThousands('{{facture.total|floatformat:2|intspace}}'))
+    $('.tvafc{{facture.id}}').text(separateThousands({{tva|floatformat:2|intspace}}))
+    $('.htfc{{facture.id}}').text(separateThousands({{ht|floatformat:2|intspace}}))*/
+     $('.totalfactureprint').text($.spellingNumber('{{facture.grand_total|floatformat:2}}', {
+      lang:'fr',
+      wholesUnit:"Dirhams",
+      fractionUnit:"Centimes",
+      digitsLengthW2F: 2,
+      decimalSeperator:"et"
+
+    }).toUpperCase())
+</script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+{% block content %}
+
+<div class="table-responsive row">
+
+
+    <!-- products -->
+    <div class="col-md-9 position-relative" style="height: 75vh; overflow-y: scroll;">
+        <div class="bg-white shadow rounded p-2">
+            <div class="loadertable d-flex justify-content-center align-items-center" style="
+            position: absolute;
+            z-index: 9999;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000007d;
+        ">
+            <div class="spinner-border text-white" role="status">
+
+            </div>
+            </div>
+            <div class="d-flex justify-content-between bg-dark rounded shadow p-2">
+
+
+                <select name="supplier" class="form-select select2 col-5">
+                    <option value="0">
+                        Fournisseur
+                    </option>
+                    {% for i in suppliers %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {%  endfor %}
+                </select>
+                <div class="col-5">
+                    <input type="text" class="form-control search-invoice" placeholder="Rechercher " data-catgoryid="1">
+                </div>
+            </div>
+            <table class="mb-5 table table-bordered table-advance item-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Marque
+                        </th>
+                        <th class="text-center" style="width: 45%;"><i class="fa fa-bullhorn"></i> Article</th>
+                        <!-- <th class="text-center"><i class=" fa fa-bookmark"></i> Unit</th> -->
+                        <th class="text-center"><i class=" fa fa-bookmark"></i> Fourn. origin</th>
+			<th class="text-center"><i class=" fa fa-bookmark"></i> Stock</th>
+                        <!-- <th class="text-center"><i class=" fa fa-edit"></i> Purchased Items</th>
+                        <th class="text-center"><i class=" fa fa-edit"></i> Bar Code</th> -->
+                        <th class="text-center"></th>
+
+                    </tr>
+                    </thead>
+                    <tbody class="product-table-body ">
+
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        
+        <div class="bg-white shadow rounded p-2">
+            <ul id="compositions-list" class="pure-tree main-tree">
+                <input type="text" class="form-control searchcategories sticky-top" placeholder="Chercher les categories">
+                <div class="searchresults">
+    
+                </div>
+                    {% for i in categories %}
+                    <li class="pure-tree_link">
+    
+                        <a href="#" class="categoriesbtn  d-flex justify-content-between" data-catgoryid="{{i.id}}">
+                            <b>
+                                {{i.name}} ({{i.total_products }})
+                            </b>
+                            <button class="disabled btn-xs btn text-primary fa fa-question"></button>
+                        </a>
+    
+                    </li>
+                    {% endfor %}
+            </ul>
+        </div>
+
+
+    </div>
+
+    
+
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    // $('.searchref').focus()
+    const command=()=>{
+        $('.qtycommand').each((i, el)=>{
+        
+        $(el).on('change', ()=>{
+        console.log('changes')
+        let itemid=$(el).data('id')
+        let categoryid=$(el).data('categoryid')
+        let supplier=$('[name="supplier"]').val()
+        if(supplier==0){
+            $(el).css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $(el).css({
+                'border': '1px solid green'
+            })
+	
+        qty=$(el).parent().find('.qtycommand').val()
+        if (qty=='' || qty==0){
+            $(el).parent().find('.qtycommand').css({
+                'border': '1px solid red'
+            })
+            return
+        }
+        $.ajax({
+            url: "{% url 'product:commandproduct' %}",
+            type: "POST",
+            data: {
+                'itemid': itemid,
+                'qty': qty,
+                'supplier': supplier,
+                'categoryid': categoryid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                if(data.valid){
+                    //$('.ordered').text(parseInt($('.ordered').text())+1)
+                    //getlowbycategory(categoryid)
+                    $(el).parent().html(`<i class="fa fa-check text-success fa-2x"></i><button class="fa fa-times text-danger fa-2x cancelcommand" id="${itemid}"></button>`)
+                }
+                else{
+                    alert('Erreur')
+                }
+            }
+        })
+    })
+    })
+    }
+    
+   function getlowbycategory(categoryid){
+    $('.loadertable').addClass('d-block').removeClass('d-none')
+    $.ajax({
+    url: "{% url 'product:getlowinarr' %}",
+    type: "POST",
+    data: {
+        'category': categoryid,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    success: function (data) {
+        $('.loadertable').addClass('d-none').removeClass('d-block')
+        $('.product-table-body').html(data.data)
+        command()
+        }
+    })
+
+}
+
+    $(document).ready(()=>{
+        let cards = document.querySelectorAll('.pure-tree_link')
+
+        function liveSearch() {
+            let search_query = document.querySelector(".searchcategories").value;
+            console.log(search_query)
+            //Use innerText if all contents are visible
+            //Use textContent for including hidden elements
+            for (var i = 0; i < cards.length; i++) {
+                if(cards[i].textContent.toLowerCase()
+                        .includes(search_query.toLowerCase())) {
+                            console.log(cards[i])
+                            cards[i].classList.remove("d-none");
+                } else {
+                    cards[i].classList.add("d-none");
+                }
+            }
+        }
+
+    //A little delay
+    let typingTimer;               
+    let typeInterval = 500;  
+    let searchInput = document.querySelector('.searchcategories');
+
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(liveSearch, typeInterval);
+    });
+        // show only li with showthis (old method)
+        // $('.pure-tree_link').each((i, el)=>{
+        //     let btn = $(el).find('.showthis')
+        //     if (btn.length){
+        //         $(el).show()
+        //     }else $(el).hide()
+        // })
+
+// function to get products by category
+    if ($('.categoriesbtn').length){
+        console.log('rr')
+        $('.categoriesbtn').first().addClass('categoryactive')
+        $('.categorynameholder').text($('.categoriesbtn').first().text())
+        // get the first category products
+        getlowbycategory($('.categoriesbtn').first().data('catgoryid'))
+    }
+
+
+    // old code to command
+    $(window).on('click', (e)=>{
+    //     if(e.target.classList.contains('rrr')){
+    //         el=$(e.target)
+    //         let itemid=el.data('id')
+    //         let categoryid=el.data('categoryid')
+    //         let supplier=el.parent().find('[name="supplier"]').val()
+
+    //         if(supplier==0){
+    //             el.parent().find('select').css({
+    //                 'border': '1px solid red'
+    //             })
+    //             return
+    //         }
+    //         el.parent().find('select').css({
+    //                 'border': '1px solid green'
+    //             })
+    //         $.ajax({
+    //             url: "{% url 'product:commandproduct' %}",
+    //             type: "POST",
+    //             data: {
+    //                 'itemid': itemid,
+    //                 'supplier': supplier,
+    //                 'categoryid': categoryid,
+    //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //             },
+    //             success: function (data) {
+    //                 if(data.valid){
+    //                     $('.ordered').text(parseInt($('.ordered').text())+1)
+    //                     getlowbycategory(categoryid)
+    //                     // el.parent().html(`<i class="fa fa-check text-success fa-2x"></i><button class="fa fa-times text-danger fa-2x cancelcommand" id="${itemid}"></button>`)
+    //                 }
+    //                 else{
+    //                     alert('Erreur')
+    //                 }
+    //             }
+    //         })
+    //     }
+        if(e.target.classList.contains('cancelcommand')){
+            el=$(e.target)
+            id=el.attr('id')
+            categoryid=el.attr('categoryid')
+            $.ajax({
+                url: "{% url 'product:cancelcommande' %}",
+                type: "POST",
+                data: {
+                    'id': id,
+                    'categoryid': categoryid,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if(data.valid){
+                        $('.ordered').text(parseInt($('.ordered').text())-1)
+                        //getlowbycategory(categoryid)
+                        el.parent().html(`
+                        <div class="">
+                                <input placeholder="Quantité" type="number" class="form-control qtycommand" data-id="${id}" data-categoryid="${categoryid}">
+                                
+                               
+                            </div>
+                        `)
+                        //
+                    }
+                    else{
+                        alert('Erreur')
+                    }
+                }
+            })
+        }
+    })
+
+
+
+
+// categories btns handler
+
+
+// to szich categories
+$('.categoriesbtn').each((i, el)=>{
+    $(el).on('click', ()=>{
+        $('.categoriesbtn').removeClass('categoryactive')
+        let catgoryid=$(el).data('catgoryid')
+        $('.categorynameholder').text($(el).text())
+        $('.name_search').data('catgoryid', catgoryid)
+        $(el).addClass('categoryactive')
+        // ajax to get low by category
+        getlowbycategory(catgoryid)
+    })
+})
+
+
+
+})
+
+</script>
+{% endblock %}

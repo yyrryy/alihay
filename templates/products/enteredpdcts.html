@@ -1,0 +1,11 @@
+{% for i in products %}
+<tr class="item-row">
+    <td id="item-name" class="item-name"><div class="delete-btn d-flex justify-content-between"><div class="invoice-item" id="invoice-item">{{i.ref}} - {{i.category.name}} - {{i.mark}}</div></div></td>
+    <td class="stock">{{i.stock}}</td>
+    <td><input value="0" class="form-control qty calculate" placeholder="Quantity" type="number"></td>
+    <td><input value="0" class="form-control price calculate" placeholder="Price" type="number" step=0.01> </td>
+    <td><input value="0" class="form-control remise calculate" placeholder="Rmise" type="number" step=0.01> </td>
+    <td><span class="total">0.00</span></td>
+    <input type="hidden" class="productid" value={{i.id}}><td><i class="btn btn-danger delete" title="Supprimer">X</i></td>
+</tr>
+{% endfor %}

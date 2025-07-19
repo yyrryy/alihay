@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+{% block content %}
+
+
+
+<div class="row mt-5">
+    <div class="col-4">
+        <div class="shadow rounded bg-white p-3 position-relative">
+            <div class="d-flex align-items-center">
+                <input type="text" class="form-control vinnumberinpt" placeholder="VIN number">
+                <button class="btn fa fa-search getvindatabtn"></button>
+            </div>
+            <div class="loadercar justify-content-center align-items-center d-none" style="
+            position: absolute;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000007d;
+            ">
+                <div class="spinner-border text-white" role="status">
+                    
+                </div>
+            </div>
+            <div class="carvin">
+
+            </div>
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="shadow rounded bg-white p-3 mb-2">
+            <!-- <strong>Categorie</strong> -->
+            <div class="categoriesholder d-none">
+                <select class="select2 form-select categoriesselect">
+                    <option value="0">Categorie</option>
+                {% for i in categories %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+                <table class="mt-5 table table-bordered table-advance item-table">
+                    
+                    <hr>
+                    <thead>
+                    <tr>
+                        <th style="width: 25%;">Ref</th>
+                        <th>Article</th>
+                        <th>Marque</th>
+                        <th>Veh.</th>
+                        <th>Frn.</th>
+                        <th>Stock</th>
+                        <th>Prix acht</th>
+                        <th>Prix ventes</th>
+                        <th style="width: 10%;">Sortie</th>
+                    </tr>
+                    </thead>
+                    <tbody class="product-table-body text-center product_search_result">
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+    let jj=localStorage.getItem('darkMode')
+    const getproductbycategoryforvin=()=>{
+        
+        $('.categoriesselect').on('change', function(){
+            var make = $('tbody').find('td').filter(function() { 
+                return $(this).prev().text() === 'Make'; 
+            }).text();
+
+            var model = $('tbody').find('td').filter(function() { 
+                return $(this).prev().text() === 'Model'; 
+            }).text();
+
+            var year = $('tbody').find('td').filter(function() { 
+                return $(this).prev().text() === 'Model year'; 
+            }).text();
+            if($(this).val()!=0){
+                categoryid=$(this).val()
+                $.ajax({
+                    'url': "{% url 'product:getproductbycategoryforvin' %}",
+                    'type': 'POST',
+                    'data': {
+                        'csrfmiddlewaretoken': "{{ csrf_token }}",
+                        'make': make,
+                        'model': model,
+                        'year': year,
+                        'categoryid': categoryid
+                    },
+                    'dataType': 'json',
+                    'success': function(data){
+                        $('.product_search_result').html(data.data)
+                    }
+                })
+            }
+            
+        })
+        // ajax request
+        
+        
+    }
+    $(document).ready(()=>{
+        $('.getvindatabtn').on('click', function(){
+            if($('.vinnumberinpt').val().length == 17){
+                $('.loadercar').removeClass('d-none').addClass('d-flex')
+                $('.categoriesholder').removeClass('d-flex').addClass('d-none')
+                $('.product_search_result').html('')
+                $('.vinnumberinpt').css('border', '1px solid green')
+                $.ajax({
+                    url: "{% url 'product:getvindata' %}",
+                    type: "POST",
+                    data: {
+                        "csrfmiddlewaretoken": "{{ csrf_token }}",
+                        "vin": $('.vinnumberinpt').val()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        $('.loadercar').removeClass('d-block').addClass('d-none')
+                        $('.carvin').html(data.data)
+                        console.log(jj)
+                        if (jj=='true'){
+                            $('table').addClass('table-dark')
+                        }else{
+                            $('table').removeClass('table-dark')
+                        }
+                        $('.categoriesholder').removeClass('d-none').addClass('d-block')
+                        getproductbycategoryforvin()
+                    }
+                })
+            }else{
+                $('.vinnumberinpt').css('border', '1px solid red')
+                alert('VIN number must be 17 characters')
+            }
+        })
+    });
+</script>
+{% endblock %}

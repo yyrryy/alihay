@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="col-md-12">
+        <br>
+       
+        <a href="{% url 'product:stockin_list' product_id=object.product.id %}"><button type="button" id="stock-in" class="btn btn-primary fa fa-arrow-left" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a>
+        <br><br><br>
+        <div class="content-panel p-2">
+            <h3 class="text-center">{{ object.product.name|title }} Modifier l'entrée</small> </h3>
+            <div class="panel-body">
+                <form class="form-horizontal product_item_form" action="#" method="post" autocomplete="off">
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <label><strong>Quantité</strong></label>
+                            <input type="text"  class="form-control quantity"  name="quantity" id="quantity" value="{{ object.quantity }}"><br>
+                        </div>
+                        <div class="col-md-6">
+                            {% csrf_token %}
+                            
+                            <input type="hidden" name="purchased_item" value="0">
+                            <input type="hidden" name="product" value="{{ object.product.id }}">
+                            <input type="hidden" name="retail_price" value="0">
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <button type="submit"  class="btn btn-primary product-sub-btn" style="width: 100%" >Enregister</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function(){
+
+            $('.buying_price_item').on('change', function(){
+                $('.total_buying_amount').val(Number($(this).val()) * Number($('.quantity').val()));
+            });
+
+            $('.quantity').on('change', function(){
+                if ($('.buying_price_item').val()) {
+                    $('.total_buying_amount').val(Number($('.buying_price_item').val()) * Number($(this).val()));
+                }
+                if ($('.price_per_item').val()) {
+                    $('.total_amount').val(Number($('.price_per_item').val()) * Number($(this).val()));
+                }
+            });
+
+        });
+        function sum() {
+            var txtFirstNumberValue = document.getElementById('quantity').value;
+            var txtSecondNumberValue = document.getElementById('price_per_item').value;
+            var result = parseInt(txtFirstNumberValue) * parseInt(txtSecondNumberValue);
+            if (!isNaN(result)) {
+                document.getElementById('total_amount').value = result;
+            }
+        }
+    </script>
+<script>
+$('#stock-in').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+$('#back-product').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

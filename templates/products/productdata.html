@@ -1,0 +1,105 @@
+<h4 class="mb-3 text-white rounded p-3" style="background: black;">
+    Modifier: {{product.ref.upper}} - {{product.mark.name.upper}}
+</h4>
+<img src="{% if product.image %}{{product.image.url}}{% endif %}" class="w-50">
+<form class="add-product-form update-product-form p-3" action="/product/updateproduct/{{product.id}}" method="post" autocomplete="off" enctype="multipart/form-data">
+    <div class="checkerror text-danger d-none">Deja existe</div>
+    <div class="form-group">
+        <input type="hidden" name="thiscategory">
+        <div class="col-sm-12">
+            {% csrf_token %}
+            <div class="row mb-2">
+                <div class="col-6 text-start">
+                    <strong for="">Categorie</strong>
+                    <select class="form-select checkref" required type="number" name="updatecategory">
+                        <option value="{{product.category.id}}">
+                            {{product.category.name}}
+                        </option>
+                        {% for i in categories %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 text-start">
+                    <strong> Marque </strong>
+                    <select required name="updatemark" class="form-select checkref">
+                        <option value="{{product.mark.id}}">{{product.mark.name}}</option>
+                        {% for i in marks %}
+                        <option value="{{i.id}}">{{i.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6 text-start">
+                    <strong>Ref</strong>
+                    <input type="text" class="notempty form-control product_name checkref" name="updateref" value="{{product.ref}}">
+                </div>
+                
+                <div class="col-6 text-start">
+                    <strong>
+                        Designation
+                    </strong>
+                    <input type="text" class="notempty form-control" value="{{product.car}}" name="updatecar">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-6 text-start">
+                <strong for="">
+                    Image
+                </strong>
+                <input type="file" class="form-control" name="updateimage"></div>
+                <!-- <div class="col-6 text-start">
+                    <strong> Fornisseur </strong>
+                    <select required name="updateoriginsupp" class="notempty form-select">
+                        <option value="{{product.originsupp.id}}">
+                            {{product.originsupp.name}}
+                        </option>
+                        {% for i in suppliers %}
+                        <option value="{{i.id}}">{{i.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div> -->
+                <div class="col-2 text-start">
+                    <strong>Prix vente gro</strong>
+                <input type="number" class="notempty form-control produc_price" name="updatepricegro" value="{{product.prvente}}">
+                </div>
+                <div class="col-2 text-start">
+                    <strong>Prix vente compt.</strong>
+                <input type="number" class="notempty form-control produc_price" name="updatepricemag" value="{{product.price}}">
+                </div>
+                <div class="col-2 text-start">
+                    <strong>Min stock</strong>
+                <input type="number" class="notempty form-control product_name" name="updateminstock" value="{{product.minstock}}">
+                </div>
+            </div>
+            <div class="row mb-2">
+                
+                
+            </div>
+            
+            
+            <div class="text-start">
+                <br>
+            </div>
+            <div class="mb-2 row">
+                <div class="col-6 text-start"></div>
+                <div class="col-6 text-start"></div>
+            </div>
+           <br>
+            <!-- <strong>Article</strong>
+            <input type="text" class="form-control product_name" name="updatename" value=""><br> -->
+            
+            <!-- <strong> Prix ventes </strong>
+            <input type="number" step="0.01" class="form-control product_name" name="updateprice" value="" ><br> -->
+            
+
+            <input type="hidden" name="retailer" value="{{ request.user.retailer_user.retailer.id }}">
+            
+        </div>
+    </div>
+</form>
+<button type="button" class="btn btn-primary updateproduct-submit-btn w-100" onclick="updateproduct(event, '{{product.id}}')">Enregister</button>
+<div class="updatepdcterror text-danger"></div>

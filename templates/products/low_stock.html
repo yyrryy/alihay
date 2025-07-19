@@ -1,0 +1,96 @@
+<div >
+    
+    <select class="select2 col-6" onchange="filterlow(event)">
+        <option value="">
+            --
+        </option>
+        {% for i in marks %}
+        <option value="{{i.id}}">
+            {{i.name}}
+        </option>
+        {%endfor%}
+    </select>
+</div>
+<table class="mb-5 table table-bordered table-advance item-table">
+    <thead>
+        <tr>
+            <th>
+                Ref
+            </th>
+            <th>
+                Marque
+            </th>
+            <th class="text-center" style="width: 45%;"><i class="fa fa-bullhorn"></i> Article</th>
+            <!-- <th class="text-center"><i class=" fa fa-bookmark"></i> Unit</th> -->
+            <th class="text-center"><i class=" fa fa-bookmark"></i> Fourn. origin</th>
+            <!-- <th class="text-center"><i class=" fa fa-edit"></i> Purchased Items</th>
+            <th class="text-center"><i class=" fa fa-edit"></i> Bar Code</th> -->
+            <th class="text-center"></th>
+
+        </tr>
+        </thead>
+        <tbody class="lowstockbody">
+            {% for item in products %}
+    <!-- 
+        <tr
+        style="background-color: rgb(189, 218, 243);">
+            <td>
+                <strong>
+                    {{item.mark.name.upper}}
+                </strong>
+            </td>
+            <td class="product_name">
+                <i class="text-success fa fa-check-circle fa-2x"></i>
+                <i class="text-danger fa fa-exclamation-circle fa-2x"></i><b>{{item.ref.upper}} - {{ item.category.name.upper}} - {{ item.car.upper }}</b>
+            </td>
+            <td>{{ item.originsupp.name }}</td>
+            <td>
+                <i class="fa fa-check text-success fa-2x"></i> <button class="fa fa-times text-danger fa-2x cancelcommand" id="{{item.id}}" categoryid="{{item.category.id}}"></button> {{item.supplier.name}}
+            </td>
+        </tr>
+     -->
+                    <tr class="mark{{item.mark.id}}">
+                        <td>
+                            <strong>
+                                {{item.ref.upper}}
+                            </strong>
+                        </td>
+                        <td>
+                            <strong>
+                                {{item.mark.name.upper}}
+                            </strong>
+                        </td>
+                        <td class="product_name">
+                            {% if item.command %}<i class="text-success fa fa-check-circle fa-2x"></i>{% endif %}
+                            {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %}  <b>{{ item.category.name.upper}} - {{ item.car.upper }}</b>
+                        </td>
+                        <!-- <td class="#">{{ item.unit_type }}</td> -->
+                        <td>{{ item.originsupp.name }}</td>
+                        
+                            {% if item.command %}
+                            <td>
+                            <i class="fa fa-check text-success fa-2x"></i> <button class="fa fa-times text-danger fa-2x" id="{{item.id}}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '{{item.id}}')"></button> {{item.supplier.name}}
+                            </td>
+                            
+                            
+                            {% else %}
+                            <td>
+                            <div class="">
+                                <input placeholder="Quantité" type="number" class="form-control" data-id="{{item.id}}" data-categoryid="{{item.category.id}}" onchange="commandepdct(event, '{{item.id}}')"">
+                                
+                               
+                            </div>
+                            </td>
+                            {% endif %}
+                            <!-- delete item is commented for now cause of the factorizaation -->
+                            <!-- <button class="btn btn-danger btn-xs deleteproduct" title="Supprimer" data-id="{{item.id}}"><i class="fa fa-trash-o"></i></button> -->
+   
+                            <!-- old code
+                            <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
+                            <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
+                        </td>
+                    </tr>
+        {% endfor %}
+        </tbody>
+</table>
+

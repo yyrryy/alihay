@@ -1,0 +1,6 @@
+{% for i in clients %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ i.customer__customer_name }} </td>
+    </tr>
+{% endfor %}

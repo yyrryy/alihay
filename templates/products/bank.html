@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+{% if  request.user.retailer_user.retailer.bank == 0 %}
+<div class="m-auto w-50">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Sold banque initial</h4>
+        <form action="{% url 'product:addbank' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group mb-2">
+                <input type="number" class="form-control" id="bank" name="bank" placeholder="bank" required>
+            </div>
+            <button type="submit" class="btn btn-outline-danger">Submit</button>
+        </form>
+    </div>
+</div>
+{% else %}
+
+<!-- fixed bootom -->
+<div class="outbankholder p-2 d-none bg-white">
+    <h4 class="bg-primary text-center text-white">
+        Sortie bank
+    </h4>
+    <form action="{% url 'product:outbank' %}" method="post">
+        <strong>Mantant</strong>
+        <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{bank}}')" required>
+        <strong>Raison</strong>
+        <textarea name="raison" class="form-control mb-2" cols="30" rows="10" required></textarea>
+        <div class="form-check form-switch">
+            <input class="form-check-input" name="externe" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">caisse Externe</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" name="charge" type="checkbox" role="switch" id="chargeswitch">
+            <label class="form-check-label" for="chargeswitch">Charges</label>
+        </div>
+        <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+        {% csrf_token %}
+    </form>
+</div>
+<div class="p-3 d-flex justify-content-between">
+    <h5>
+        Solde initial: {{initialbank|floatformat:2}}
+    </h5>
+    <h5>
+        Solde actuel: {{bank|floatformat:2}}
+    </h5>
+    <h5>
+        Solde entré: {{totalbankins|floatformat:2}}
+    </h5>
+    <h5>
+        Solde Sortie: {{totalbankouts|floatformat:2}}
+    </h5>
+    <button class="btn btn-sm bg-danger" onclick="$('.outbankholder').toggleClass('d-none')">+</button>
+    <div>
+        <select name="" id="" class="months"onchange="typeofoutsbank(event)">
+            <option value="">Type de sortie</option>
+            <option value="charge">Charges</option>
+            <option value="extern">Caisse Externe</option>
+        </select>
+        <strong class="totaltype"></strong>
+    </div>
+</div>
+
+<!-- table of bank transaction -->
+<div class="bg-white rounded p-2">
+<table class="table table-bordered table-hove">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Montant entré</th>
+            <th>Montant Sortie</th>
+            <th>Raison</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for i in releve %}
+        <tr style="background:{% if i.1 == 'ins' or i.1 == 'inscl' %}#f0f8df  {%else%}#fae6e6{% endif %};">
+            <td>{{i.0.date|date:'d/m/Y'}}</td>
+            <td>{% if i.1 == 'ins' or i.1 == 'inscl' %} {{i.0.amount|floatformat:2}} {% endif %}</td>
+            <td>{% if i.1 == 'outs' or i.1 == 'outssupp' %} {{i.0.amount|floatformat:2}} {% endif %}</td>
+            <td>
+                {% if i.1 == 'ins' %}
+                Caisse externe
+                {% elif i.1 == 'inscl' %}
+                VEREMENT CLIENT
+                {% else %}
+                {% if i.1 == 'outssupp' %}
+                VEREMENT FOURNISSEUR
+                {% elif i.0.externe %}
+                Distination: caisse externe
+                {% elif i.0.charge %}
+                Distination: Charges
+                {% elif i.0.intern %}
+                Distination: caisse interne
+                {% else %}
+                {{i.0.raison}}
+                {% endif %}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<!--
+<div class="row">
+    <div class="col-6">
+        <div class="bg-white rounded shadow">
+            <div class="">
+                <h5 class="card-header bg-success text-white">ENTREES</h5>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Montant</th>
+					<th>Client</th>
+                                    <th>Raison</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in ins %}
+                                {% if i.1 == 'pay' %}
+                                <tr>
+                                    <td>{{i.0.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{i.0.amount}}</td>
+				<td>{{i.0.client.customer_name}}</td>
+                                    <td>payments</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td>{{i.0.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{i.0.grand_total}}</td>
+                                    <td>Comptoir</td>
+                                    <td>Ventes des produits</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                                {% for ent in comptoir %}
+                                <tr>
+                                    <td>{{ent.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{ent.grand_total}}</td>
+                                    <td>Comptoir</td>
+                                    <td>Ventes des produits</td>
+                                </tr>
+                                {% endfor %}
+                                {% for ent in payments %}
+                                <tr>
+                                    <td>{{ent.created_at|date:'d/m/Y'}}</td>
+                                    <td>{{ent.amount}}</td>
+				<td>{{ent.client.customer_name}}</td>
+                                    <td>payments</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                    </table>
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+
+        <div class="bg-white rounded shadow">
+            <div class="outbankholder p-2 d-none">
+                <h4 class="bg-primary text-center text-white">
+                    Sortie bank interieur
+                </h4>
+                <form action="{% url 'product:outbank' %}" method="post">
+                    <strong>Mantant</strong>
+                    <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{bank}}')">
+                    <strong>Raison</strong>
+                    <textarea name="raison" class="form-control mb-2" cols="30" rows="10"></textarea>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="externe" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">bank Externe</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="charge" type="checkbox" role="switch" id="chargeswitch">
+                        <label class="form-check-label" for="chargeswitch">Charges</label>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div>
+                <h5 class="d-flex justify-content-between card-header bg-danger text-white">
+                    <div>
+                        SORTIES
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light" onclick="$('.outbankholder').toggleClass('d-none')">+</button>
+                    </div>
+                </h5>
+                <div class="card-body">
+                    <strong>Sorties reguliers</strong>
+                  <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Montant</th>
+                                <th>Raison</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for out in outs %}
+                            <tr>
+                                <td>{{out.date|date:'d/m/Y'}}</td>
+                                <td>{{out.amount}}</td>
+                                <td>{{out.raison}}</td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                  </table>
+                  <br>
+                  <strong>Reglement Fournisseur espece</strong>
+                  <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Fournisseur</th>
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for out in supplierspayments %}
+                        <tr>
+                            <td>{{out.date|date:'d/m/Y'}}</td>
+                            <td>{{out.amount}}</td>
+                            <td>{{out.supplier.name}}</td>
+                            <td>Reglement</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                  </table>
+                  <br>
+                  <strong>Avoir Client</strong>
+                  <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Client</th>
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for out in avoirclietns %}
+                        <tr>
+                            <td>{{out.created_at|date:'d/m/Y'}}</td>
+                            <td>{{out.grand_total}}</td>
+                            <td>{{out.customer.customer_name}}</td>
+                            <td>Avoir</td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<!-- out bank modal -->
+<div class="modal fade" id="outbankmodal" tabindex="-1" aria-labelledby="outbankmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form action="{% url 'product:outbank' %}" method="post">
+                <strong>Mantant</strong>
+                <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{bank}}')">
+                <strong>Raison</strong>
+                <textarea name="raison" class="form-control mb-2" cols="30" rows="10"></textarea>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" name="externe" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">bank Externe</label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" name="charge" type="checkbox" role="switch" id="chargeswitch">
+                    <label class="form-check-label" for="chargeswitch">Charges</label>
+                </div>
+                <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                {% csrf_token %}
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<div style="top:0;" class="d-none passwordscreen m-auto position-fixed bg-dark w-100 h-100 d-flex justify-content-center text-white align-items-center">
+    <input type="password" class="form-control w-50" placeholder="Mot de passe" id="password" onkeyup="checkpassword(event)">
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function typeofoutsbank(event){
+        type=$(event.target).val()
+        $.get('/product/typeofoutsbank', {
+            'type':type
+        }, (data)=>{
+            $('.totaltype').text(data.total)
+            console.log(data)
+        })
+        
+    }
+  inactive=localStorage.getItem('inactive')||'1'
+  console.log('>>>>> ', inactive)
+  if (inactive=='1'){
+    console.log('its inactive')
+    $('.passwordscreen').removeClass('d-none')
+    $('.passwordinput').focus()
+  }else{
+    console.log('its not inactive')
+    checkForInactivity(120)
+  }
+    function updatecaise(event){
+        var amount = $(event.target).prev().val();
+        input=$(event.target).prev()
+        if (amount == '' || amount == 0){
+            console.log('eerrrr')
+            input.addClass('border-danger');
+            return;
+        }
+        $.get('/product/updatebank', {'amount': amount}, function(data){
+                location.reload();
+            }
+        )
+    }
+    function checkmax(event, max){
+        console.log(max)
+        if(parseFloat($(event.target).val()) > parseFloat(max) || parseFloat($(event.target).val()) == 0){
+            $(event.target).addClass('is-invalid');
+            //$('[type="submit"]').attr('disabled', 'disabled');
+        }else{
+            $(event.target).removeClass('is-invalid');
+            //$('[type="submit"]').removeAttr('disabled');
+        }
+        if ($(event.target).val() == '' || $(event.target).val() == 0){
+            $('[type="submit"]').attr('disabled', 'disabled');
+        }else{
+            $('[type="submit"]').removeAttr('disabled');
+        }
+    }
+</script>
+{% endblock %}

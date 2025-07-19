@@ -1,0 +1,473 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+
+	</style>
+
+
+<!-- end add client modal -->
+<!-- to distinguish between invoice create and update -->
+
+<div class="row position-relative">
+
+
+<!-- bon articles -->
+    <div class="col-4">
+        <h5 class="bg-white p-2 rounded">
+            Bon Avoir client: {{reseipt_no}}
+        </h5>
+        <div class="bg-white p-2 mt-2">
+            <table class="table table-bordered">
+                <tr>
+                    <td>date</td>
+                    <td>
+                        <input type="date" class="dateavoir form-control">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Client</td>
+                    <td>
+                        <select class="clientselect select2 form-control" style="width: 100%;">
+                            <option value="">---</option>
+                            {% for i in clients %}
+                            <option value="{{i.id}}">{{i.customer_name}} - {{i.customer_phone}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr class="productslistholder d-none">
+                    <td>Produit</td>
+                    <td>
+                        <select style="width: 100%;" name="" id="" class="productslist form-control"></select>
+                    </td>
+                </tr>
+            </table>
+            <!-- <div class="d-flex align-items-center">
+                <h5 class="">date</h5>
+                <input type="date" class="dateavoir form-control">
+            </div>
+            <h5 class="mt-2">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">Client</div>
+                    <select class="clientselect select2 form-control">
+                        <option value="">---</option>
+                        {% for i in clients %}
+                        <option value="{{i.id}}">{{i.customer_name}} - {{i.customer_phone}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+            </h5>
+            <div class="mb-2 productslistholder d-none">
+                <div class="d-flex">
+
+                    <small>Products:</small> <br>
+                    <select style="width: 100%;" name="" id="" class="productslist form-control"></select>
+                </div>
+            </div> -->
+            
+        </div>
+        <div class="mt-2 bg-white p-2 border" style="height: 40vh; overflow-y: scroll;">
+            <hr>
+            <h5>
+                Historique produit
+            </h5>
+            <div class="outs"></div>
+        </div>
+        
+        <!-- <h5 class="rounded shadow p-2 text-white" style="background:black;">
+            N° Bon refference: {{bon.receipt_no}}
+            <input type="text" name="bonid" value="{{bon.id}}" hidden>
+        </h5> -->
+
+        <!-- <div class="mb-2 col-5">
+
+            <div>
+                <select class="form-selsect select2 customer 
+ clientselectbl " name="customer" id="customer">
+                    <option value="0">
+                        Client
+                    </option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.customer_name }} - {{ customer.customer_phone }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div> -->
+    </div>
+    <div class="col-8">
+        <div class="shadow rounded p-2 bg-white">
+            <div class="alert alert-danger text-center item-error" style="display: none;" role="alert">
+                ERROR
+            </div>
+            <!-- <div class="col-md-6 mb-3">
+                <input type="text" class="form-control refexeption refexeptioninp" placeholder="REF exeption">
+                <select class="select2 categoryid w-100 refexeption refexeptioncategory">
+                    {% for i in categories %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                    {% endfor %}
+                </select>
+                <div class="exeptionresults d-flex flex-column">
+
+                </div>
+            </div>
+            <hr> -->
+            <div id="item-data-sc" class="table-responsive item-data-sc" style="height: 75vh; overflow-y: scroll;">
+                
+
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="">
+                        <th style="width: 45%;">Article</th>
+                        <th>Qté. Bon</th>
+                        <th>Prix</th>
+                        <th>Quantité Avoir (Retour)</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody class="itemsbon">
+                    {% for item in bon.purchased_items.all %}
+                    <tr class="item-row ">
+                        <td id="item-name" class="item-name">
+                            <strong class="invoice-item" id="invoice-item">
+                            {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                            </strong>
+                        </td>
+                        <td class="stock">
+                            {{item.quantity}}
+
+                        </td>
+                        <td>
+                            <input readonly value="{{ item.price|floatformat:2}}" class="form-control price" >
+                        </td>
+                        <td>
+                            <input class="form-control qty" placeholder="Quantity" type="number" max="{{ item.quantity}}" onkeyup="checkmax(this)">
+                        </td>
+                        <td>
+                            <span class="total">0</span>
+                        </td><input type="hidden" class="productid" value={{item.product.id}}>
+                        <td>
+                            <i class="btn btn-danger delete" onclick="deletereow(event)">X</i>
+                        </td>
+                    </tr>
+                    <!-- <tr class="item-row">
+                        <td>
+                            {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                        </td>
+                        <td class="stock">
+                            {{item.product.stock|floatformat:-2}}
+                        </td>
+                        <td class="price">
+                            <input type="number" class="form-control price" min="0" value="{{ item.price|floatformat:2}}">
+
+                        </td>
+                        <td >
+                            <input type="number" class="qtyavoir form-control qty" min="0" max="{{ item.quantity|floatformat:-2}}">
+                        </td>
+                        <td class="total">
+
+                        </td>
+                        <input type="hidden" class="productid" value='{{item.product.id}}'>
+                        <td>
+                            <i class="btn btn-danger" title="Supprimer">X</i>
+                        </td>
+                    </tr>  -->
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+
+            </div>
+            <div class="">
+
+                <div class="borders shadow bg-white p-2 rounded">
+                    <div class="table-responsive d-flex justify-content-between">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tbody>
+                            <tr hidden>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><strong>Sub Total</strong></td>
+                                <td><span id="subtotal">0.00</span></td>
+                            </tr>
+                            <tr hidden>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><strong>Discount</strong></td>
+                                <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                            </tr>
+                            <tr hidden>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><strong>Shipping</strong></td>
+                                <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                            </tr>
+                            <tr>
+                                <!-- <td><strong>Total Qty: </strong><span id="totalQty" style="color: red; font-weight: bold">0</span></td> -->
+        
+                                <td class="text-right"><h4>Total: <span id="grandTotal" style="color:red">0</span></h4></td>
+                            </tr>
+        
+        
+                            </tbody>
+                        </table>
+                        <div class="">
+        
+                            <a id="create-invoice" href="javascript:;" title="Create Invoice" class="btn btn-primary w-100 h-100" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Valider</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- bon billing -->
+    
+
+
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/jquery.invoice.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.scannerdetection.js' %}"></script>
+    <script>
+        $('.clientselect').on('change', function(){
+            if ($(this).val()==''){
+                $('.productslistholder').addClass('d-none')
+                return
+            }
+            $('.productslistholder').removeClass('d-none')
+        })
+        if ($('.clientselect').val()=='') {
+            $('.clientselect').css('border-color', 'red');
+        }
+        // jQuery().invoice().init
+        $(function(){
+            $('.productslist').select2({
+                minimumInputLength: 2,
+                placeholder:'Chercher',
+                ajax: {
+                type:'get',
+                dataType: 'json',
+                url: '/product/searchproduct',
+                data: function (params) {
+                    var query = {
+                    term: params.term,
+                    }
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                proccessresults: function (data) {
+                    return {
+                        results:data.results
+                    }
+                },
+                cache:true
+                }
+            });
+        })
+
+        // productslist on chaneg
+        $('.productslist').on('change', function(){
+            // get product client id
+            let clientid=$('.clientselect').val()
+            let [ref, car, p, stock, productid, remise, prnet]=$(this).val().split('§')
+            let ids = $('.productid').map(function() {
+                return parseInt($(this).val());
+            }).get();
+            console.log('>> ids', ids, productid)
+            if (ids.includes(parseInt(productid))){
+                alertify.error('Produit déja ajouté')
+                return
+            }
+            // get outs to choose the price
+            $.get('/product/getoutsofproduct', {'id':productid, 'clientid':clientid}, (data)=>{
+                $('.outs').html(data)
+                // $('.addstock').text('stock: '+data.stock)
+                // $('.addprice').text('P.achat: '+data.price)
+                // $('.addpriceinp').attr('min', data.prnet)
+                // $('.addprnet').text('P.Net: '+data.prnet)
+            })
+            // get client price
+            $.get('/product/getclientprice',
+            {clientid:clientid, productid:productid},
+            (data)=>{
+                if (data.price==0){
+                    alertify.error("ERROR", 'Produit non disponible pour ce client')
+                    // let it pass if not, just uncomment return below
+                    return
+                }
+                $('.itemsbon').append(`<tr class="item-row ">
+                        <td id="item-name" class="item-name">
+                            <strong class="invoice-item" id="invoice-item">
+                            ${ref} ${car}
+                            </strong>
+                        </td>
+                        <td class="stock">
+                            ${data.qty}
+
+                        </td>
+                        <td>
+                            <input value="${data.price}" class="form-control price" >
+                        </td>
+                        <td>
+                            <input class="form-control qty" placeholder="Quantity" type="number" max="{{ item.quantity|floatformat:-2}}" onkeyup="checkmax(this)">
+                        </td>
+                        <td>
+                            <span class="total">0</span>
+                        </td><input type="hidden" class="productid" value=${productid}>
+                        <td>
+                            <i class="btn btn-danger delete" onclick="deletereow(event)">X</i>
+                        </td>
+                    </tr>`);
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+                });
+                jQuery().invoice().init
+            }
+            ).fail(function (xhr, status, errors) {
+                    alertify.error('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+            });
+            // add product row with client rice
+
+
+        })
+        $(window).on('click', function (e) {
+            if (e.target.classList.contains('addexeptionbtn')) {
+                console.log('add exeption')
+                el=$(e.target)
+                el.removeClass('fa-plus').addClass('fa-check')
+                item=el.attr('item')
+                id=el.attr('id')
+                stock=el.attr('stock')
+                prachat=el.attr('prachat')
+                price=el.attr('price')
+                $('.itemsbon').append('<tr class="item-row"><td id="item-name" class="item-name"><small class="invoice-item" id="invoice-item">'+item+'</td><td class="stock">'+stock+'</td><td class="prachat" hidden>'+prachat+'</td><td><input value='+price+' class="form-control price" placeholder="Price" type="number"> </td><td><input class="form-control qty" placeholder="Quantity" type="number" min=1 value=1></td><td><span class="total">'+price*1+'</span></td><input type="hidden" class="productid" value='+id+'><td><i class="btn btn-danger delete" title="Supprimer">X</i></td></tr>');
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+                });
+                jQuery().invoice().init
+            }
+        })
+
+        // jQuery().invoice().init
+
+        // $('.delete').on('click', function () {
+        //     $(this).closest('tr').remove();
+        // });
+        function showerror(m){
+            $('.item-error').show()
+        }
+        $(document).ready(function () {
+        // add client
+        // telephone obligatoir (avoid duolicate)
+
+        // var item_list = '<select id="all-items" class="form-select select2"><option value="0">Articles</option>';
+        // // create select from pdct, its a registered
+        // $.get('/sales/product/items/details/', function (data, status) {
+        //     $.each(data.products, function(key, result){
+        //         item_list += '<option data-price="' + result.consumer_price + '" data-stock= "' + result.stock +'" data-prachat="'+result.pr_achat+'"data-id= "' + result.id +'">' +result.ref+' - '+ result.category+' - '+ result.mark+'</option>'
+        //     });
+        //     item_list += '</select>';
+
+
+
+        //     $('.itemsselectholder').append(item_list);
+        //     $('.select2').select2();
+        //     $('.loading').removeClass('d-flex').addClass('d-none');
+
+        // });
+
+
+
+
+
+        $(function () {
+
+
+
+
+
+            $('#create-invoice').on('click', function () {
+                if ($('.clientselect').val()=="" || $('.dateavoir').val()==""){
+                    alertify.error('Client/date')
+                    return
+                }
+                if (($.inArray(true, $('.price').map((t, i)=>$(i).val()=="")) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()=="")) !== -1) || ($.inArray(true, $('.price').map((t, i)=>$(i).val()==0)) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()==0)) !== -1)) {
+
+                    showerror();
+                    $('.price').css('border-color', 'red');
+                    $('.qty').css('border-color', 'red');
+                    return
+                }
+                else {
+                    $('.item-error').hide();
+                    $('.price').css('border', 'none');
+                }
+                var items = [];
+                var total_quantity = 0;
+                for (var i=0; i<$('.item-row').length; i++) {
+                    var products = {};
+                    products['item_id'] = $($('.item-row')[i]).find('.productid').val();
+                    products['price'] = $($('.item-row')[i]).find('.price').val();
+                   products['qty'] = $($('.item-row')[i]).find('.qty').val();
+                    products['total'] = $($('.item-row')[i]).find('.total').text();
+
+                    items.push(products);
+                    total_quantity += Number(products['qty']);
+                }
+                console.log("sending");
+                console.log(items)
+                $.post("{% url 'sales:generateavoir' %}", {
+                        customer: $('.clientselect').val(),
+                        dateavoir:$('.dateavoir').val(),
+                        total: parseFloat($('#grandTotal').text()),
+                        items: JSON.stringify(items),
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    }, function (result, status) {
+                        window.location.href = `/ledger/customer/${$('.clientselect').val()}/ledger/details/`;
+                    }
+                ).fail(function (xhr, status, errors) {
+                    alertify.error('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                });
+                // $.post("{% url 'sales:generateavoir' %}", {
+                //         'customer': '{{bon.customer.id}}',
+                //         'total': $('#grandTotal'),
+                //         'items': JSON.stringify(items)
+                //     }, function (result, status) {
+                //         console.log(result);
+                //     }
+                // ).fail(function (xhr, status, errors) {
+                //     alertify.error('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                // });
+
+            });
+
+
+
+        });
+    });
+    </script>
+{% endblock %}

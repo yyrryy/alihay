@@ -1,0 +1,87 @@
+{% for item in products %}
+                    <tr>
+                        <td>
+                            {{item.mark}}
+                        </td>
+                        <td class="product_name">
+                            {{item.category}}
+                        </td>
+                        <!-- <td class="#">{{ item.unit_type }}</td> -->
+                        <td>{{ item.stock}}</td>
+                        <!-- <td>{{ item.product_purchased_items|floatformat:-2 }}</td>
+                        <td>{{ item.bar_code}}</td> -->
+                        
+                    </tr>
+        {% endfor %}
+<script>
+   
+    // $('.commande').each((i, el)=>{
+    //         $(el).on('click', ()=>{
+    //             let itemid=$(el).data('id')
+    //             let supplier=$(el).parent().find('[name="supplier"]').val()
+    //             if(supplier==0){
+    //                 $(el).parent().find('select').css({
+    //                     'border': '1px solid red'
+    //                 })
+    //                 return
+    //             }
+    //             $(el).parent().find('select').css({
+    //                     'border': '1px solid green'
+    //                 })
+    //             $.ajax({
+    //                 url: "{% url 'product:commandproduct' %}",
+    //                 type: "POST",
+    //                 data: {
+    //                     'itemid': itemid,
+    //                     'supplier': supplier,
+    //                     'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //                 },
+    //                 success: function (data) {
+    //                     if(data.valid){
+    //                         $(el).parent().html('<i class="fa fa-check text-success fa-2x"></i>')
+    //                         $('.ordered').text(parseInt($('.ordered').text())+1)
+    //                     }
+    //                     else{
+    //                         alert('Erreur')
+    //                     }
+    //                 }
+    //             })
+    //     })
+    //     })
+    // $('.cancelcommand').each((i, el)=>{
+    //     $(el).on('click', ()=>{
+    //         $.ajax({
+    //             url: "{% url 'product:cancelcommande' %}",
+    //             type: "POST",
+    //             data: {
+    //                 'id': $(el).attr('id'),
+    //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //             },
+    //             success: function (data) {
+    //                 if(data.valid){
+    //                     $(el).parent().html(`
+    //                     <div class="d-flex">
+    //                             <select name="supplier" class="form-select select2">
+    //                                 <option value="0">
+    //                                     Fournisseur
+    //                                 </option>
+    //                                 {% for i in suppliers %}
+    //                                 <option value="{{i.id}}">
+    //                                     {{i.name}}
+    //                                 </option>
+    //                                 {%  endfor %}
+    //                             </select>
+    //                             <button class="btn btn-info btn-xs commande" data-id="{{item.id}}">Commande</button>
+    //                         </div>
+    //                     `)
+    //                     $('.ordered').text(parseInt($('.ordered').text())-1)
+    //                     }
+    //                 else{
+    //                     alert('Erreur')
+    //                 }
+    //             }
+    //         })
+    //     })
+    // })
+
+</script>

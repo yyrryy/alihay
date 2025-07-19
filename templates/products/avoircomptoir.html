@@ -1,0 +1,539 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+	<style>
+		.item-row th {
+			background: #eee;
+		}
+
+		.delete-btn {
+			position: relative;
+		}
+
+		
+	</style>
+
+<!-- end add client modal -->
+<!-- to distinguish between invoice create and update -->
+<input type="hidden" class="createinvoice">
+
+
+
+<!-- bon articles -->
+
+<div class="row">
+    <div class="col-4">
+        <div class="bg-white rounded p-2">
+            <div class="mt-2">
+                <small>Date bon</small>
+                <input type="date" name="datebon" placeholder="Date" value="{{present_date|date:'Y-m-d'}}" class="form-control">
+            </div>
+            <hr>
+            <strong>
+                Produits
+            </strong> <br>
+            <select name="" id="" class="productslist form-control" style="width: 100%;"></select>
+            <div class="mt-3 row">
+                <div class="col-6">
+                    
+                    <input type="number" class="addqtyinp form-control" placeholder="Qty">
+                    <div class="addstock"></div>
+                </div>
+                <div class="col-6">
+                    
+                    <input type="number" class="addpriceinp form-control" placeholder="Prix" onkeyup="checkmin(event)">
+                    <div class="addprice"></div>
+                    <div class="addprnet"></div>
+                </div>
+                
+                <div class="col-12">
+
+                    <button class="btn btn-primary w-100" onclick="addrow()">+</button>
+                </div>
+                <input type="text" class="addname" hidden>
+            </div>
+            <div class="mt-2 bg-white p-2 outs" style="height: 30vh; overflow-y: scroll;"></div>
+        </div>
+    </div>
+    <div class="col-8">
+        <div class="bg-white rounded p-2">
+            <div id="item-data-sc" class="table-responsive item-data-sc">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="">
+                        <th style="width: 45%;">Article</th>
+                        <th>Stock</th>
+                        <th>Prix acht</th>
+                        <th>Prix ventes</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody class="itemsbon">
+                    
+                    </tbody>
+                </table>
+                
+    
+            </div>
+            <div class="borders shadow bg-white p-2 rounded">
+                <div class="table-responsive d-flex justify-content-between">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tbody>
+                        <tr hidden>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right"><strong>Sub Total</strong></td>
+                            <td><span id="subtotal">0.00</span></td>
+                        </tr>
+                        <tr hidden>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right"><strong>Discount</strong></td>
+                            <td><input autocomplete="off" class="form-control" id="discount" value="0" type="text"></td>
+                        </tr>
+                        <tr hidden>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right"><strong>Shipping</strong></td>
+                            <td><input autocomplete="off" class="form-control" id="shipping" value="0" type="text"></td>
+                        </tr>
+                        <tr>
+                            <!-- <td><strong>Total Qty: </strong><span id="totalQty" style="color: red; font-weight: bold">0</span></td> -->
+                            
+                            <td class="text-right"><h4>Total: <span id="grandTotal" style="color:red">0</span></h4> </td>
+                            <td></td>
+                        </tr>
+                        <!-- <tr>
+                            <td class="text-right">
+                                <strong>Payé</strong>
+                            </td>
+                            <td class="d-flex">
+                                <button class="btn btn-primary paid">
+                                    Payé
+                                </button>
+                                <input autocomplete="off" class="form-control" id="paidAmount" value="0" type="number"> 
+                        </td>
+                        </tr>
+                        <tr>
+                            <td class="text-right"><strong>Rest</strong></td>
+                            <td><span id="remainingAmount">0</span></td>
+                        </tr> -->
+                        
+                        </tbody>
+                    </table>
+                    <div class="">
+                        
+                        <a id="create-invoice" href="javascript:;" title="Create Invoice" class="btn btn-primary w-100 h-100" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Valider</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'js/jquery.invoice.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.scannerdetection.js' %}"></script>
+    <script>
+        function removeline(event, productid){
+            console.log('deletting;;;', productid)
+            $(event.target).closest('tr').remove();
+            qtyinpadd=$(event.target).closest('tr').find('.qty').val()
+            bonitems=JSON.parse(localStorage.getItem('bonitemsavoircomptoir'))
+            idsinbon=JSON.parse(localStorage.getItem('pdctsinbonavoircomptoir'))
+            dx=idsinbon.indexOf(productid)
+            idsinbon.splice(dx, 1)
+            bonitems.splice(dx, 1)
+            console.log(dx, idsinbon, bonitems)
+            localStorage.setItem('bonitemsavoircomptoir', JSON.stringify(bonitems))
+            localStorage.setItem('pdctsinbonavoircomptoir', JSON.stringify(idsinbon))
+            
+        }
+        function addrow(){
+            pdcts=JSON.parse(localStorage.getItem('pdctsinbonavoircomptoir'))||[]
+            bonitems=JSON.parse(localStorage.getItem('bonitemsavoircomptoir'))||[]
+            parentdiv=$(this).parent().parent()
+            if ($('.productslist').val()==''){
+                return
+            }
+            var [ref, car, pr_achat, stock, id, remise, prnet] = $('.productslist').val().split('§');
+             // first time adding to localstorg
+            qtyinpadd=$('.addqtyinp').val()
+            priceinpadd=$('.addpriceinp').val()
+            if (qtyinpadd=='' || priceinpadd==''){
+                alertify.error('Champ vide')
+                return
+            }
+            totalrow=(qtyinpadd*priceinpadd).toFixed(2)
+          row={
+                'article':car,
+                'stock':stock,
+                'prnet':prnet,
+                'prachat':pr_achat,
+                'price':priceinpadd,
+                'qty':qtyinpadd,
+                'productid':id,
+                'prices':[(parseFloat(priceinpadd)*parseInt(qtyinpadd)).toFixed(2)]
+            }
+            
+            pdcts.push(id)
+            localStorage.setItem('pdctsinbonavoircomptoir', JSON.stringify(pdcts))
+            // add it to items localstorage
+            console.log(bonitems)
+            bonitems.push(row)
+            localStorage.setItem('bonitemsavoircomptoir',JSON.stringify(bonitems))
+
+            $('.itemsbon').append(`<tr class="item-row" id="itemrow${id}""><td id="item-name" class="item-name"><strong class="invoice-item" id="invoice-item">${car}</strong></td><td class="stock ${stock==0 ? "bg-danger text-white" : ""}">${stock}</td><td class="prachat">${pr_achat}</td><td><input type="hidden" class="prnet" value=${prnet}><input min=${prnet} readonly value=${priceinpadd} class="form-control price" prices="[${qtyinpadd*priceinpadd}]" placeholder="Price" type="number" oninput="saverow(event)"><br><span class="text-danger errorprice d-none bg-white">Prix de vent doit etre superieur ou egal a prix net: ${prnet}</span> </td><td><input readonly class="form-control qty" placeholder="Quantity" type="number" min=1 value=${qtyinpadd} oninput="saverow(event)"></td><td class="total">${totalrow}</td><input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer" productid="${id}" onclick="removeline(event, '${id}')"></i></td></tr>`);
+            jQuery().invoice().init
+            $('.productslist').empty()
+            $('.productslist').select2('open'); //open
+            $('.addqtyinp').val('')
+            $('.addpriceinp').val('')
+            $('.addstock').text('')
+            $('.addprnet').text('')
+            
+        
+          
+                
+        }
+        
+        function saverow(event){
+            console.log('saving row')
+            tr=$(event.target).parent().parent()
+            article=tr.find('.item-name').text()
+            stock=tr.find('.stock').text()
+            prachat=tr.find('.prachat').text()
+            prnet=tr.find('.prnet').val()
+            price=tr.find('.price').val()?tr.find('.price').val():0
+            qty=tr.find('.qty').val()?tr.find('.qty').val():0
+            productid=tr.find('.productid').val()
+            console.log('prnet', prnet)
+            prices=JSON.parse(tr.find('.price').attr('prices'))
+            bonitems=JSON.parse(localStorage.getItem('bonitemsavoircomptoir')) || []
+            idsinbon=JSON.parse(localStorage.getItem('pdctsinbonavoircomptoir'))
+            // get index of id
+            if (idsinbon){
+                dx=idsinbon.indexOf(productid)
+                console.log(dx)
+            }
+            row={
+                'article':article,
+                'stock':stock,
+                'prnet':prnet,
+                'prachat':prachat,
+                'price':price,
+                'qty':qty,
+                'productid':productid,
+                'prices':prices
+            }
+            if (bonitems.length > 0){
+                bonitems[dx]=row
+                // insert it in index to remain the same order, order is important here
+                localStorage.setItem('bonitemsavoircomptoir',JSON.stringify(bonitems))
+            }else{
+                bonitems.push(row)
+                localStorage.setItem('bonitemsavoircomptoir',JSON.stringify(bonitems))
+
+            }
+        }
+        
+        // track bons in products
+        // localStorage.setItem('pdctsinbonavoircomptoir', '[]')
+        // localStorage.setItem('pdctsdetails', '[]')
+        $(function(){
+            $('.productslist').select2({
+                minimumInputLength: 1,
+                placeholder:'Chercher',
+                ajax: {
+                type:'get',
+                dataType: 'json',
+                url: '/product/searchproduct',
+                data: function (params) {
+                    var query = {
+                    term: params.term,
+                    }
+                    // Query parameters will be ?search=[term]&type=public
+                    return query;
+                },
+                proccessresults: function (data) {
+                    return {
+                        results:data.results
+                    }
+                },
+                cache:true
+                }
+            });
+        })
+        // set products in local storage
+        // remove prdcts localstorage when valider
+        
+        $('.productslist').on('change', function(){
+            pdcts=JSON.parse(localStorage.getItem('pdctsinbonavoircomptoir'))||[]
+            bonitems=JSON.parse(localStorage.getItem('bonitemsavoircomptoir'))||[]
+            console.log(pdcts)
+            parentdiv=$(this).parent().parent()
+            if ($(this).val()==''){
+                return
+            }
+            var [ref, car, pr_achat, stock, id, remise, prnet] = $(this).val().split('§');
+            $.get('/product/getoutsofproduct', {'id':id}, (data)=>{
+                $('.outs').html(data)
+                // $('.addstock').text('stock: '+data.stock)
+                // $('.addprice').text('P.achat: '+data.price)
+                // $('.addpriceinp').attr('min', data.prnet)
+                // $('.addprnet').text('P.Net: '+data.prnet)
+            })
+           
+        //   let repswithprice=[]
+        //   let addname=$('input[name="addname"]')
+        //   let addprice=$('input[name="addprice"]')
+        //   let addremise=$('input[name="addremise"]')
+        //   let addqty=$('input[name="addqty"]')
+        //   console.log('qty of change',addqty)
+        //   $('.addstock').text(stock)
+        //   addqty.val('')
+        //   addremise.val(remise)
+        //   addname.val(`${ref} - ${name}`).attr('data', `${ref},${car},${pr_achat},${stock},${id},${remise},${prnet}`)
+         
+            
+          
+        //   let selected = $(this).find(':selected')
+          // selected.remove()
+          // delect selected option
+      })
+        
+        $(window).on('click', function (e) {
+            if (e.target.classList.contains('addexeptionbtn')) {
+                el=$(e.target)
+                el.removeClass('fa-plus').addClass('fa-check')
+                item=el.attr('item')
+                id=el.attr('id')
+                stock=el.attr('stock')
+                prachat=el.attr('prachat')
+                price=el.attr('price')
+                prnet=el.attr('prnet')
+                $('.itemsbon').append(`<tr class="item-row "><td id="item-name" class="item-name"><strong class="invoice-item" id="invoice-item">${item}</strong></td><td class="stock ${stock==0 ? "bg-danger text-white" : ""}">${stock}</td><td class="prachat">${prachat}</td><td><input type="hidden" class="prnet" value=${prnet}><input readonly min=${prnet} value=${prachat} class="form-control price" placeholder="Price" type="number"><br><span class="text-danger errorprice d-none bg-white">Prix de vent doit etre superieur ou egal a prix net: ${prnet}</span> </td><td><input class="form-control qty" placeholder="Quantity" type="number" min=1 value="0"></td><td><span class="total">0</span></td><input type="hidden" class="productid" value=${id}><td><i class="btn btn-danger delete" title="Supprimer">X</i></td></tr>`);
+                $('.delete').on('click', function () {
+                    $(this).closest('tr').remove();
+                });
+                jQuery().invoice().init
+            }
+        })
+        $('.refexeption').on('change', function(){
+            console.log('ref exeption')
+            let ref=$('.refexeptioninp').val()
+            if (ref!=''){
+                $.ajax({
+                    url:'{% url "product:refexeption" %}',
+                    type:'POST',
+                    data:{
+                        'ref':ref,
+                        'type':'inv',
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
+                        'categoryid':$('.refexeptioncategory').val()
+                    },
+                    success:(data)=>{
+                        $('.exeptionresults').html(data.data)
+                    }
+                })
+            }
+        })
+    // $('.loading').removeClass('d-none').addClass('d-flex');
+    $(document).ready(function () {
+        bonitems=JSON.parse(localStorage.getItem('bonitemsavoircomptoir'))||[]
+        if (bonitems.length>0){
+            for (i of bonitems){
+                $('.itemsbon').append(`<tr class="item-row" id="itemrow${i.productid}""><td id="item-name" class="item-name"><strong class="invoice-item" id="invoice-item">${i.article}</strong></td><td class="stock ${i.stock==0 ? "bg-danger text-white" : ""}">${i.stock}</td><td class="prachat">${i.prachat}</td><td><input type="hidden" class="prnet" value=${i.prnet}><input min=${i.prnet} value=${i.price} class="form-control price" placeholder="Price" prices="[${i.prices}]" type="number" oninput="saverow(event)"><br><span class="text-danger errorprice d-none bg-white">Prix de vent doit etre superieur ou egal a prix net: ${i.prnet}</span> </td><td><input class="form-control qty" placeholder="Quantity" type="number" min=1 value="${i.qty}" oninput="saverow(event)"></td><td class="total">${i.qty*i.price}</td><input type="hidden" class="productid" value=${i.productid}><td><i class="btn btn-danger delete" title="Supprimer" productid="${i.productid}" onclick="removeline(event, '${i.productid}')"></i></td></tr>`);
+                
+            }
+            jQuery().invoice().init
+        }
+        function showerror(m){
+            $('.item-error').show().text(m)
+        }
+        // add client
+        // telephone obligatoir (avoid duolicate)
+        // $('.addclientbtn').on('click', ()=>{
+        //     if($('.customer').val() == '' || $('.customer_phone').val()=='' || $('.customer_phone').val().length!=10){
+        //         console.log('error')
+        //         $('.customererror').show();
+        //         return false;
+        //     }else{
+
+        //         $('.addclientbtn').addClass('disabled')
+        //         $.post(
+        //             '{% url "product:addclient" %}',
+        //             {
+        //                 'name':$('.customer').val(),
+        //                 'phone':$('.customer_phone').val(),
+        //                 'ice':$('.customer_ice').val(),
+        //                 'address':$('.customer_address').val(),
+        //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+        //             },
+        //             function(data){
+        //                 alertify.success('OK')
+        //             }
+        //         )
+        //     }
+        // })
+
+        // var item_list = '<select id="all-items" class="form-select select2"><option value="0">Articles</option>';
+        // // create select from pdct, its a registered
+        // $.get('/sales/product/items/details/', function (data, status) {
+        //     $.each(data.products, function(key, result){
+        //         item_list += '<option data-price="' + result.consumer_price + '" data-stock= "' + result.stock +'" data-prachat="'+result.pr_achat+'"data-id= "' + result.id +'">' +result.ref+' - '+ result.category+' - '+ result.mark+'</option>'
+        //     });
+        //     item_list += '</select>';
+            
+
+            
+        //     $('.itemsselectholder').append(item_list);
+        //     $('.select2').select2();
+        //     $('.loading').removeClass('d-flex').addClass('d-none');
+            
+        // });
+        
+        
+
+
+        $('.paid').on('click', ()=>{
+            let total=$('#grandTotal').text()
+            // assign total to received
+            $('#paidAmount').val(total)
+        })
+
+        $(function () {
+            
+
+            
+            
+            
+            $('#create-invoice').on('click', function () {
+                const allErrorDivsHaveDNone = $('.errorprice').toArray().every(function(div) {
+                    return $(div).hasClass('d-none');
+                });
+                if (!allErrorDivsHaveDNone) {
+                    showerror('Prix de vent doit etre superieur ou egal a prix net');
+                    return;
+                }
+                if ($('#item-name').hasClass('item-name') == false) {
+                    showerror('Remplir les champs');
+                    return;
+                }
+                
+                if (($.inArray(true, $('.price').map((t, i)=>$(i).val()=="")) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()=="")) !== -1) || ($.inArray(true, $('.price').map((t, i)=>$(i).val()==0)) !== -1)||($.inArray(true, $('.qty').map((t, i)=>$(i).val()==0)) !== -1)) {
+
+                    showerror('املئ خانة الثمن');
+                    $('.price').css('border-color', 'red');
+                    $('.qty').css('border-color', 'red');
+                    return
+                }
+                else {
+                    $('.item-error').hide();
+                    $('.price').css('border', 'none');
+                    $('.qty').css('border', 'none');
+                }
+                var items = [];
+                for (var i=0; i<$('.item-row').length; i++) {
+                    var products = {};     
+                    products['item_id'] = $($('.item-row')[i]).find('.productid').val();
+                    products['price'] = $($('.item-row')[i]).find('.price').val();
+                    products['prachat'] = parseFloat($($('.item-row')[i]).find('.prachat').text());
+                    products['qty'] = $($('.item-row')[i]).find('.qty').val();
+                    products['total'] = $($('.item-row')[i]).find('.total').text();
+                    
+                    items.push(products);
+                }
+                var grand_total = $('#grandTotal').text();
+                var datebon=$('[name="datebon"]').val()
+
+                const itemIds = items.map(item => item.item_id);
+                const uniqueItemIds = Array.from(new Set(itemIds));
+                console.log(items)
+                if (datebon==''){
+                    alertify.error('Date')
+                    return
+                }
+                // if (itemIds.length > uniqueItemIds.length) {
+                // alert("منتوجات متكررة");
+                // } else {
+                // $('#create-invoice').addClass('disabled')
+                // console.log("sending");
+                // $.post("{% url 'product:sortiecomptoir' %}", {
+                //         datebon:datebon,
+                //         total: grand_total,
+                //         items: JSON.stringify(items)
+                //     }, function (result, status) {
+                //         localStorage.removeItem('bonitemsavoircomptoir')
+                //         localStorage.removeItem('pdctsinbonavoircomptoir')
+                //         location.reload()
+                //     }
+                // ).fail(function (xhr, status, errors) {
+                //     alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                // });
+                // }
+                $('#create-invoice').addClass('disabled')
+                console.log("sending");
+                $.get("{% url 'product:createavoircomptoir' %}", {
+                        datebon:datebon,
+                        total: grand_total,
+                        items: JSON.stringify(items)
+                    }, function (result, status) {
+                        localStorage.removeItem('bonitemsavoircomptoir')
+                        localStorage.removeItem('pdctsinbonavoircomptoir')
+                        location.reload()
+                    }
+                ).fail(function (xhr, status, errors) {
+                    alert('خطأ في البيانات المدخلة، يرجى التأكد من صحة البيانات والمحاولة مرة أخرى');
+                });
+            });
+
+
+
+        });
+        $('.btn-primary').on('click', function () {
+            $('.item-error').hide();
+        });
+    });
+    </script>
+    <script>
+
+        // $('.form-control').click (function () {
+        //     $('.list-error').hide();
+        //     checkDec(this);
+
+        // });
+
+        // function checkDec(el){
+        //     var ex = /^[0-9]+\.?[0-9]*$/;
+        //     if(ex.test(el.value)==false){
+        //         el.value = el.value.substring(0,el.value.length - 1);
+        //     }
+        // }
+    </script>
+<!-- <script>
+$('#invoice').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script> -->
+{% endblock %}

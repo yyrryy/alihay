@@ -1,0 +1,157 @@
+﻿
+<div class="btn-group mb-3" role="group" aria-label="Default button group">
+   <!-- this used to be how to do avoir direcly from the bon -->
+    <!-- <a type="button" class="btn btn-primary" href="/sales/avoirclient/{{devis.id}}">
+        Avoir
+    </a> -->
+    
+
+    <!-- <a href="/product/updatedevis?id={{devis.id}}" type="button" class="btn btn-primary me-5">
+        Modifier
+    </a> -->
+    
+    {% if not devis.isgenerated %}
+    <a type="button" class="btn btn-primary" href="/product/genererdevistobonpage?id={{devis.id}}">
+        Generer Bon
+    </a>
+    {% endif %}
+
+    <!-- <button onclick="printfacture({{devis.id}})" type="button" class="btn btn-primary">
+        Factuer
+    </button> -->
+  </div>
+<div class="bg-white rounded shadow" id="print-invoice" style="padding: 10px">
+    <div class="row">
+        <div class="d-flex justify-content-between head align-itmes-center">
+            <div>
+
+
+                <strong class="f-size">Client: {% if devis.client %}{{ devis.client.client_name }}{% else %}Comptoir {% endif%} </strong>
+            </div>
+            <div>
+                <strong>
+                        {{devis.devis_no}}
+                </strong>
+            </div>
+            <h6 style="font-size:14px">{{ devis.date|date:"d/m/Y"}}</h6>
+
+        </div>
+        <div class="col-xs-12 col-md-12">
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <div class="col-md-12 ">
+
+                </div>
+                    <!-- {% if devis.client.shop %}
+                        <label><strong class="f-size">Shop Name:</strong></label> <span class="f-size">{{ devis.client.shop }}</span><br>
+                    {% endif %} -->
+                    <div class="col-md-12 pull-left">
+
+                </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <div class="">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="">
+                        <th >Article</th>
+                        <th style="width: 12%;">Prix</th>
+                        <th style="width: 12%;">Qté</th>
+                        <th style="width: 12%;">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {{ item.product.ref}} {{ item.product.category}} {{ item.product.car}} {{ item.product.mark}}
+                            </td>
+                            <td>
+                                {{ item.price|floatformat:2}}
+                            </td>
+                            <td >
+                                {{ item.qty|floatformat:-2}}
+                            </td>
+                            <td >
+                                {{ item.total|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr >
+                            <td colspan="3" class="text-end">
+                                Total
+                            </td>
+                            <td>
+                                <b id="grandTotal" style="color: red;">
+                                    {{ devis.total|floatformat:2 }} Dh
+                                </b>
+                            </td>
+
+                        </tr>
+
+
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<!-- {% if not avoir %}
+<div class="bg-white shadow rounded mt-5">
+    <h5>
+        list avoirs
+    </h5>
+    {% for i in avoirs %}
+    N°: {{i.devis_no}} <br>
+    <table class="table table-bordered">
+        <thead>
+        <tr class="">
+            <th >Article</th>
+            <th style="width: 12%;">Prix</th>
+            <th style="width: 12%;">Qté</th>
+            <th style="width: 12%;">Total</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            {% for item in i.returneditems.all %}
+            <tr>
+                <td>
+                    {{ item.product.ref}} {{ item.product.category}} {{ item.product.mark}}
+                </td>
+                <td>
+                    {{ item.price|floatformat:2}}
+                </td>
+                <td >
+                    {{ item.qty|floatformat:-2}}
+                </td>
+                <td >
+                    {{ item.total|floatformat:2 }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr >
+                <td colspan="3" class="text-end">
+                    Total
+                </td>
+                <td>
+                    <b id="grandTotal" style="color: red;">
+                        {{ i.grand_total|floatformat:2 }} Dh
+                    </b>
+                </td>
+            </tr>
+        </tbody>
+    {% endfor %}
+</div>
+{% endif %} -->
+<script>
+    
+</script>

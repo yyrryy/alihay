@@ -1,0 +1,4 @@
+<option value="0">Articles</option>
+{% for i in products %}
+<option data-price="{{i.price}}" data-stock= "{{i.stock}}" data-prachat="{{i.pr_achat}}"data-id= "{{i.id}}">{{i.ref}} -  {{i.category}} - {{i.mark}}</option>
+{% endfor %}

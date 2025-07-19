@@ -1,0 +1,8 @@
+{% for product in products %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ product.product__ref }} {{ product.product__category__name}}</td>
+        <td>{{ product.total_quantity }}</td>
+        <td>{{ product.total_purchase_amount|floatformat:2 }}</td>
+    </tr>
+{% endfor %}

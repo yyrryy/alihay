@@ -1,0 +1,701 @@
+{% extends 'base.html' %}
+{% block menu_product %}active{% endblock %}
+{% block submenu_list_items %}active{% endblock %}
+{% block content %}
+<script src="/static/js/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<!-- <div style="top:0;" class="passwordscreen d-none m-auto position-fixed bg-dark w-100 h-100 d-flex justify-content-center text-white align-items-center">
+    <input type="password" class="form-control w-50" placeholder="Mot de passe" id="password" onkeyup="checkpassword(event)">
+  </div> -->
+  <div class="row">
+    <div class="col-3">
+    <h4 class="text-center text-white bg-dark rounded p-2 ">
+      Stock general: <br> {{stockgeneral|floatformat:2}}Dh
+      
+    </h4>
+    </div>
+    <div class="col-3">
+    <h4 class="text-center text-white bg-dark rounded p-2 ">
+      Sold clients: <br> {{soldclients|floatformat:2}}Dh
+      
+    </h4>
+    </div>
+    <div class="col-3">
+    <h4 class="text-center text-white bg-dark rounded p-2 ">
+      Sold fournisseurs: <br> {{soldsuppliers|floatformat:2}}Dh
+      
+    </h4>
+    </div>
+
+  </div>
+<div class="filterholder p-3 row">
+    <!-- <div class="col-md-3">
+        <input type="date" class="form-control date">
+    </div> -->
+    <strong>
+      الربح اليومي
+    </strong> <br>
+    <input type="date" class="col-3 datefrom" name="" id="">
+    <input type="date" class="col-3 dateto" name="" id="">
+
+    <!-- <div class="col-md-3">
+        <select class="form-select" name="year1" onchange="getprofit()">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>
+            <option value="2032">2032</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="month1" onchange="getprofit()">
+            <option value="0">--</option>
+            <option value="1">يناير</option>
+            <option value="2">فبراير</option>
+            <option value="3">مارس</option>
+            <option value="4">ابريل</option>
+            <option value="5">مايو</option>
+            <option value="6">يونيو</option>
+            <option value="7">يوليو</option>
+            <option value="8">اغسطس</option>
+            <option value="9">سبتمبر</option>
+            <option value="10">اكتوبر</option>
+            <option value="11">نوفمبر</option>
+            <option value="12">ديسمبر</option>
+        </select>
+    </div> -->
+    <button class="findnetprofit btn btn-primary fa fa-search col-2" onclick="getprofit()">
+    </button>
+    </div>
+<div class="row mb-3 position-relative">
+    <div class="col-12">
+        <!-- <div class="loadingnumbers d-flex justify-content-center align-items-center" style="position:absolute; width:100%; height:100%; background: rgba(0, 0, 0, 0.315);">
+            <div class="spinner-border text-primary text-white" role="status">
+            </div>
+        </div> -->
+    </div>
+    
+    <hr>
+    <!-- netprofit -->
+    <div class="col-lg-3 col-6">
+        <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+            <strong>Total ventes</strong>
+            <h4>
+                <strong class="sales">{{sales|floatformat:2}}</strong>
+            </h4>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+            <strong>Total Avoir client</strong>
+            <h4>
+                <strong class="avoircl">{{avoircl|floatformat:2}}</strong>
+            </h4>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+        <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+            <strong>Total Achats</strong>
+            <h4>
+                <strong class="achats">{{achats|floatformat:2}}</strong>
+            </h4>
+        </div>
+    </div>
+    <div class="col-lg-3 col-6">
+      <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+          <strong>Total Avoir fourn.</strong>
+          <h4>
+              <strong class="avoirsupp">{{avoirsupp|floatformat:2}}</strong>
+          </h4>
+      </div>
+  </div>
+  <div class="col-lg-3 col-6 mt-2">
+    <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+        <strong>Total bonus</strong>
+        <h4>
+            <strong class="totalmarge"></strong>
+        </h4>
+    </div>
+</div>
+    
+    
+    
+</div>
+<div class="">
+    <div class="shadow text-center rounded py-2 netprofitholder bg-white">
+        <strong>Profit</strong>
+        <!-- <h4>
+            <strong class="netprofit">{{netprofit|floatformat:2}}</strong>
+        </h4> -->
+        <table class="table table-bordered table hover">
+            <thead>
+              <tr>
+                <td>
+                  Date
+                </td>
+                <td>
+                  Article
+                </td>
+                <td>
+                  prix achat
+                </td>
+                <td>
+                  % achat
+                </td>
+                <td>
+                  achat Net
+                </td>
+                <td>
+                  prix vente
+                </td>
+                <td>
+                  Difference
+                </td>
+                <td>
+                  Qté
+                </td>
+                <td>
+                  Benifice
+                </td>
+                
+              </tr>
+            </thead>
+            <tbody class="ventestr">
+
+            </tbody>
+            <thead>
+              <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td class="totalmarge">
+                  
+                </td>
+                
+              </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-6 position-relative">
+        
+        <!-- <div class="downrankingload d-flex justify-content-center align-items-center" style="position:absolute; width:100%; height:100%; background: rgba(0, 0, 0, 0.315);">
+            <div class="spinner-border text-primary text-white" role="status">
+            </div>
+        </div> -->
+        <!-- <div class="tableholder rounded shadow">
+            <h4 class="text-center">
+                الاقل مبيعا
+            </h4>
+            
+            <table class="table table-striped table-advance table-hover item-table table-bordered">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Article</th>
+                        <th>
+                            Ventes
+                        </th>
+                        <th>
+                            Revenus
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="downranking">
+                    
+                </tbody>
+            </table>
+        </div> -->
+    </div>
+    <div class="">
+        
+        <!-- <div class="loadingproducts d-flex justify-content-center align-items-center" style="position:absolute; width:100%; height:100%; background: rgba(0, 0, 0, 0.315);">
+            <div class="spinner-border text-primary text-white" role="status">
+            </div>
+        </div> -->
+        <div class="tableholder rounded shadow" hidden>
+            <h4 class="text-center">
+                Articless plus vendus
+            </h4>
+            <!-- table for products ranking -->
+            <table class="table table-striped table-advance item-table table-bordered bg-white">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Article</th>
+                        <th>
+                            Ventes
+                        </th>
+                        <th>
+                            Revenus
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="productsranking">
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="oneproductstats bg-white border mt-5 p-3" hidden>
+    <h2>
+        Statistiques d'un produit
+    </h2>
+    <!-- <div class="row">
+        <select class="select2 productslist" name="">
+
+        </select>
+
+      </div> -->
+
+
+      <!-- I want to add something new here -->
+
+      <div class="mt-5 pdctdaterepport">
+        <div class="row">
+          <div class="col-2">
+            <img class="pdctimg" src="/media/default.jpg" alt="" style="width:9em;">
+          </div>
+          <div class="col-10">
+            <strong class="pdctname">--</strong>
+            <div class="d-flex justify-content-between mt-3">
+              <div class="">
+
+                <div class="p-2 bg-primary rounded text-white text-center">
+                  <strong class="totalqtyin"></strong> <br>
+                  <strong>Achats</strong>
+                </div>
+              </div>
+              <div class="">
+
+                <div class="p-2 bg-primary rounded text-white text-center">
+                  <strong class="totalqtyout"></strong> <br>
+                  <strong>QTY Sortie</strong>
+                </div>
+              </div>
+              <div class="">
+
+                <div class="p-2 bg-danger rounded text-white text-center">
+                  <strong class="totalqtyavoirs"></strong> <br>
+                  <strong>Avoirs clients</strong>
+                </div>
+              </div>
+              <div class="">
+
+                <div class="p-2 bg-danger rounded text-white text-center">
+                  <strong class="pdctavoirsupp"></strong> <br>
+                  <strong>Avoir Fournisseur</strong>
+                </div>
+              </div>
+              <div class="">
+
+                <div class="p-2 bg-primary rounded text-white text-center">
+                  <strong class="pdctstock"></strong> <br>
+                  <strong>Stock</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-5" >
+          <div class="col-6">
+
+            <div class="bg-white rounded shadow p-2">
+              <strong class="underline">Entrée Frns</strong>
+              <!-- <canvas id="inbymonth"></canvas> -->
+
+              <table class="table table-hover table-bordered mt-3">
+                <thead style="position:sticky; top:0; background:#f7ce9a;">
+                  <tr>
+                    <td>Date</td>
+                    <td>Frn.</td>
+                    <td>Qty</td>
+                    <td>prix</td>
+                    <td>devise</td>
+                    <td>Total</td>
+                  </tr>
+                </thead>
+                <tbody class="tbodyinsrepport">
+
+                </tbody>
+              </table>
+
+              <hr>
+              <div class="alert alert-warning text-dark" role="alert">
+                <strong>Avoirs</strong>
+                <table class="table table-hover table-bordered mt-3">
+                  <thead style="position:sticky; top:0; background:#f7ce9a;">
+                    <tr>
+                      <td>Client</td>
+                      <td>Avoirs</td>
+                    </tr>
+                  </thead>
+                  <tbody class="tbodyclientsavoirs">
+
+                  </tbody>
+                </table>
+              </div>
+
+              <hr>
+              <strong>Top client</strong>
+              <table class="table table-hover table-bordered mt-3">
+                <thead style="position:sticky; top:0; background:#f7ce9a;">
+                  <tr>
+                    <td>Client</td>
+                    <td>Qty</td>
+                  </tr>
+                </thead>
+                <tbody class="tbodyclientsqty">
+
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="bg-white rounded shadow p-2">
+              <strong class="">Sortie de stock</strong>
+              <canvas id="outbymonth"></canvas>
+              <div class="" style="height:15em; position:relative; overflow: scroll;">
+                <table class="table table-hover table-bordered mt-3">
+                  <thead style="position:sticky; top:0; background:#f7ce9a;">
+                    <tr>
+                      <td>Date</td>
+                      <!-- <td>N°</td> -->
+                      <td style="width:4em; text-align:center;">Qty</td>
+                      <td>prix</td>
+                      <td>remise</td>
+                      <td>client</td>
+                      <td>Total</td>
+                    </tr>
+                  </thead>
+                  <tbody class="tbodyoutsrepport">
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+</div>
+
+<div class="surah mt-5 rtl">
+    
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(function(){
+        $('.productslist').select2({
+            minimumInputLength: 1,
+            placeholder:'Chercher',
+            ajax: {
+            type:'get',
+            dataType: 'json',
+            url: '/product/searchproduct',
+            data: function (params) {
+                var query = {
+                term: params.term,
+                }
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            proccessresults: function (data) {
+                return {
+                    results:data.results
+                }
+            },
+            cache:true
+            }
+        });
+    })
+    function getpdctouts(pdctref){
+      $.get('/product/getpdctouts', {'ref':pdctref}, (data)=>{
+        console.log(data)
+        $('.pdctavoirsupp').text(data.avoirsupp)
+        $('.totalqtyout').html('data.totalqtyout')
+        $('.totalqtyout').html(data.totalqtyout)
+        $('.pdctstock').html('')
+        $('.pdctstock').html(data.pdctstock)
+        $('.pdctimg').attr('src', '')
+        $('.pdctimg').attr('src', data.pdctimg)
+        $('.pdctname').html('')
+        $('.pdctname').html(data.pdctname)
+        $('.totalqtyavoirs').html('')
+        $('.totalqtyavoirs').html(data.totalqtyavoirs)
+        $('.tbodyoutsrepport').html('')
+        if (data.success){
+          //<td>${i.no}</td>
+          for (let i of data.pdctouts){
+            console.log(i)
+            $('.tbodyoutsrepport').append(`
+            <tr>
+              <td>${i.date}</td>
+
+              <td style="text-align:center;">${i.quantity}</td>
+              <td>${i.price}</td>
+              <td style="text-align:center;">${i.remise}%</td>
+              <td>${i.client}</td>
+              <td></td>
+            </tr>
+            `)
+          }
+          $('.tbodyclientsqty').html('')
+          for (let i of data.clientsqty){
+          $('.tbodyclientsqty').append(`
+            <tr>
+              <td>${i.client}</td>
+              <td>${i.quantity}</td>
+            </tr>
+            `)
+          }
+          $('.tbodyclientsavoirs').html('')
+          for (let i of data.clientsavoirs){
+          $('.tbodyclientsavoirs').append(`
+            <tr>
+              <td>${i.client}</td>
+              <td>${i.quantity}</td>
+            </tr>
+            `)
+          }
+          months_data=data.outbymonth
+          const canvas = document.getElementById('outbymonth');
+          const ctx = canvas.getContext('2d');
+          months=months_data.map(row => row.month)
+          counts=months_data.map(row => row.count)
+          // Check if there's an existing chart and destroy it
+          if (window.myChart) {
+              window.myChart.destroy();
+          }
+          window.myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', // Example color
+                    borderColor: 'rgba(54, 162, 235, 1)', // Example color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        align: 'end',
+                        color: 'black',
+                        font: {
+                            weight: 'bold'
+                        },
+                        formatter: (value) => {
+                            return value;
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        display: false // Hide y-axis
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+        }
+        $('.pdctdaterepport').toggleClass('blurred');
+      })
+
+    }
+    function getpdctins(pdctref){
+      $.get('/product/getpdctins', {'ref':pdctref}, (data)=>{
+        $('.tbodyinsrepport').html('')
+        $('.totalqtyin').html(data.totalqtyin)
+        if (data.success){
+          for (let i of data.pdctins){
+            $('.tbodyinsrepport').append(`
+            <tr>
+              <td>${i.date}</td>
+              <td>${i.supplier}</td>
+              <td style="background:yellowgreen;">${i.quantity}</td>
+              <td>${i.price}</td>
+              <td>${parseFloat(i.devise).toFixed(2)}</td>
+              <td>${(i.total).toFixed(2)}</td>
+            </tr>
+            `)
+          }
+        }
+
+      })
+    }
+
+    $('.productslist').on('change', function(){
+      $('.pdctdaterepport').toggleClass('blurred')
+
+      var [ref, car, pr_achat, stock, id, remise, prnet] = $(this).val().split('§');
+      getpdctins(ref)
+      getpdctouts(ref)
+    })
+    
+    inactive=localStorage.getItem('inactive')||'1'
+  console.log('>>>>> ', inactive)
+  if (inactive=='1'){
+    console.log('its inactive')
+    $('.passwordscreen').removeClass('d-none')
+    $('.passwordinput').focus()
+  }else{
+    console.log('its not inactive')
+    checkForInactivity(120)
+  }
+  function getprofit(){
+            $('.loadingnumbers').removeClass('d-none').addClass('d-flex');
+            datefrom=$('.datefrom').val()
+            dateto=$('.dateto').val()
+            if (datefrom==''||dateto==''){
+              alertify.error('Veuillez choisir une date')
+              return
+            }
+            $.post("{% url 'product:reportnetprofit' %}",{
+                'datefrom': datefrom,
+                'dateto': dateto,
+                // 'year': $('select[name="year1"]').val(),
+                // 'month': $('select[name="month1"]').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                console.log(data.netprofit>0)
+                data.netprofit>0?$('.netprofitholder').removeClass('text-danger').addClass('text-success'):$('.netprofitholder').removeClass('text-success').addClass('text-danger')
+                $('.loadingnumbers').removeClass('d-flex').addClass('d-none');
+                $('.netprofit').text(data.netprofit);
+                $('.ventestr').html(data.ventes)
+                $('.totalmarge').text(data.totalmarge)
+                // totalcost and totalprofit
+                // 
+
+                $('.sales').text(data.sales);
+                $('.avoircl').text(data.avoircl);
+                $('.avoirsupp').text(data.avoirsupp);
+                $('.achats').text(data.achats);
+            })
+
+            $('.loadingproducts').removeClass('d-none').addClass('d-flex');
+            $.post("{% url 'product:productsranking' %}",{
+                'year': $('select[name="year1"]').val(),
+                'month': $('select[name="month1"]').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                $('.loadingproducts').removeClass('d-flex').addClass('d-none');
+                $('.productsranking').html(data.data);
+            })
+            
+            $('.downrankingload').removeClass('d-none').addClass('d-flex');
+            $.post("{% url 'product:downranking' %}",{
+                'year': $('select[name="year1"]').val(),
+                'month': $('select[name="month1"]').val(),
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            }, function(data, status){
+                console.log(data)
+                $('.downrankingload').removeClass('d-flex').addClass('d-none');
+                $('.downranking').html(data.data);
+            })
+            
+        }
+
+    $(document).ready(function(){
+
+        //date search
+        $('.date').on('change', function () {
+            if ($(this).val() == '') {
+                return
+                
+            } 
+            else {
+                $('.loadingnumbers').removeClass('d-none').addClass('d-flex');
+                $('.loadingproducts').removeClass('d-none').addClass('d-flex');
+                $.post("{% url 'product:dailystats' %}",{
+                    'date': $(this).val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                }, function(data, status){
+                    data.netprofit>0?$('.netprofitholder').removeClass('bg-danger').addClass('bg-success')
+                    :$('.netprofitholder').removeClass('bg-success').addClass('bg-danger')
+                    $('.loadingnumbers').removeClass('d-flex').addClass('d-none');
+                    $('.netprofit').text(data.netprofit);
+                    // totalcost and totalprofit
+                    $('.totalcost').text(data.totalcost);
+                    $('.totalprofit').text(data.totalprofit);
+                })
+                $.post("{% url 'product:dailyproductsranking' %}",{
+                    'date': $(this).val(),
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                }, function(data, status){
+                    $('.loadingproducts').removeClass('d-flex').addClass('d-none');
+                    $('.productsranking').html(data.data);
+                })
+                $('.downranking').html('');
+                // $.post("{% url 'product:dailyproductsrankingdown' %}",{
+                //     'date': $(this).val(),
+                //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+                // }, function(data, status){
+                //     console.log(data)
+                //     $('.downrankingload').removeClass('d-flex').addClass('d-none');
+                // })
+            }
+        })
+      })
+
+        // // products ranking
+        // $.post("{% url 'product:productsranking' %}",{
+        //     'year': $('select[name="year1"]').val(),
+        //     'month': $('select[name="month1"]').val(),
+        //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+        // }, function(data, status){
+        //     $('.loadingproducts').removeClass('d-flex').addClass('d-none');
+        //     $('.productsranking').html(data.data);
+        // })
+        // //products downranking
+        // $.post("{% url 'product:downranking' %}",{
+        //     'year': $('select[name="year1"]').val(),
+        //     'month': $('select[name="month1"]').val(),
+        //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+        // }, function(data, status){
+        //     console.log(data)
+        //     $('.downrankingload').removeClass('d-flex').addClass('d-none');
+        //     $('.downranking').html(data.data);
+        // })
+        // // products ranking
+        // $.post("{% url 'product:reportnetprofit' %}",{
+        //     'year': $('select[name="year1"]').val(),
+        //     'month': $('select[name="month1"]').val(),
+        //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+        // }, function(data, status){
+        //     data.netprofit>0?$('.netprofitholder').removeClass('bg-danger').addClass('bg-success')
+        //     :$('.netprofitholder').removeClass('bg-success').addClass('bg-danger')
+        //     $('.loadingnumbers').removeClass('d-flex').addClass('d-none');
+        //     $('.netprofit').text(data.netprofit);
+        //     //
+</script>
+{% endblock %}

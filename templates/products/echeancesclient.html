@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block menu_sales %}active{% endblock %}
+{% block submenu_create_bill %}active{% endblock %}
+{% block content %}
+<div class="bg-white rounded p-2">
+    <!-- <div class="d-flex justify-content-between">
+        
+        <div>
+
+            <select class="select-control" name="" id="" onchange="gettypeEcheance(event)">
+                <option value="">--</option>
+                <option value="effet">EFFET</option>
+                <option value="cheque">CHEQUE</option>
+                <option value="echeanceEspece">ECHEANCE ESPECE</option>
+            </select>
+            <div class="typetotal">0.00</div>
+        </div>
+    </div> -->
+    <div>
+        <strong style="font-size: 25px;">Total:
+            {{totalamount}} Dh
+        </strong>
+    </div>
+    <table class="table table-bordered table-hover ">
+        <thead>
+            <tr>
+                <td>Date creation</td>
+                <td>Type</td>
+                <td>
+                    Echeance
+                </td>
+                <td>
+                    N° piece
+                </td>
+                <td>
+                    Mantant
+                </td>
+                <td>
+                    Fourn.
+                </td>
+                <td style="width: 15%;">
+                    Etat
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in echeances %}
+            <tr class="{% if i.echeance == tomorrow %}bg-warning{% elif i.echeance <= today and not i.ispaid and not i.iscash %}bg-danger{% endif %}">
+                <td>
+                    {{i.date|date:"d/m/Y"}}
+                </td>
+                <td>
+                    {{i.mode}}
+                </td>
+                <td>
+                    {{i.echeance|date:"d/m/Y"}}
+                </td>
+                <td>
+                    {{i.npiece}}
+                </td>
+                <td>
+                    {{i.amount}}
+                </td>
+                <td>
+                    {{i.supplier.name}}
+                </td>
+                <td>
+                    {% if i.echeance == today or i.echeance < today %}
+                    {% if i.ispaid %}
+                    Reglé
+                    {% elif i.iscash %}
+                    Espece
+                    {% else %}
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-sm btn-primary" onclick="makeecheanceclientpaid(event, '{{i.id}}')">Reglé</button>
+                        <button class="btn btn-sm btn-success" onclick="makeecheanceclientcash(event, '{{i.id}}')">espece</button>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="top:0;" class="d-none passwordscreen m-auto position-fixed bg-dark w-100 h-100 d-flex justify-content-center text-white align-items-center">
+    <input type="password" class="form-control w-50" placeholder="Mot de passe" id="password" onkeyup="checkpassword(event)">
+  </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        function gettypeEcheance(event){
+            mode=$(event.target).val()
+            $.get('/product/gettypeEcheance', {'mode':mode}, (data)=>{
+                console.log(data)
+                $('.typetotal').html(data.total)
+            })
+        }
+    //   inactive=localStorage.getItem('inactive')||'1'
+    //   console.log('>>>>> ', inactive)
+    //   if (inactive=='1'){
+    //     console.log('its inactive')
+    //     $('.passwordscreen').removeClass('d-none')
+    //     $('.passwordinput').focus()
+    //   }else{
+    //     console.log('its not inactive')
+    //     checkForInactivity(120)
+    //   }
+       function makeecheanceclientpaid(event, id){
+        alertify.confirm("Confirmer le paiement", "Voulez vous vraiment marquer cette echeance comme payée?", function(){
+            $.get('/product/makeecheanceclientpaid', {'id':id}, (data)=>{
+                alertify.success('Echeance payée');
+                $(event.target).parent().html('Reglé')
+            })
+        }, function(){
+            alertify.error('Annulé');
+        });
+       }
+       function makeecheanceclientcash(event, id){
+        alertify.confirm("Confirmer le paiement espece", "Voulez vous vraiment marquer cette echeance comme Espece?", function(){
+            $.get('/product/makeecheanceclientcash', {'id':id}, (data)=>{
+                alertify.success('Echeance payée espece');
+                $(event.target).parent().html('Espece')
+            })
+        }, function(){
+            alertify.error('Annulé');
+        });
+       }
+    </script>
+{% endblock %}

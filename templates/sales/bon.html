@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+</head>
+<body>
+    <div class="d-flex justify-content-between">
+      <a href="/">Retour</a>
+        <a class="btn btn-sm btn-info" href="#" data-abc="true" onclick="PrintInvoice('{{inv.id}}')">Print </a>
+        
+      </div>
+    <div class="mt-100 mb-100">
+        <div id="ui-view">
+          <div class="" id="invoice">
+            
+              <div class="card-header d-flex">
+                <!-- <img src="/static/img/logo.jpeg" alt="" width="100" height="100"> -->
+                <div>
+                  <h1>VENTE DES PIECES AUTOS</h1>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between">
+                <div>
+                  Client: 
+                <strong>{% if inv.customer %}{{ inv.customer.customer_name }}{% else %}Comptoir {% endif%}.</strong>
+              </div>
+                <p>
+                  
+                  Bon {% if avoir %} avoir {%else%}sortie {%endif%}<strong>#{{inv.receipt_no}}</strong>
+              </p>
+              <p>
+                  {{inv.datebon|date:'d/m/Y'}}
+              </p>
+              
+              </div>
+              <div class="card-body">
+                <div class="d-flex mb-4 justify-content-between">
+                  
+                  <div class="">
+                  </div>
+                </div>
+                <div class="table-responsive-sm text-center">
+                  <table class="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Deignation</th>
+                        <th>Qté</th> 
+                        <th>Prix unit.</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% if avoir %}
+                      {% for item in inv.returneditems.all %}
+                        <tr>
+                            <td>
+                                {{ item.product.car}}
+                            </td>
+                            <td >
+                                {{ item.qty|floatformat:-2}}
+                            </td>
+                            <td>
+                                {{ item.price|floatformat:2}} 
+                            </td>
+                            <td >
+                                {{ item.total|floatformat:2 }} 
+                            </td>
+                        </tr>
+                        {% endfor %}
+                      {% else %}
+                        {% for i in items %}
+                      <tr>
+                        <td class="left">{{i.product.car}}</td>
+                        <td >
+                          {{ i.quantity|floatformat:-2}}
+                        </td>
+                        <td class="center">{{i.price|floatformat:2}}</td>
+                        <td >
+                            {{ i.purchase_amount|floatformat:2 }} 
+                        </td>
+                      </tr>
+                      {% endfor %}
+                      <tr>
+                      {% endif %}
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2"></td>
+                        <td >Total</td>
+                        <td>{{ inv.grand_total|floatformat:2 }} Dh {{payments}}</td>
+                    </tr>
+                    
+                </tr>
+                    
+                    </tbody>
+                  </table>
+                </div>
+                
+              </div>
+            
+            
+          </div>
+        </div>
+      </div>
+</body>
+<script src="{% static 'js/jquery.min.1.7.js'%}"></script>
+
+<script>
+  function PrintInvoice(bonid){
+
+url = window.location.pathname.split( '/' );[0]
+var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/bonprint/'+bonid, '', 'width=900,height=900');
+
+ myWindow.focus();
+
+ myWindow.addEventListener('load', function() {
+console.log('New window loaded.');
+
+// Wait for 5 seconds before printing
+setTimeout(function() {
+ try {
+   myWindow.print();
+   console.log('Print command issued.');
+   myWindow.close();
+   console.log('New window closed.');
+ } catch (e) {
+   console.error('Failed to print and close the window:', e);
+ }
+}, 300); // 1000 milliseconds = 1 seconds
+}, false);
+}
+
+    </script>
+</html>

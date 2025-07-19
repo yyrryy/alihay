@@ -1,0 +1,510 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="bg-white rounded shadow p-2">
+            {% if product.image %}
+            <img src="{{product.image.url}}" class="w-100">
+            {% endif %}
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <th>REF</th>
+                        <th>{{product.ref.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <th>{{product.category.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Designation</th>
+                        <th>{{product.car.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Fourn.</th>
+                        <th>{{product.originsupp.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Marque</th>
+                        <th>{{product.mark.name.upper}}</th>
+                    </tr>
+                    <tr>
+                        <th>Entrées</th>
+                        <th>{{totalin}}</th>
+                    </tr>
+                    
+                    <tr>
+                        <th>Sorties</th>
+                        <th>{{totalout}}</th>
+                    </tr>
+                    <tr>
+                        <th>Stock facture</th>
+                        <th>{{product.stockfacture}}</th>
+                    </tr>
+                    <tr style="background: {%if product.stock <= 0%}red{%elif product.stock > 0 and product.stock == product.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
+                        <th>Stock</th>
+                        <th><strong class="oldstockqty">{{product.stock|floatformat:-2}} </strong>
+                            <button class="btn btn-info" onclick="$('.updatestock').toggleClass('d-none')"></button>
+                            <div class="updatestock d-none">
+                                <input type="number" class="qtystock">
+                                <button class="btn btn-success" onclick="updatestock('{{product.id}}')"></button>
+                            </div>
+                            <!-- <div class="accordion-item">
+                                <button class="accordion-button bg-white collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+
+                                </button>
+                              <div id="collapseTwo" class="accordion-collapse collaps collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+                                <div class="accordion-body">
+                                  <input type="number">
+                                  <button></button>
+
+                                </div>
+                              </div>
+                            </div> -->
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Prix pondiré (Net)</th>
+                        <th>{{product.pondire}} DH</th>
+                    </tr>
+                    <tr>
+                        <th>Dernier prix achat</th>
+                        <th>{{product.pr_achat}} DH</th>
+                    </tr>
+                    <tr>
+                        <th>Remise</th>
+                        <th>{{product.remise}} %</th>
+                    </tr>
+                    <tr>
+                        <th>Prix achat NET</th>
+                        <th>{{product.prnet}} Dh</th>
+                    </tr>
+
+                    <!-- <tr>
+                        <th>% vents</th>
+                        <th>{{percentage}}%</th>
+                    </tr>
+                    <tr class="text-white bg-{% if netprofit > 0 %}success{% else %}danger{% endif %}">
+                        <th>
+                            Net profit
+                        </th>
+                        <th>
+                            {{netprofit|floatformat:2}} DH
+                        </th>
+                    </tr>
+                    <tr >
+                        <th>
+                            Profit margin
+                        </th>
+                        <th>
+                            {{profitmargin}}%
+                        </th>
+                    </tr> -->
+                </tbody>
+            </table>
+            
+            <input type="password" class="form-control border-danger" name="password">
+            <button class="btn btn-danger w-100" onclick="deletearticle(event, '{{product.id}}')">
+                <i class="fa fa-trash"></i>
+                Supprimer
+            </button>
+            <!-- <img src="/product/barcode/{{product.bar_code}}" alt="Barcode" style="width: 100%;">
+            <input type="number" placeholder="Prix" class="form-control codebarprice">
+            <input type="number" placeholder="qty" class="form-control codebarqty">
+            <button class="btn btn-primary w-100" onclick="printcodebar(event)">Imprimer</button> -->
+        </div>
+    </div>
+
+    <div class="col-md-9 row">
+
+        <div class="col-md-6">
+            <div class="rounded shadow" style="height: 60vh; overflow-y: scroll;">
+                <h4 class="p-2 rounded text-white bg-danger shadow text-center bg-danger">
+                    <strong>
+                        Entrée
+                    </strong >
+                </h4>
+                <div class="p-2">
+                    <table class="table table-striped table-advance item-table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="text-center">Total entrées</th>
+
+                            <th class="text-center">
+                                Total costs
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="product-table-body text-center">
+                            <tr>
+                                <td>{{totalin}}</td>
+
+                                <td class="totalcost">{{totalcost}}</td>
+
+                            </tr>
+                        </tbody>
+                        </table>
+                        <table class="table table-striped table-advance item-table table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="text-center">Date</th>
+                                <th class="text-center">Quantité</th>
+                                <th class="text-center">Source</th>
+                                <th class="text-center">Prix</th>
+
+                            </tr>
+                            </thead>
+                            <tbody class="product-table-body text-center">
+                                {% for i in stockin %}
+                                <tr>
+                                    <td>{{ i.dated_order|date:"d/m/Y" }}</td>
+                                    <td>{{ i.quantity|floatformat:-2 }} </td>
+
+
+                                    <td>
+                                        
+                                        {% if i.status == 1 and i.reciept != None %}
+                                        <strong>
+                                            
+                                            <a type="button" onclick="bonentree({{i.reciept.id}})" class="text-success">{%if i.reciept.isfacture%}(FC){%endif%}{{i.reciept.supplier.name}}</a>
+
+                                        </strong>
+                                        {% elif i.receipt == None and i.avoir_reciept == None %}
+                                        Stock initial
+                                        {% else %}
+                                            Avoir {% if i.avoir_reciept.customer %}
+                                                clt {{i.avoir_reciept.customer.customer_name}}{% else %}Comptoir
+                                            {% endif %}
+
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        {{ i.price|floatformat:2 }} DH
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="bg-white rounded shadow" style="height: 60vh; overflow-y: scroll;">
+                <h4 class="p-2 rounded text-white bg-success shadow text-center bg-success">
+                    <strong>
+                        Sortie
+                    </strong >
+                </h4>
+                <div class="p-2">
+                    <table class="table table-striped table-advance table-hover item-table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="text-center">
+                                Total Ventes
+                            </th>
+
+                            <th class="text-center">
+                                Total revenus
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="product-table-body text-center">
+                            <tr>
+                                <td>{{totalout}}</td>
+
+                                <td class="totalprofit">{{totalamountout}}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-striped table-advance item-table table-bordered">
+                        <thead>
+                        <tr>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Quantité</th>
+                            <th class="text-center">Client</th>
+                            <th class="text-center">Prix</th>
+                            <th class="text-center">N° Bon</th>
+                        </tr>
+                        </thead>
+                        <tbody class="product-table-body text-center">
+                        {% for i in stockout %}
+                            <tr>
+                                <td>{% if i.isavoirsupp %} {{i.avoirsupp.date|date:"d/m/Y"}} {%else%} {{ i.invoice.datebon|date:"d/m/Y"}}{%endif%}</td>
+                                <td class="qty">{{ i.quantity|floatformat:-2 }} </td>
+                               <td> {% if i.invoice.customer %} {{i.invoice.customer.customer_name}} {% else %} {% if i.isavoirsupp %} {{i.avoirsupp.supplier}} (Avoir frs) {% else %} Comptoir {% endif %}{% endif %}
+                                <td>
+                                    {{i.price}}
+                                </td>
+                                <td>
+
+                                    {% if i.isavoirsupp == True %}
+                                    {{i.avoirsupp.receipt_no}}
+                                    {% else %}
+
+                                    <a type="button" class="bg-white" onclick="bondata({{i.invoice.id}})">
+                                        {{i.invoice.receipt_no}}
+                                    </a>
+                                    {% endif %}
+                                    <!-- {% if i.invoice_id %}
+                                    <a class="bg-white" href=''sales:invoice_detail' invoice_id=i.invoice_id %}">{{i.invoice.receipt_no}}</a>-->
+                                    <!-- {{i.isavoirsupp}}
+                                    {% if i.isavoirsupp == True %}
+                                    Avoir Fournisseur
+                                    {% else %}
+                                    <a type="button" class="bg-white" onclick="bondata({{i.invoice.id}})">
+                                        {{i.invoice.receipt_no}}
+                                    </a>
+                                    {% endif %} -->
+                                    <!-- {% else %}
+                                    <a class="retourbtn btn" data-bs-toggle="modal" data-bs-target="#retourmodal" id="{{i.id}}">Retour</a>
+                                    {% endif %}-->
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+<div class="row mt-5">
+    <!-- <div class="col-md-3">
+        <div class="bg-white rounded shadow">
+            <h6 class="p-2 rounded bg-white shadow text-center">
+                <strong>
+                    Stock des prix
+                </strong >
+            </h6>
+            <table class="table table-bordered">
+                {% for i in prices %}
+                <tr>
+                    <td>
+                        {{i.0|floatformat:2}}
+                    </td>
+                    <td>
+                        {{i.1|floatformat:-2}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div> -->
+    <!-- <div class="col-md-9">
+        <div class="">
+            <div class="bg-white rounded shadow">
+                <h4 class="p-2 rounded bg-white shadow text-center">
+                    <strong>
+                        Evolution prix d'achat
+                    </strong >
+                </h4>
+                <div class="priceschart">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+<!-- <div class="fixed-bottom p-2 bg-{% if netprofit > 0%}success{%else%}danger{%endif%} text-white text-center">
+
+<div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item bg-transparent text-white">
+        <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed bg-transparent text-white" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Net profit :
+            {{netprofit}}
+        </button>
+        </h2>
+        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% if netprofit < 0%}
+            Rest en  Stock {{ rest }}
+            {% endif %}<br>
+            cost unit. {{product.pr_achat}} Dh<br>
+            Percentage vendu {{percentage}}%<br>
+
+
+
+        </div>
+        </div>
+    </div>
+</div>
+</div> -->
+
+<!-- retour modal -->
+<div class="modal fade" id="retourmodal" tabindex="-1" aria-labelledby="eretourmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form method="post" action="{% url 'product:retour' %}">
+                {% csrf_token %}
+
+
+                <div class="mb-3">
+                    <label>
+                        Qty
+                    </label>
+                    <input class="form-control" required type="number" name="qtyinp">
+                    <input class="form-control" type="text" name="productid" value="{{product.id}}" hidden>
+                    <input class="form-control" type="text" name="purchaseid" value="" hidden>
+                </div>
+
+
+
+
+                <button type="submit" class="btn btn-primary submitretour" disabled>Ajouter</button>
+
+            </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    function deletearticle(event, productId) {
+        event.preventDefault();
+        const password = $('[name="password"]').val();
+        if (!password || password.trim() === '') {
+            // Display an error message if the password field is empty
+            alertify.error('Please enter the password.');
+            return;
+        }
+        $.post('/product/deleteproduct/', {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'id': productId,
+                'password': password
+            }, function(response) {
+                console.log(response)
+                if (response.success) {
+                    alertify.success('Article deleted successfully.');
+                    window.location.href = '/';
+                } else {
+                    alertify.error('Failed to delete article: ' + response.message);
+                }
+            }).fail(function() {
+                alertify.error('An error occurred while deleting the article.');
+            });
+        }
+    
+  function printcodebar(){
+    codebarprice=$('.codebarprice').val()
+    codebarqty=$('.codebarqty').val()
+    if (codebarprice=="" || codebarprice==0){
+      $('.codebarprice').addClass('border-danger')
+      return
+    }
+    $('.codebarprice').removeClass('border-danger')
+    if (codebarqty=="" || codebarqty==0){
+      $('.codebarqty').addClass('border-danger')
+      return
+    }
+    $('.codebarqty').removeClass('border-danger')
+
+    url = window.location.pathname.split( '/' );[0]
+    var myWindow = window.open('http://'+window.location.href.split( '/' )[2]+'/product/printbarcodes?productid={{product.id}}&qty='+codebarqty+'&price='+codebarprice, '', 'width=900,height=900');
+
+    myWindow.focus();
+
+    myWindow.addEventListener('load', function() {
+    console.log('New window loaded.');
+
+    // Wait for 5 seconds before printing
+    setTimeout(function() {
+    try {
+      myWindow.print();
+      console.log('Print command issued.');
+      myWindow.close();
+      console.log('New window closed.');
+    } catch (e) {
+      console.error('Failed to print and close the window:', e);
+    }
+    }, 300); // 1000 milliseconds = 1 seconds
+    }, false);
+    
+  }
+    function updatestock(productid){
+        stock=$('.qtystock').val()
+        if (stock!==''){
+            $.get('/product/updatestock', {'productid':productid, 'stock':stock}, (data)=>{
+                $('.oldstockqty').text(stock)
+            })
+        }
+    }
+    const pondire=(id)=>{
+        $.post("{% url 'product:pondire' %}", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'id':id}, (data)=>{
+            location.reload()
+        })
+    }
+    const bonentree=(id)=>{
+        $('.bondata').html('<div class="spinner-grow text-primary" role="status"><span class="sr-only">Loading...</span></div>')
+        $('.bondataholder').removeClass('d-none')
+        $.post(`/product/bonentree/${id}`,{
+            'csrfmiddlewaretoken':'{{csrf_token}}'
+        },
+        function(data){
+            $('.bondata').html(data.data)
+        })
+    }
+    // const bondata=(id)=>{
+    //     $('.bondata').html('<div class="spinner-grow text-primary" role="status"><span class="sr-only">Loading...</span></div>')
+    //     $('.bondataholder').removeClass('d-none')
+    //     $.post("{% url 'product:bondata' %}",{id:id},function(data){
+    //         $('.bondata').html(data.data)
+    //     })
+    // }
+
+    qtyinp=$('[name="qtyinp"]')
+    $('.retourbtn').each((i, el)=>{
+        $(el).on('click', ()=>{
+            qty=parseInt($(el).parent().parent().find('.qty').text())
+            qtyinp.attr('max', qty)
+            purchseid=$(el).attr('id')
+            console.log(purchseid)
+            $('[name="purchaseid"]').val(purchseid)
+
+        })
+    })
+    qtyinp.on('change', ()=>{
+        console.log('channged')
+        max=parseFloat(qtyinp.attr('max'))
+        if (qtyinp.val()>max || qtyinp.val()==0 || qtyinp.val()==''){
+            qtyinp.css({
+                'border':'1px solid red'
+            })
+            $('.submitretour').attr('disabled', true)
+            return
+        }else{
+            $('.submitretour').attr('disabled', false)
+        }
+    })
+    $.post("{% url 'product:priceevolution' %}", {'csrfmiddlewaretoken': '{{ csrf_token }}', 'id':{{product.id}}}, (data)=>{
+        $('.priceschart').html(data)
+    })
+    // $('.submitretour').on('click', ()=>{
+    //     $('.submitretour').attr('disabled', true)
+    // })
+</script>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block stock_product %}active{% endblock %}
+{% block submenu_list_stock %}active{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <br>
+        <a href="{% url 'product:stock_items_list' %}"><button type="button" id="stock-in" class="btn btn-primary fa fa-arrow-left" id="load" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a>
+        <br><br><br>
+        <div class="content-panel p-2">
+            <h3 class="text-center">({{ product.name }}) </h3>
+            <div class="panel-body">
+                <form class="form-horizontal product_item_form" action="{% url 'product:add_stock_items' product_id=product.id %}" method="post" autocomplete="off">
+                    <div class="form-group">
+                            <div class="">
+                            <label><strong>Quantité</strong></label>
+                            <span class="item-error" style="color:red; display:none">...</span>
+                            <input type="number"  class="form-control quantity"  name="quantity" id="quantity"  placeholder="Stock Quantity" required><br>
+                        <div class="col-md-4">
+                            {% csrf_token %}
+                            
+                            <input type="hidden" name="purchased_item" value="0">
+                            <input type="hidden" name="product" value="{{ product.id }}">
+                            <input type="hidden" name="retail_price" value="0">
+                        </div>
+                        
+                        <div class="">
+                            <button type="button"  class="btn btn-primary product-sub-btn" style="width: 100%"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Enregistrer</button>
+                        </div>
+                        </div>
+                        
+                        
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+
+            $('.buying_price_item').on('change', function(){
+                $('.total_buying_amount').val(Number($(this).val()) * Number($('.quantity').val()));
+            });
+
+            $('.quantity').on('change', function(){
+                if ($('.buying_price_item').val()) {
+                    $('.total_buying_amount').val(Number($('.buying_price_item').val()) * Number($(this).val()));
+                }
+                if ($('.price_per_item').val()) {
+                    $('.total_amount').val(Number($('.price_per_item').val()) * Number($(this).val()));
+                }
+            });
+
+            $(".product-sub-btn").on ('click', function(){
+                $(this).addClass('disabled');
+                $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                var error= false;
+
+                if ($('.product-error').val() == ""){
+                    $('.product-error').show();
+                    error = true;
+                }
+                else {
+                    $('.product-error').hide();
+                }
+                if ($('.quantity').val () == ""){
+                    $('.item-error').show();
+                    error = true;
+                }
+                else {
+                    $('.item-error').hide();
+                }
+                if (error == true) {
+                    $(this).removeClass('disabled');
+                    $(this).html('Enregister');
+                    return;
+                }
+                else
+                {
+                    $('.product_item_form').submit();
+
+                }
+
+            });
+
+
+
+        });
+
+        $('.product-error').keyup (function(){
+            $('.product-error').hide();
+        });
+
+        function checkDec(el){
+            var ex = /^[0-9]+\.?[0-9]*$/;
+            if(ex.test(el.value)==false){
+                el.value = el.value.substring(0,el.value.length - 1);
+            }
+        }
+
+        $('.quantity').keyup (function(){
+            $('.item-error').hide();
+        });
+
+        function checkDec(el){
+            var ex = /^[0-9]+\.?[0-9]*$/;
+            if(ex.test(el.value)==false){
+                el.value = el.value.substring(0,el.value.length - 1);
+            }
+        }
+
+
+        $('.form-control').click (function () {
+            $('.list-error').hide();
+            checkDec(this);
+
+        });
+        function sum() {
+            var txtFirstNumberValue = document.getElementById('quantity').value;
+            var txtSecondNumberValue = document.getElementById('price_per_item').value;
+            var result = parseInt(txtFirstNumberValue) * parseInt(txtSecondNumberValue);
+            if (!isNaN(result)) {
+                document.getElementById('total_amount').value = result;
+            }
+        }
+    </script>
+<script>
+$('#stock-in').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

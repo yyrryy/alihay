@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- add one stock model -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+        
+        <div class="modal-body">
+            <form class="form-horizontal product_item_form" action="{% url 'product:add_stock_items' product_id=product.id %}" method="post" autocomplete="off">
+                <div class="form-group">
+                        <div class="">
+                        <label><strong>Quantité</strong></label>
+                        <span class="item-error" style="color:red; display:none">...</span>
+                        <input type="number"  class="form-control quantity"  name="quantity" id="quantity"  required><br>
+                    <div class="col-md-4">
+                        {% csrf_token %}
+                        
+                        <input type="hidden" name="purchased_item" value="0">
+                        <input type="hidden" name="product" value="{{ product.id }}">
+                        <input type="hidden" name="retail_price" value="0">
+                    </div>
+                    
+                    <div class="">
+                        <button type="button"  class="btn btn-primary product-sub-btn" style="width: 100%"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing Order">Enregistrer</button>
+                    </div>
+                    </div>
+                    
+                    
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="col-md-12">
+        <br>
+
+        <!-- product details tacle -->
+        <!-- <div class="card mt-3">
+            <h1 class="text-center"> <small> </small> Entrée</h1><br>
+            <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">Article</th>
+                    <th scope="col">Marque</th>
+                    <th scope="col">Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ product.name|title }}</td>
+                    <td>{{ product.brand_name|title }}</td>
+                    <td>{{product.stock|floatformat:-2}}</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div> -->
+        <!-- <a href="{% url 'product:stock_items_list' %}"><button type="button" id="add-product" class="btn btn-primary fa fa-arrow-left" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i>Processing"></button></a> -->
+        <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            + Ajouter
+        </button>
+
+        <div class="content-panel table-responsive">
+            <h1 class="text-center">{{ product.name|title }} | الدخول</h1><br>
+
+            <table class="table table-striped table-advance table-hover item-table table-bordered">
+                <thead>
+                <tr>
+                    <th class="text-center">Quantité</th>
+
+                    <th class="text-center">Date</th>
+                    <th class="text-center"></th>
+                </tr>
+                </thead>
+                <tbody class="product-table-body text-center">
+                {% for stockin in object_list %}
+                    <tr>
+                        <td>{{ stockin.quantity|floatformat:-2 }} </td>
+
+                        <td>{{ stockin.dated_order|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'product:update_stockin' pk=stockin.id %}"><button class="btn btn-primary btn-xs">Modifier</button></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if paginator.page_range|length > 1 %}
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li><a  style="background-color: #3070A8; color: white" class="page_previous" href="{% if page_obj.has_previous %}{% url 'product:stockin_list' product_id=product.id %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" title="Previous"><<</a></li>
+                        <li><a style="background-color: #3070A8; color: white" class="page_next" href="{% if page_obj.has_next %}{% url 'product:stockin_list' product_id=product.id %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}" title="Next">>></a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+<script>
+    $(".product-sub-btn").on ('click', function(){
+                $(this).addClass('disabled');
+                $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                var error= false;
+
+                if ($('.product-error').val() == ""){
+                    $('.product-error').show();
+                    error = true;
+                }
+                else {
+                    $('.product-error').hide();
+                }
+                if ($('.quantity').val () == ""){
+                    $('.item-error').show();
+                    error = true;
+                }
+                else {
+                    $('.item-error').hide();
+                }
+                if (error == true) {
+                    $(this).removeClass('disabled');
+                    $(this).html('Enregister');
+                    return;
+                }
+                else
+                {
+                    $('.product_item_form').submit();
+
+                }
+
+            });
+$('#stock-in').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+$('#add-product').on('click', function() {
+    var $this = $(this);
+  $this.button('loading');
+    setTimeout(function() {
+       $this.button('reset');
+   }, 5000);
+});
+
+    </script>
+{% endblock %}

@@ -1,0 +1,788 @@
+{% extends 'base.html' %}
+{% block submenu_add_product %}active{% endblock %}
+{% block menu_product %}active{% endblock %}
+
+{% block css %}
+{%endblock%}
+{% block content %}
+
+<!-- add products -->
+<div class="modal fade" id="duplicatemodel" tabindex="-1" aria-labelledby="eimagedisplaymodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body text-center">
+            <input type="hidden" name="duplicateid">
+            <select name="markduplicate" class="form-select">
+                {% for i in marks %}
+                    <option value="{{i.id}}">
+                        {{i.name}}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="d-flex justify-content-between">
+    <!-- <button type="button" class="btn btn-success addoneproduct" data-bs-toggle="modal" data-bs-target="#addoneproductmodal">
+        Ajouter un produits
+    </button> -->
+    
+    
+</div>
+
+
+<div class="row">
+    <!-- articles -->
+    <div class="col-lg-9 col-6">
+        
+        <div class="shadow rounded p-2 bg-white">
+            <div class="d-flex justify-content-between rounded shadow p-2" style="background: black;">
+
+                <h5 class=" text-center  text-white">
+                    <span class="categorynameholder"></span>
+                </h5>
+                <input type="text" class="form-control searchref sticky-top w-50" placeholder="Chercher REF stock">
+                <!-- <div class="col-5">
+                    <input type="text" class="form-control search-invoice" placeholder="Rechercher " data-catgoryid="1">
+                </div> -->
+            </div>
+            <div class="pdctsholder" style="height: 75vh; overflow: scroll; position: relative;">
+                <div class="loadertable d-none justify-content-center align-items-center" style="
+                position: absolute;
+                z-index: 9999;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: #0000007d;
+                ">
+                <div class="spinner-border text-white" role="status">
+
+                </div>
+                </div>
+                <table class="mb-5 table table-bordered table-advance table-hover item-table">
+
+                    <thead style="position: sticky; top: 0; background-color: white;">
+                    <tr>
+                        <th>Ref</th>
+                        <th >Famille</th>
+                        <th>Marque</th>
+                        <th>Designation</th>
+                        <!-- <th>Frn.</th> -->
+                        <th>Stock</th>
+                        <th>Pondiré (NET)</th>
+                        <th>P. achat</th>
+                        <th>remise</th>
+                        <th>P. vt gro</th>
+                        <th>P. vt compt.</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody class="product-table-body product_search_result">
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Categories -->
+    <div class="col-lg-3 col-6">
+
+        <div class="shadow bg-white p-2 rounded">
+            <a type="button" class="btn btn-success w-100 mb-3" href="/product/addproduct">
+                Ajouter un produits
+            </a>
+            <a href="/product/marks" class="btn btn-primary w-100">Marques</a>
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+
+                  <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button collapsed btn-success" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                        + Ajouter Categories
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                        <form action="{% url 'product:addcategory' %}" method="post">
+                            <div class="form-control text-center">
+                                <small class="">
+
+                                </small>
+                                <select name="parent" class="form-select disabled mb-2">
+                                        <option value="{{ parents.0.id}}">
+                                            {{ parents.0.name}}
+                                        </option>
+                                </select>
+                                <input type="text" name="category" placeholder="Nom" required class="form-control mt-3">
+                                <button class="btn btn-primary w-100 mt-2">
+                                    Valider
+                                </button>
+                            </div>
+                        </form>
+
+
+
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <hr>
+            <!-- categories disply -->
+            <div style="
+            max-height: 394px;
+            overflow-y: scroll;
+        ">
+
+                <ul id="compositions-list" class="pure-tree main-tree">
+                    <input type="text" class="form-control searchcategories sticky-top" placeholder="Chercher les categories">
+                    <div class="searchresults">
+
+                    </div>
+                        {% for i in children %}
+                        <li class="pure-tree_link d-flex justify-content-between">
+
+                            <a href="#" class="categoriesbtn" data-catgoryid="{{i.id}}">
+                                <b>
+                                    {{i.name}} ({{i.product_set.all.count}})
+                                </b>
+                            </a>
+                            <button class=" btn-xs btn updatecategorybtn fa fa-edit" child="{{i.name}}" id="{{i.id}}" parent="{{i.parent}}" data-bs-toggle="modal" data-bs-target="#updatecategorymodal"></button>
+
+                        </li>
+                        {% endfor %}
+                    <!-- {% for i in categories %}
+                    <li>
+
+                    <input type="checkbox" id="trigger-views{{i.id}}">
+                    <label for="trigger-views{{i.id}}">{{i.name}} </label>
+                    <ul class="pure-tree">
+                        {% for k in i.children.all %}
+                        {% include 'nested.html' %}
+                        {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %} -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+
+
+<!-- add one product model -->
+<div class="modal fade" id="addoneproductmodal" tabindex="-1" aria-labelledby="eaddoneproductmodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form method="post" action="{% url 'product:addoneproduct' %}" enctype="multipart/form-data" class="addoneproductform">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="">Categorie</label>
+                    <select class="form-select checkref" required name="pcategory">
+                        <option value=""></option>
+                        {% for i in children %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="">
+                        Image
+                    </label>
+                    <input type="file" class="form-control" name="image">
+                </div>
+
+                <div class="mb-3 row">
+                    <b class="text-center text-danger checkerror d-none">
+                        Deja existé
+                    </b>
+                    <div class="col-6">
+                        <label>
+                            Ref.
+                        </label>
+                        <input class="form-control checkref" required type="text" name="ref" >
+                    </div>
+                    <div class="col-6">
+                        <label>
+                            Marque <span class="fa fa-refresh btn refreshmark"></span>
+                        </label>
+
+                        <select class="form-select checkref markselect" required type="text" name="mark">
+                            <option value=""></option>
+                            {% for i in marks %}
+                            <option value="{{i.id}}">
+                                {{i.name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="mb-3">
+                    <label>
+                        Article
+                    </label>
+                    <input class="form-control" required type="text" name="name" >
+                </div> -->
+                <div class="mb-3">
+                    <label>
+                        Fournisseur
+                    </label>
+                    <select class="form-select" required type="text" name="originsupp">
+                        <option value=""></option>
+                        {% for i in suppliers %}
+                        <option value="{{i.id}}">
+                            {{i.name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label>
+                        Designation
+                    </label>
+                    <input class="form-control" required type="text" name="car" >
+                </div>
+                <!-- <div class="mb-3">
+                    <label for="">
+                        Prix ventes
+                    </label>
+                    <input required type="number" class="form-control" name="price" min="0" step="0.01">
+                </div> -->
+                <div class="mb-3 row">
+                    <div class="col-6">
+                        <label>
+                            Prix acht
+                        </label>
+                        <input type="number" required class="form-control" name="prachat" min="0" step="0.01">
+                    </div>
+                    <div class="col-6">
+                        <label>
+                            Remise %
+                        </label>
+                        <input type="number" required class="form-control" name="remise" min="0" step="0.01">
+                    </div>
+
+                </div>
+                <div class="mb-3">
+                    <label for="">
+                        Stock
+                    </label>
+                    <input class="form-control" required type="number" name="stock" min="0">
+                </div>
+                <div class="mb-3">
+                    <label for="">
+                        Stock min.
+                    </label>
+                    <input class="form-control" required type="number" name="minstock" min="0">
+                </div>
+
+
+
+                <button type="submit" class="btn btn-primary addoneproductbtn" disabled>Ajouter</button>
+
+            </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- update category -->
+<div class="modal fade" id="updatecategorymodal" tabindex="-1" aria-labelledby="eupdatecategorymodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form method="post" class="updatecategoryform">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="">Categorie</label>
+                    <input type="text" name="categoryname" class="form-control">
+                </div>
+
+
+
+
+                <button type="submit" class="btn btn-primary w-100">Ajouter</button>
+
+            </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+    let currentPagepdcts = 1;
+    let loadingpdcts = false;
+    function handleScrollpdcts () {
+      console.log('scrolling .........')
+      const container = $('.pdctsholder')[0]; // Get the native DOM element
+        let categoryid=$('.categorynameholder').attr('catgoryid')
+      const lastRow = document.querySelector('.pdct-row:last-child');
+      const lastRowOffset = lastRow.offsetTop + lastRow.clientHeight;
+      const containerBottom = container.scrollTop + container.clientHeight;
+      if (containerBottom+900 >= lastRowOffset && !loadingpdcts) {
+        console.log('loading........')
+        currentPagepdcts=currentPagepdcts+1
+          loadMorepdcts(categoryid, currentPagepdcts);
+      }
+    };
+    $('.pdctsholder').on('scroll', handleScrollpdcts)
+    function loadMorepdcts (categoryid, currentPagepdcts)  {
+        //currentPagepdcts++;
+        console.log('>>>', currentPagepdcts, categoryid)
+    loadingpdcts = true;
+    $.get(`/product/loadpdctsinstock/?page=${currentPagepdcts}&categoryid=${categoryid}`, (data)=>{
+      console.log(data)
+      const tbody = $('.product_search_result');
+      tbody.append(data.trs);
+
+      console.log('products loaded')
+      loadingpdcts = false;
+
+
+          if (!data.has_more) {
+
+              // Remove the scroll event listener when there are no more records
+              $('.pdctsholder').off('scroll', handleScrollpdcts);
+          }
+        })
+
+
+        // Append the new records to your table or update the DOM as needed
+    };
+
+    function getproductsbycategory(categoryid){
+
+        $('.loadertable').addClass('d-block').removeClass('d-none')
+        $.ajax({
+        url: "{% url 'product:getproductsbycategory' %}",
+        type: "POST",
+        data: {
+            'category': categoryid,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (data) {
+            $('.loadertable').addClass('d-none').removeClass('d-block')
+            $('.product-table-body').html(data.data)
+            editproduct()
+            displayimage()
+            console.log('onscroll')
+
+            }
+        })
+
+    }
+    $('.searchref').focus()
+    $(window).on('click', (e)=>{
+        if(e.target.classList.contains('duplicatebtn')){
+            el=$(e.target)
+            el.parent().find('.duplicatediv').toggleClass('d-none')
+        }
+        if(e.target.classList.contains('createduplicate')){
+            el=$(e.target)
+            ref=el.parent().find('.refduplicate').val()
+            id=el.attr('id')
+            categoryid=el.attr('categoryid')
+            checkboxes=el.parent().find('.checkboxes')
+            console.log(id)
+            if (ref==''){
+                return
+            }else{
+                // get diffusion product
+                $.post('/product/getdeffusionpdct', {'id':id,'ref':ref, 'categoryid':categoryid, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, (data)=>{
+                    checkboxes.html(data.data)
+                    $('[name="deffusionproduct"]').on('change', function(){
+                        originid=$(this).attr("originid")
+                        originproduct=$(this).attr("originproduct")
+                        product=$(this).attr("product")
+                        id=$(this).val()
+                        if (confirm(`Diffuse ${product} au ${originproduct}`)){
+                            data={
+                                'id':id,
+                                'originid':originid,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                            }
+                            $.post('/product/diffuse', data, (data)=>{
+                                location.reload()
+                            })
+                        }
+                    })
+                })
+            }
+        }
+    })
+    $(document).ready(()=>{
+        $('.addoneproductbtn').on('click', function(){
+            $(this).attr('disabled', true)
+            $('.addoneproductform').submit()
+        })
+        $('.searchref').on('change', ()=>{
+            // ajax call to searchrefinlow
+            let ref=$('.searchref').val()
+            if(ref==''){
+                return
+            }
+            $('.loadertable').addClass('d-block').removeClass('d-none')
+
+            $.ajax({
+                url: "{% url 'product:searchrefinstock' %}",
+                //url: "{% url 'product:searchglobal' %}",
+                type: "POST",
+                data: {
+                    'ref': ref,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    console.log(data)
+                    $('.loadertable').addClass('d-none').removeClass('d-block')
+                    $('.product-table-body').html(data.data)
+                    editproduct()
+                    displayimage()
+                }
+            })
+        })
+        $('.refreshmark').on('click', ()=>{
+            $.ajax({
+                url: "{% url 'product:refreshmark' %}",
+                type: "GET",
+                success: (data)=>{
+                    $('.markselect').html(data.data)
+                }
+            })
+        })
+
+        let cards = document.querySelectorAll('.pure-tree_link')
+
+        function liveSearch() {
+            let search_query = document.querySelector(".searchcategories").value;
+            console.log(search_query)
+            //Use innerText if all contents are visible
+            //Use textContent for including hidden elements
+            for (var i = 0; i < cards.length; i++) {
+                if(cards[i].textContent.toLowerCase()
+                        .includes(search_query.toLowerCase())) {
+                            console.log(cards[i])
+                            cards[i].classList.remove("d-none");
+                } else {
+                    cards[i].classList.add("d-none");
+                }
+            }
+        }
+
+    //A little delay
+    let typingTimer;
+    let typeInterval = 500;
+    let searchInput = document.querySelector('.searchcategories');
+
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(liveSearch, typeInterval);
+    });
+
+    const displayimage=()=>{
+        $('.imagedisplaybtn').each((i, el)=>{
+            $(el).on('click', ()=>{
+
+                img=$(el).find('.imgproduct').attr('src')
+                console.log(img)
+                $('.imgproductmodal').attr('src', img)
+            })
+        })
+    }
+
+        // change action in form
+        $('select[name="category"]').on('change', ()=>{
+            console.log('changed')
+            $('.addbulk').attr('action', '/product/items/addbulkcategory/'+$('[name="category"]').val())
+
+        })
+
+        $('.addbulkcategorybtn').on('click', ()=>{
+            console.log('ffff')
+            if ($('select[name="category"]').val()==0 || $('[name="excel_file"]').val()==''){
+                alert('Vuiller choisir EXCEL ou Categorie')
+
+            }
+            else{
+                $('.addbulk').submit()
+            }
+        })
+
+        // serch in tables instead of sending ajax request
+        $(".name_search").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                // $(".product_search_result tr").filter(function() {
+                //   $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                // });
+                // search only in the first td ot each tr
+                $(".product_search_result tr").filter(function() {
+                    // used to be td:first, first td
+                    $(this).toggle($(this).find('td').text().toLowerCase().indexOf(value) > -1)
+                });
+                editproduct()
+                displayimage()
+              });
+
+        // edit product handler
+        updateform=$('.add-product-form')
+
+        const editproduct=()=>{
+            $('.update').each((i, el)=>{
+                $(el).on('click', ()=>{
+                    updateform.attr('action', '/product/updateproduct/'+$(el).attr('data-id'))
+                    categoryid=$(el).parent().parent().find('.product_name').attr('categoryid')
+                    $('[name="thiscategory"]').val(categoryid)
+                    updateform.attr('id', i+1)
+                    category=$(el).parent().parent().find('.product_name').text().trim()
+                    markid=$(el).parent().parent().find('.mark').attr('markid')
+                    suppid=$(el).parent().parent().find('.originsupp').attr('suppid')
+                    // $('[name="updatecategory"]').prepend(`
+                    // <option value=${categoryid}>${category}</option>
+                    // `)
+                    // const firstOptionValue = select.find('option:first').val();
+                    // select.val(firstOptionValue);
+
+                    select = $('[name="updatecategory"]');
+                    select.val($(`[name="updatecategory"] option[value="${categoryid}"]`).val());
+
+                    select = $('[name="updatemark"]');
+                    select.val($(`[name="updatemark"] option[value="${markid}"]`).val());
+                    console.log($(el).parent().parent().find('.product_remise').text().trim())
+                    select = $('[name="updateoriginsupp"]');
+                    select.val($(`[name="updateoriginsupp"] option[value="${suppid}"]`).val());
+                    $('[name="updateref"]').val($(el).parent().parent().find('.product_ref').text().trim())
+                    $('[name="updateremise"]').val($(el).parent().parent().find('.product_remise').text().trim())
+                    $('[name="updatecar"]').val(($(el).parent().parent().find('.car').text().trim()))
+                    $('[name="updateminstock"]').val(($(el).parent().parent().find('.minstock').text().trim()))
+                    // $('[name="updatename"]').val(parts[1].trim())
+                    //$('[name="updateprice"]').val(parseFloat($(el).parent().parent().find('.product_price').text()))
+                    $('[name="updatepr_achat"]').val(parseFloat($(el).parent().parent().find('.product_pr_achat').text()))
+                    $('.checkref').on('change', ()=>{
+                        if ($('[name="updateref"]').val()!='' && $('[name="updatemark"]').val()!='' && $('[name="updatecategory"]').val()!=''){
+                            console.log('checking')
+                            $.post('/product/checkref/', {
+                                'ref': $('[name="updateref"]').val().toLowerCase(),
+                                'mark': $('[name="updatemark"]').val().toLowerCase(), 'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val(),
+                                'categoryid':$('[name="updatecategory"]').val()
+                        }, (data)=>{
+                                if (data.status){
+                                    $('.checkerror').removeClass('d-none').addClass('d-flex')
+                                    $('.addoneproductbtn').attr('disabled', true)
+                                }
+                                else{
+                                    $('.checkerror').removeClass('d-flex').addClass('d-none')
+                                    $('.product-submit-btn').attr('disabled', false)
+                                }
+                            })
+
+                        }
+                    })
+
+                })
+
+            })
+        }
+
+
+        // function to get products by category
+        function getproductsbycategory(categoryid){
+            $('.loadertable').addClass('d-block').removeClass('d-none')
+            $.ajax({
+            url: "{% url 'product:getproductsbycategory' %}",
+            type: "POST",
+            data: {
+                'category': categoryid,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                $('.loadertable').addClass('d-none').removeClass('d-block')
+                $('.product-table-body').html(data.data)
+                editproduct()
+                displayimage()
+                }
+            })
+
+        }
+
+
+
+
+        // active the first category
+        //$('.categoriesbtn').first().addClass('categoryactive')
+        //$('.categorynameholder').text($('.categoriesbtn').first().text())
+        // get the first category products
+        //getproductsbycategory($('.categoriesbtn').first().data('catgoryid'))
+
+        //$('.name_search').data('catgoryid', $('.categoriesbtn').first().data('catgoryid'))
+
+        // search products handler
+    //    $('.name_search').on('change', function () {
+    //         if ($('.name_search').val()==''){
+    //             getproductsbycategory($('.name_search').data('catgoryid'))
+    //         }
+    //         else{
+    //             $.ajax({
+    //             url: "{% url 'product:searchproductsincategory' %}",
+    //             type: "POST",
+    //             data: {
+    //                 'name': $('.name_search').val(),
+    //                 'category': $('.name_search').data('catgoryid'),
+    //                 'csrfmiddlewaretoken': '{{ csrf_token }}'
+    //             },
+    //             success: function (data) {
+    //                 $('.product_search_result').html(data.data)
+    //                 editproduct()
+    //             }
+    //         })
+    //         }
+    //     });
+
+        // categories btns handler
+
+        // to swich categories
+        $('.categoriesbtn').each((i, el)=>{
+            $(el).on('click', ()=>{
+                $('.categoriesbtn').removeClass('categoryactive')
+                let catgoryid=$(el).data('catgoryid')
+                $('.categorynameholder').text($(el).text())
+                $('.categorynameholder').attr('catgoryid', catgoryid)
+                $('.name_search').data('catgoryid', catgoryid)
+                $(el).addClass('categoryactive')
+                // ajax to get products by category
+                getproductsbycategory(catgoryid)
+                currentPagepdcts = 1;
+                loadingpdcts = false;
+                $('.pdctsholder').on('scroll', handleScrollpdcts)
+                console.log('onscroll')
+            })
+        })
+
+        // // handle submit form update product
+        // $('.add-product-form').on('submit', function (e) {
+        //     console.log('submitting')
+        //     $('product-submit-btn').attr('disabled', true)
+        //     e.preventDefault()
+
+        //     const formData = new FormData(document.querySelector('.add-product-form'));
+        //     // const fileInput = $('[name="updateimage"]');
+        //     // formData.append('image', fileInput[0].files[0]);
+        //     formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        //     $.ajax({
+        //         url: $(this).attr('action'),
+        //         type: "POST",
+        //         // data: {
+        //         //     'car': $('[name="updatecar"]').val(),
+        //         //     'ref': $('[name="updateref"]').val(),
+        //         //     'price': $('[name="updateprice"]').val(),
+        //         //     'pr_achat': $('[name="updatepr_achat"]').val(),
+        //         //     'originsupp': $('[name="updateoriginsupp"]').val(),
+        //         //     'mark': $('[name="updatemark"]').val(),
+        //         //     'category': $('[name="updatecategory"]').val(),
+        //         //     'csrfmiddlewaretoken': '{{ csrf_token }}'
+        //         // },
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (data) {
+        //             if (data.status){
+
+        //                 categoryid=$('[name="thiscategory"]').val()
+        //                 //getproductsbycategory(categoryid)
+        //                 location.reload()
+        //                 $('[name="updatemark"]').val('')
+        //                 $('[name="updateoriginsupp"]').val('')
+        //                 $('#exampleModal').modal('hide')
+        //                 // row=$('tr')[updateform.attr('id')]
+        //                 // $(row).find('.product_ref').text($('[name="updateref"]').val())
+        //                 // $(row).find('.product_price').text($('[name="updateprice"]').val())
+        //                 // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+        //                 // $(row).find('.product_pr_achat').text($('[name="updatepr_achat"]').val())
+
+        //                 // $(row).find('.mark').text($('[name="updatemark"] option:selected').text())
+        //                 // $(row).find('.mark').attr('markid', $('[name="updatemark"] option:selected').val())
+
+        //                 // $(row).find('.pdct').find('.product_name').text($('[name="updatecategory"] option:selected').text())
+        //                 // $(row).find('.pdct').find('.product_name').attr('categoryid', $('[name="updatecategory"] option:selected').val())
+
+        //                 // $(row).find('.car').text($('[name="updatecar"]').val())
+
+        //                 // $(row).find('.originsupp').text($('[name="updateoriginsupp"] option:selected').text())
+        //                 // $(row).find('.originsupp').attr('suppid', $('[name="updateoriginsupp"] option:selected').val())
+
+
+        //             }
+        //             else{
+        //                 alert(data.error)
+        //             }
+        //         }
+        //     })
+        // })
+
+
+        // update categories handler
+        $('.updatecategorybtn').each((i, el)=>{
+            $(el).on('click', ()=>{
+                $('.updatecategoryform').attr('action', '/product/updatecategory/'+$(el).attr('id'))
+                $('[name="categoryname"]').val($(el).attr('child'))
+            })
+        })
+
+        // submit update category form
+
+
+    })
+    $('.checkref').on('change', ()=>{
+            if ($('[name="ref"]').val()!='' && $('[name="mark"]').val()!='' && $('[name="pcategory"]').val()!=''){
+                console.log('checking')
+                $.post('/product/checkref/', {
+                    'ref': $('[name="ref"]').val().toLowerCase(),
+                    'mark': $('[name="mark"]').val().toLowerCase(), 'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val(),
+                    'categoryid':$('[name="pcategory"]').val()
+            }, (data)=>{
+                    if (data.status){
+                        $('.checkerror').removeClass('d-none').addClass('d-flex')
+                        $('.addoneproductbtn').attr('disabled', true)
+                    }
+                    else{
+                        $('.checkerror').removeClass('d-flex').addClass('d-none')
+                        $('.addoneproductbtn').attr('disabled', false)
+                    }
+                })
+
+            }
+        })
+
+</script>
+{% endblock %}

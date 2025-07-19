@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+{% if  request.user.retailer_user.retailer.caisseexterieur == 0 %}
+<div class="m-auto w-50">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Caisse Exterieur initial</h4>
+        <form action="{% url 'product:addcaisseextern' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group mb-2">
+                <input type="number" class="form-control" id="caisse" name="caisse" placeholder="Caisse" required>
+            </div>
+            <button type="submit" class="btn btn-outline-danger">Submit</button>
+        </form>
+    </div>
+</div>
+{% else %}
+
+<!-- fixed bootom -->
+<div class=" p-3 text-white d-flex justify-content-between" style="background: black;">
+    <h4>
+        Solde Caisse extern: {{caisse|floatformat:2}}
+    </h4>
+    <div class="d-flex">
+      <select class="years" name="" onchange="getsoldextmonth()">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+      </select>
+      <select class="months" name="" onchange="getsoldextmonth()">
+        <option value="">--</option>
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05">05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+      </select>
+      <div class="monthsold d-flex ms-5 align-items-center">
+        <div class="entree bg-success me-3 p-2 rounded">
+        </div>
+
+        <div class="sortie bg-danger me-3 p-2 rounded">
+        </div>
+
+        <div class="soldmonth">
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div class="bg-white rounded shadow">
+            <div class="">
+                <h5 class="card-header bg-success text-white">ENTREES</h5>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Montant</th>
+                                    <th>Raison</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in ins %}
+                                <tr>
+                                    <td>{{i.date|date:'d/m/Y'}}</td>
+                                    <td>{{i.amount}}</td>
+                                    <td>{{i.raison}} {% if i.externe %} du caisse int. {%endif%}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                    </table>
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="col-6">
+
+        <div class="bg-white rounded shadow">
+            <!-- outcaisseextholder -->
+            <div class="outcaisseextholder p-2 d-none">
+                <h4 class="bg-dark text-center text-white">
+                    Sortie caisse Exterieur
+                </h4>
+                <form action="/product/outext" method="post">
+                    <strong>Mantant</strong>
+                    <input type="number" name="amount" class="form-control mb-2" onkeyup="checkmax(event, '{{caisse}}')">
+                    <strong>Raison</strong>
+                    <textarea name="raison" class="form-control mb-2" cols="30" rows="10"></textarea>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="interne" type="checkbox" role="switch" id="flexSwitchintern">
+                        <label class="form-check-label" for="flexSwitchintern">Caisse Interne</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="charge" type="checkbox" role="switch" id="chargeswitch">
+                        <label class="form-check-label" for="chargeswitch">Charges</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" name="bank" type="checkbox" role="switch" id="bankswitch">
+                        <label class="form-check-label" for="bankswitch">Bank</label>
+                    </div>
+                    <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div>
+                <h5 class="d-flex justify-content-between card-header bg-danger text-white">
+                    <div>
+                        SORTIES
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-light" onclick="$('.outcaisseextholder').toggleClass('d-none')">+</button>
+                    </div>
+                </h5>
+                <div class="card-body">
+
+                  <!-- <strong>Reglement Fournisseur</strong> -->
+                  <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <!-- <th>Fournisseur</th> -->
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- {% for out in supplierspayments %}
+                        <tr>
+                            <td>{{out.date|date:'d/m/Y'}}</td>
+                            <td>{{out.amount}}</td>
+                            <td>{{out.supplier.name}}</td>
+                            <td>Reglement</td>
+                        </tr>
+                        {% endfor %} -->
+                        {% for i in outs %}
+                        <tr>
+                            <td>
+                                {{i.date|date:'d/m/Y'}}
+                            </td>
+                            <td>
+                                {{i.amount}}
+                            </td>
+                            <td colspan="3">
+                                {{i.raison}} {% if i.interne %} - caisse interne {%elif i.charge %} Charges {%elif i.bank %} Bank {%endif%}
+                            </td>
+
+                        </tr>
+                       {% endfor %}
+                    </tbody>
+                  </table>
+                  <br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="top:0;" class="d-none passwordscreen m-auto position-fixed bg-dark w-100 h-100 d-flex justify-content-center text-white align-items-center">
+    <input type="password" class="form-control w-50" placeholder="Mot de passe" id="password" onkeyup="checkpassword(event)">
+  </div>
+<!-- out caisse modal -->
+<div class="modal fade" id="outcaissemodal" tabindex="-1" aria-labelledby="outcaissemodalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-white">
+
+        <div class="modal-body">
+            <form action="{% url 'product:outcaisse' %}" method="post">
+                <strong>Mantant</strong>
+                <input type="number" max="{{caisse}}" name="amount" class="form-control mb-2" >
+                <strong>Raison</strong>
+                <textarea name="raison" class="form-control mb-2" cols="30" rows="10"></textarea>
+                <button type="submit" class="btn btn-outline-success w-100" disabled>Submit</button>
+                {% csrf_token %}
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  inactive=localStorage.getItem('inactive')||'1'
+  console.log('>>>>> ', inactive)
+  if (inactive=='1'){
+    console.log('its inactive')
+    $('.passwordscreen').removeClass('d-none')
+    $('.passwordinput').focus()
+  }else{
+    console.log('its not inactive')
+    checkForInactivity(120)
+  }
+  function getsoldextmonth(){
+    year=$('.years').val()
+    month=$('.months').val()
+    if (month==""){
+      alertify.error('ERROR')
+      return
+    }
+    $('.monthsold').css('filter', 'blur(2px)')
+    $.get('/product/getsoldextmonth', {'year':year, 'month':month}, (data)=>{
+      $('.entree').text(data.ins)
+      $('.sortie').text(data.outs)
+      $('.soldmonth').text(data.soldmonth)
+      $('.monthsold').css('filter', 'blur(0)')
+    })
+  }
+    $('[name="amount"]').on('input', function(){
+        console.log($(this).attr('max'))
+        if(parseFloat($(this).val()) > parseFloat($(this).attr('max')) || $(this).val() == '' || parseFloat($(this).val()) == 0){
+            $(this).addClass('is-invalid');
+            $('[type="submit"]').attr('disabled', 'disabled');
+        }else{
+            $(this).removeClass('is-invalid');
+            $('[type="submit"]').removeAttr('disabled');
+        }
+    })
+</script>
+{% endblock %}
