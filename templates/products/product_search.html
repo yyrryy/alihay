@@ -47,17 +47,44 @@
     </td>
     <td class="product_pr_achat">
         <!-- prices here price1 then price2 ... -->
-        
-        {% for i in item.getprices %}
-            
-            <span class="prices">
-                {{i.2|floatformat:2}} Dh
-            </span>
-            (<span class="qtyofprice">
-                {{i.3|floatformat:-2}} => {{i.0}}
-            </span>) <br>
+        <table class="table table-bordered table-striped table-sm">
+            <tr>
+                <th>Prix</th>
+                <th>Qté</th>
+                <th>Frns+bon achat</th>
+                <th>Sortie</th>
+            </tr>
+            {% if item.stock != 0 %}
+            {% for i in item.getprices %}
+            {% if i.3 > 0 %}
+            <tr>
+                <td>{{i.2|floatformat:2}} Dh</td>
+                <td>{{i.3|floatformat:-2}}</td>
+                <td>{{i.0}}</td>
+                <td class="d-flex">
+                    <input type="number" class="form-control sortieinput" placeholder="quantité sortie" min="0" max="{{i.3}}" value="{{i.3}}">
+                    <button class="btn fa fa-check" onclick="outprice(event, '{{ forloop.counter0 }}', '{{i.3}}', '{{item.id}}')"></button>
+                </td>
+            </tr>
+            {% endif %}
 
-        {% endfor %}
+                <!-- <div class="d-flex">
+
+                    <span class="prices">
+                        
+                    </span>
+                    (<span class="qtyofprice">
+                        {{i.3|floatformat:-2}} => 
+                    </span>) 
+                    <input type="number" class="form-control priceinput" placeholder="quantité vente">
+                </div> -->
+
+            {% endfor %}
+            {% endif %}
+
+            
+          </table>
+        
         <!-- {{item.pr_achat}} -->
     </td>
     <td class="product_remise">

@@ -236,7 +236,7 @@
                         <tbody class="product-table-body text-center">
                         {% for i in stockout %}
                             <tr>
-                                <td>{% if i.isavoirsupp %} {{i.avoirsupp.date|date:"d/m/Y"}} {%else%} {{ i.invoice.datebon|date:"d/m/Y"}}{%endif%}</td>
+                                <td>{% if i.isavoirsupp %} {{i.avoirsupp.date|date:"d/m/Y"}} {%else%} {{ i.created_at|date:"d/m/Y"}}{%endif%}</td>
                                 <td class="qty">{{ i.quantity|floatformat:-2 }} </td>
                                <td> {% if i.invoice.customer %} {{i.invoice.customer.customer_name}} {% else %} {% if i.isavoirsupp %} {{i.avoirsupp.supplier}} (Avoir frs) {% else %} Comptoir {% endif %}{% endif %}
                                 <td>

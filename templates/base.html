@@ -1036,6 +1036,20 @@ Version: 1.3.0
 
 
 <script>
+  function outprice(event, index, qty, productid){
+    outqty=$(event.target).parent().find('input').val()
+    if (outqty=='' || outqty<=0 || parseFloat(outqty) > parseFloat(qty)){
+      alertify.error('Quantité de sortie invalide')
+      return
+    }
+    $.get('/product/outprice', {
+      'index':index,
+      'id':productid,
+      'qty':outqty
+    }, (data)=>{
+      location.reload()
+    })
+  }
   function bonachatdata(id){
         $('.bondataholder').removeClass('d-none')
         $.post(`/product/bonentree/${id}`,{

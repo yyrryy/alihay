@@ -216,8 +216,8 @@ class Product(models.Model):
         return round(self.pondire*self.stock, 2)
     def getprices(self):
         prices=json.loads(self.prices)
-        filtered_prices = [item for item in prices[1:] if float(item[2]) != 0]
-        return filtered_prices
+        #filtered_prices = [item for item in prices if float(item[3]) != 0]
+        return prices
     
 
 class Productscommand(models.Model):
@@ -339,7 +339,8 @@ class PurchasedProduct(DatedModel):
     )
     discount_percentage = models.FloatField(default=0.00, blank=True, null=True
     )
-    purchase_amount = models.FloatField(default=0.00, blank=True, null=True
+    #this is total
+    total = models.FloatField(default=0.00, blank=True, null=True
     )
 
 

@@ -1915,10 +1915,9 @@ def producthistory(request, id):
             pass
     product=Product.objects.get(pk=id)
     pr=StockIn.objects.filter(product=product).order_by('-dated_order')
-    stockout=PurchasedProduct.objects.filter(product=product, invoice__ismanual=False, invoice__isdevis=False)
-    outavoirsupp= PurchasedProduct.objects.filter(product=product, isavoirsupp=True)
-    totalouts=(stockout.aggregate(Sum('quantity')).get('quantity__sum') or 0)+(outavoirsupp.aggregate(Sum('quantity')).get('quantity__sum') or 0)
-    allouts = sorted(chain(stockout, outavoirsupp), key=attrgetter('created_at'), reverse=True)
+    stockout=PurchasedProduct.objects.filter(product=product)
+    totalouts=stockout.aggregate(Sum('quantity')).get('quantity__sum') or 0
+    # allouts = sorted(chain(stockout, outavoirsupp), key=attrgetter('created_at'), reverse=True)
     # avoir also is out of stock
     totalin=pr.aggregate(Sum('quantity')).get('quantity__sum') or 0
     totalcost=round(float(totalin)*float(product.pr_achat), 2)
@@ -1930,9 +1929,9 @@ def producthistory(request, id):
     }
 
     if stockout:
-        totalamountout=stockout.aggregate(Sum('purchase_amount')).get('purchase_amount__sum')
+        totalamountout=stockout.aggregate(Sum('total')).get('total__sum')
         ctx.update({
-            'stockout':allouts,
+            'stockout':stockout,
             'totalamountout':round(totalamountout, 2),
             'totalout':totalouts,
             'netprofit':round(float(totalamountout)-float(totalcost), 2),
@@ -4788,3 +4787,28 @@ def lowpriceachat(request):
     return JsonResponse({
         'price':products.price
     })
+
+def outprice(request):
+    qty= request.GET.get('qty')
+    # index is needed to get the xact price and out its qty
+    index= request.GET.get('index')
+    id= request.GET.get('id')
+    product=Product.objects.get(pk=id)
+    prices= json.loads(product.prices)
+    price=prices[int(index)][2]
+    total=round(float(price)*float(qty), 2)
+    # go to index
+    prices[int(index)][3] = float(prices[int(index)][3]) - float(qty)
+    product.stock=float(product.stock)-float(qty)
+    PurchasedProduct.objects.create(
+        product=product,
+        quantity=float(qty),
+        price=float(price),
+        total=total
+    )
+    product.prices=json.dumps(prices)
+    product.save()
+    return JsonResponse({
+        'success':True
+    })
+    
