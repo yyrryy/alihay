@@ -35,7 +35,7 @@
             {{item.stock|floatformat:-2}}
         </b>
     </td>
-    <td class="pondire" suppid="{{item.originsupp.id}}">
+    <td hidden class="pondire" suppid="{{item.originsupp.id}}">
       <b>
         {{ item.pondire }}
       </b>
@@ -47,18 +47,17 @@
     </td>
     <td class="product_pr_achat">
         <!-- prices here price1 then price2 ... -->
-        <b>
-
-            {{item.pr_achat}}
-        </b>
-        <!-- {% for i in item.getprices %}
+        
+        {% for i in item.getprices %}
+            
             <span class="prices">
-                {{i.0|floatformat:2}}
+                {{i.2|floatformat:2}} Dh
             </span>
             (<span class="qtyofprice">
-                {{i.1|floatformat:-2}}
+                {{i.3|floatformat:-2}} => {{i.0}}
             </span>) <br>
-        {% endfor %} -->
+
+        {% endfor %}
         <!-- {{item.pr_achat}} -->
     </td>
     <td class="product_remise">
@@ -76,12 +75,12 @@
         {% endfor %} -->
         <!-- {{item.pr_achat}} -->
     </td>
-    <td class="product_price">
+    <td hidden class="product_price">
         <b>
             {{item.prvente}}
         </b>
     </td>
-    <td class="product_price">
+    <td hidden class="product_price">
         <b>
             {{item.price}}
         </b>

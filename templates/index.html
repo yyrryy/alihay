@@ -93,11 +93,9 @@
                 <th>Marque</th>
                 <th>Designation</th>
                 <th>Stock</th>
-                <th>Pondiré (NET)</th>
                 <th>Prix acht</th>
                 <th>Remise</th>
-                <th>P. vt gro</th>
-                <th>P. vt compt.</th>
+                
                 <!-- <th style="width: 10%;">Sortie</th> -->
             </tr>
             </thead>
@@ -110,85 +108,17 @@
 
     </div>
 
-    <div class="row mt-3" style="font-size: 2em;">
-        <div class="col-3">
-            <div class="rounded shadow p-3 bg-white">
-                <div class="">
-                    <strong class="text-primary">
-                        Produits
-                    </strong>
-                    <br>
-                    <strong>
-                        {{totalproducts}}
-                    </strong>
-                    
-                </div>
-
-            </div>
-        </div>
-
-        <div class="col-3">
-            <div class="rounded shadow p-3 bg-white">
-                <div class="">
-                    <strong class="text-primary">
-                        Ventes de jour
-                    </strong>
-                    <div class="">
-                        <strong>
-                            {{sales_sum}}DH
-                        </strong>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="col-3">
-            <div class="rounded shadow p-3 bg-white">
-                <strong class="text-primary">
-                    Clients
-                </strong>
-                <div class="">
-                    <strong>
-                        {{totalclients}}
-                    </strong>
-                </div>
-                
-
-            </div>
-        </div>
-
-        <!-- <div class="col-3">
-            <div class="rounded shadow p-3 bg-white">
-                <strong class="text-primary">
-                    Bon non payé
-                </strong>
-                <br>
-                <strong>
-                    {{notpaid}}
-                </strong>
-                
-
-            </div>
-        </div> -->
-
-
-
-    </div>
+    
 
 
 
     <br>
-    <h1>
-        {{request.user.retailer.retailer_user}}
-    </h1>
+    
 
 <!--col-div end here--->
 </div>
 {% endif %}
-<h1 style="text-align: center; font-size: 8em;" class="text-primary">
-    {{ request.user.retailer_user.retailer.name }} {% if user.groups.all.0.name == 'account' %} (Facturation){% endif %}
-</h1>
+
 
 {% endblock %}
 

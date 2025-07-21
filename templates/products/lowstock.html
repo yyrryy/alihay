@@ -159,10 +159,10 @@
     }
 
    function getlowbycategory(categoryid){
-    if ($('[name="supplier"]').val()==0){
-        alertify.error('Veuillez choisir un fournisseur')
-        return
-    }
+    // if ($('[name="supplier"]').val()==0){
+    //     alertify.error('Veuillez choisir un fournisseur')
+    //     return
+    // }
     console.log($('[name="supplier"]').val())
     $('.loadertable').removeClass('d-none')
     $.ajax({
