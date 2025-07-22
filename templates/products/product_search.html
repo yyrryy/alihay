@@ -47,6 +47,7 @@
     </td>
     <td class="product_pr_achat">
         <!-- prices here price1 then price2 ... -->
+        {% if item.stock > 0 %}
         <table class="table table-bordered table-striped table-sm">
             <tr>
                 <th>Prix</th>
@@ -54,7 +55,6 @@
                 <th>Frns+bon achat</th>
                 <th>Sortie</th>
             </tr>
-            {% if item.stock != 0 %}
             {% for i in item.getprices %}
             {% if i.3 > 0 %}
             <tr>
@@ -80,10 +80,10 @@
                 </div> -->
 
             {% endfor %}
-            {% endif %}
-
             
-          </table>
+            
+        </table>
+        {% endif %}
         
         <!-- {{item.pr_achat}} -->
     </td>

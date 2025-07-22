@@ -1705,6 +1705,7 @@ def addoneproductinbase(request):
     
     #price = request.POST.get('price')
     car=request.POST.get('carinadd').strip()
+    image=request.FILES.get('imageinadd')
     ref=request.POST.get('refinadd').strip().lower()
     category=request.POST.get('categoryinadd')
     product=Product.objects.create(
@@ -1722,6 +1723,9 @@ def addoneproductinbase(request):
         ref=ref,
         mark_id=mark,
     )
+    if image:
+        product.image=image
+    product.save()
     
     return JsonResponse({
     'success':True
