@@ -451,7 +451,37 @@ table{
               <div class="dropdown-content">
                 <div class="d-flex flex-wrap">
                   
+                  <a href="#" onclick="$('.addclientholder').toggleClass('d-none')" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+client</div>
+                  </a>
+                  <a href="#" onclick="$('.addproductholder').toggleClass('d-none')" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+Article</div>
+                  </a>
+                  <a href="/sales/create/invoice/" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+bon</div>
+                  </a>
                   
+                  <a href="/sales/invoice/list/" class="quickitem">
+                    <div class="fa fa-list"></div>
+                    <div>List bons</div>
+                  </a>
+                  <a href="/product/deviview/" class="quickitem">
+                    <div class="fa fa-money"></div>
+                    <div>+Devis</div>
+                  </a>
+                  <a href="/ledger/list/customer/" class="quickitem">
+                    <div class="fa fa-user"></div>
+                    <div>Client</div>
+                  </a>
+                  
+                  <a href="/product/items/productslistbycategory/" class="quickitem">
+                    <div class="fa fa-list
+                    "></div>
+                    <div>Produits</div>
+                  </a>
                   <a href="/product/supply/" class="quickitem">
                     <div class="fa fa-money"></div>
                     <div>+Bon achat</div>
@@ -510,7 +540,177 @@ table{
 <section class="d-flex">
   
 
-  
+  <div class="sidebar" style="transition: width .5s ease; overflow: hidden; white-space: nowrap;">
+    <div class="nav-side-menu d-flex flex-column" >
+      
+
+          <div class="menu-list">
+
+              <ul id="menu-content" class="menu-content collapse out" style="font-size: 14px;">
+                <!-- <a href="/">
+                      <li>
+                    <i class="fa fa-dashboard fa-lg"></i> Dashboard
+                  </li>
+                </a> -->
+                {% if request.user.retailer_user.role_type == 'pos' %}
+                <li><a href="/product/sorticontoir/">
+                    Sortie Comptoir
+                  </a></li>
+                  <li><a href="/product/avoircomptoirpage/">
+                    Avoir Comptoir
+                  </a></li>
+                  <li><a href="/sales/create/invoice/">
+                    Bon Livraison
+                  </a></li>
+                  
+                  <li><a href="/sales/avoirclient">
+                    Bon avoir
+                  </a></li>
+                  <li><a href="/sales/invoice/list/">
+                    List des bons
+                  </a></li>
+                  
+                {%else%}
+                <li  data-bs-toggle="collapse" data-bs-target="#ventes" class="collapsed">
+                  <a href="#"><i class="fa fa-money fa-lg"></i> Ventes </a>
+                </li>
+                <ul class="sub-menu collapse" id="ventes">
+                  <li><a href="/product/sorticontoir/">
+                    Sortie Comptoir
+                  </a></li>
+                  <li><a href="/product/avoircomptoirpage/">
+                    Avoir Comptoir
+                  </a></li>
+                  <li><a href="/sales/create/invoice/">
+                    Bon Livraison
+                  </a></li>
+                  
+                  <li><a href="/sales/avoirclient">
+                    Bon avoir
+                  </a></li>
+                  <li><a href="/sales/invoice/list/">
+                    List des bons
+                  </a></li>
+                  <li><a href="{% url 'product:listdevis' %}">
+                    List Devis
+                  </a></li>
+                </ul>
+                <li>
+                  <a href="/product/items/productslistbycategory/">
+                    <i class="fa fa-eject fa-lg"></i>
+                  Stock
+                  </a>
+                </li>
+                  <!-- <li  data-bs-toggle="collapse" data-bs-target="#products" class="collapsed">
+                    <a href="#"><i class="fa fa-gift fa-lg"></i> Produits </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="products">
+                    <li>
+                      <a href="/product/items/productslistbycategory/">
+                        
+                      List des produits
+                      </a>
+                    </li>
+                    <li>
+                      <a href="/product/addproduct">
+                        Ajouter un produits
+                      </a>
+                    </li>
+                  </ul> -->
+                  
+                  <li  data-bs-toggle="collapse" data-bs-target="#suppliers" class="collapsed">
+                    <a href="#"><i class="fa fa-gift fa-lg"></i> Fournisseurs </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="suppliers">
+                    <li><a href="{% url 'product:supplierslist' %}">
+                      List fournisseurs
+                    </a></li>
+                      <li><a href="{% url 'product:supply' %}">
+                        Bon achat
+                      </a></li>
+                      <li><a href="{% url 'product:avoirsupp' %}">
+                        Avoir Fournisseur
+                      </a></li>
+
+                      <li><a href="{% url 'product:bonsentrees' %}">
+                        List bon achat
+                      </a></li>
+                      
+                      
+                  </ul>
+
+
+                  
+
+
+                 
+
+
+                  <li>
+                   <a href="/ledger/list/customer/">
+                   <i class="fa fa-user fa-lg"></i> Clients
+                   </a>
+                   </li>
+                   
+
+
+
+                    <!-- <li>
+                      <a href="{% url 'product:lowstock' %}" class="text-danger">
+                      <i class="fa fa-exclamation-circle fa-lg"></i> Alert stock ({{p_n}})
+                      </a>
+                    </li>
+
+                  <li>
+                    <a href="/product/items/productscommande/">
+                    <i class="fa fa-shopping-cart fa-lg"></i>Commandes ({{cmnd}})
+                    </a>
+                  </li> -->
+                  <li>
+                    <a href="/product/inventaire">
+                    <i class="fa fa-list fa-lg"></i> Inventaire
+                    </a>
+                  </li>
+                  <!-- <li>
+                    <a href="/product/reports">
+                    <i class="fa fa-arrows fa-lg"></i> Rapports
+                    </a>
+                  </li> -->
+                  <li>
+                    <a href="/product/initpage">
+                    <i class="fa fa-gear fa-lg"></i> Configuration
+                    </a>
+                  </li>
+                  <li data-bs-toggle="collapse" data-bs-target="#facturation" class="collapsed">
+                    <a href="#"><i class="fa fa-globe fa-lg"></i> Facturation </a>
+                  </li>
+                  <ul class="sub-menu collapse" id="facturation">
+                    <li><a href="/product/listfactures">
+                      Factures clients
+                    </a></li>
+                    <li><a href="/product/factureview/">
+                      + Facture client
+                    </a></li>
+                    <li><a href="/product/bonsentrees/?facture=1">
+                      Factures fournisseur
+                    </a></li>
+                    
+                    <li><a href="/product/supply/?facture=1">
+                      + Facture achat
+                    </a></li>
+                    
+                    
+                  </ul>
+                  
+                 {%endif%}
+                  
+                  
+              </ul>
+
+       </div>
+       
+      </div>
+  </div>
 
 
   
