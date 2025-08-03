@@ -39,6 +39,7 @@ class Supplier(models.Model):
     phone2 = models.CharField(max_length=100, default=None, null=True, blank=True)
     address = models.CharField(max_length=100, default=None, null=True, blank=True)
     website = models.CharField(max_length=100, default=None, null=True, blank=True)
+    ice = models.CharField(max_length=100, default=None, null=True, blank=True)
     total= models.DecimalField(max_digits=65, decimal_places=2, default=0.00)
     rest= models.DecimalField(max_digits=65, decimal_places=2, default=0.00)
     client=models.ForeignKey(Customer, related_name="clientofsupplier", on_delete=models.CASCADE, default=None, blank=True, null=True)

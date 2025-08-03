@@ -1424,9 +1424,8 @@ def addbulksuppliers(request):
     for d in df.itertuples():
         Supplier.objects.create(
             name=d.nom,
-            phone1=d.phone,
-            rest=d.sold,
-            total=d.sold
+            address= '-' if pd.isna(d.address) else d.address,
+            ice='-' if pd.isna(d.ice) else d.ice,
         )
     return redirect('product:supplierslist')
         
@@ -4820,10 +4819,12 @@ def addbulkclient(request):
     myfile=request.FILES[next(iter(request.FILES))]
     df = pd.read_excel(myfile)
     for d in df.itertuples():
+        print('>> create cl')
         Customer.objects.create(
             customer_name=d.nom,
             #customer_phone=d.phone,
-            ice=d.ice,
-            address=d.address
+            address= '-' if pd.isna(d.address) else d.address,
+            ice='-' if pd.isna(d.ice) else d.ice,
+            retailer_id=1
         )
     return redirect('product:initpage')
