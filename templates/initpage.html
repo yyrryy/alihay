@@ -84,8 +84,21 @@
             </button>
         </form>
     
+        <strong>Ajouter Des Clients via excel</strong>
+        <form action="{% url 'product:addbulkclient' %}" class="addbulk col-6" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" class="form-control mb-2" required name="excel_file">
+    
+            
+    
+            <button class="btn btn-primary">
+                Ajouter
+            </button>
+        </form>
+
+
         <strong>Ajouter Des Fournisseurs via excel</strong>
-        <form action="{% url 'product:addbulksuppliers' %}" class="addbulk col-6" method="post" enctype="multipart/form-data">
+        <form action="{% url 'product:addbulkclient' %}" class="addbulk col-6" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <input type="file" class="form-control mb-2" required name="excel_file">
     

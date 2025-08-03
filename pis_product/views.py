@@ -4816,3 +4816,14 @@ def outprice(request):
         'success':True
     })
     
+def addbulkclient(request):
+    myfile=request.FILES[next(iter(request.FILES))]
+    df = pd.read_excel(myfile)
+    for d in df.itertuples():
+        Customer.objects.create(
+            customer_name=d.nom,
+            #customer_phone=d.phone,
+            ice=d.ice,
+            address=d.address
+        )
+    return redirect('product:initpage')

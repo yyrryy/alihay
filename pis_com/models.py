@@ -102,6 +102,14 @@ class Customer(models.Model):
     #     totalcredit=(avoirs.aggregate(Sum('grand_total')).get('grand_total__sum') or 0)+(payments.aggregate(Sum('amount')).get('amount__sum') or 0)
     #     totalbons=bons.aggregate(Sum('grand_total')).get('grand_total__sum') or 0
     #     return float(totalbons)-float(totalcredit)-float(paid_amount)
+# this class is used to create socites to link to clients
+class Socities(models.Model):
+    name= models.CharField(max_length=200, blank=True, null=True)
+    address = models.TextField(max_length=500, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    email = models.EmailField(max_length=200, blank=True, null=True)
+    ice = models.CharField(max_length=200, blank=True, null=True)
+    
 
 
 class FeedBack(models.Model):
