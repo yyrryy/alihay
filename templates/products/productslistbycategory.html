@@ -149,7 +149,7 @@
 
                             <a href="#" class="categoriesbtn" data-catgoryid="{{i.id}}">
                                 <b>
-                                    {{i.name}} ({{i.product_set.all.count}})
+                                    {{i.id}} -- {{i.name}} ({{i.product_set.all.count}})
                                 </b>
                             </a>
                             <button class=" btn-xs btn updatecategorybtn fa fa-edit" child="{{i.name}}" id="{{i.id}}" parent="{{i.parent}}" data-bs-toggle="modal" data-bs-target="#updatecategorymodal"></button>

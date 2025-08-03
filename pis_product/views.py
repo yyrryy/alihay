@@ -1408,7 +1408,7 @@ def addbulk(request):
             prvente=d.prixventegro,
             originsupp_id=d.fournisseur,
             prnet=prachatnet,
-            category_id=category,
+            category_id=d.category,
         )
         StockIn.objects.create(
             product=product,
