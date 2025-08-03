@@ -1426,6 +1426,7 @@ def addbulksuppliers(request):
             name=d.nom,
             address= '-' if pd.isna(d.address) else d.address,
             ice='-' if pd.isna(d.ice) else d.ice,
+            phone1='-' 
         )
     return redirect('product:supplierslist')
         
