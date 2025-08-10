@@ -873,7 +873,7 @@ def searchrefinstock(request):
     ctx={
         'products':products,
         'home':False,
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return JsonResponse({
         'data':render(request, 'products/product_search.html', ctx).content.decode('utf-8')
@@ -957,7 +957,7 @@ def productslistbycategory(request):
         #first id to put it in the form of adding bulk
         'firstid':first,
         'suppliers':Supplier.objects.all(),
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return render(request, 'products/productslistbycategory.html', ctx)
 
@@ -1096,7 +1096,7 @@ def getproductsbycategory(request):
     ctx={
         'products':products,
         'home':False,
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return JsonResponse({
         'data':render(request, 'products/product_search.html', ctx).content.decode('utf-8')
@@ -1113,7 +1113,7 @@ def loadpdctsinstock(request):
     ctx={
         'products':products,
         'home':False,
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return JsonResponse({
         'trs':render(request, 'products/product_search.html', ctx).content.decode('utf-8'),
@@ -1176,7 +1176,8 @@ def searchproductsincategory(request):
     products = Product.objects.filter(category__pk=request.POST.get('category'), name__icontains=request.POST.get('name'))
     ctx={
         'products':products,
-        'home':False
+        'home':False,
+        'marks':Mark.objects.order_by('name')
     }
     return JsonResponse({
         'data':render(request, 'products/product_search.html', ctx).content.decode('utf-8')
@@ -1354,7 +1355,7 @@ def product_search(request):
         query &= Q(category= category)
     products = request.user.retailer_user.retailer.retailer_product.filter(query).order_by('-stock')
     return JsonResponse({
-        'data': render(request, 'products/product_search.html', {'products': products, 'home':True}).content.decode('utf-8')
+        'data': render(request, 'products/product_search.html', {'products': products, 'home':True, 'marks':Mark.objects.order_by('name')}).content.decode('utf-8')
     })
 
 @csrf_exempt
@@ -1373,7 +1374,7 @@ def searchglobal(request):
     products = Product.objects.filter(q_objects).order_by('-stock')
 
     return JsonResponse({
-        'data': render(request, 'products/product_search.html', {'products': products, 'home': True}).content.decode('utf-8')
+        'data': render(request, 'products/product_search.html', {'products': products, 'home': True, 'marks':Mark.objects.order_by('name')}).content.decode('utf-8')
     })
 
 @csrf_exempt
@@ -1484,7 +1485,7 @@ def updatestock(request):
 
     return JsonResponse({
         'data': render(request, 'products/product_search.html', {'products': products, 'home':True}).content.decode('utf-8'),
-        'zerostock':newstock==0,
+        'zerostock':newstock==0, 'marks':Mark.objects.order_by('name')
     })
 
 #cancel commande
@@ -1525,7 +1526,7 @@ def marks(request):
         if not userprofile.canseelistmarks:
             # return render(request, 'products/nopermission.html')
             pass
-    return render(request, 'products/marks.html', {'title':'les marques', 'marks':Mark.objects.all()})
+    return render(request, 'products/marks.html', {'title':'les marques', 'marks':Mark.objects.order_by('name')})
 
 @csrf_exempt
 def addmark(request):
@@ -2287,7 +2288,7 @@ def supply(request):
         'title':'+ Bon achat',
         'children':cc,
         'suppliers':Supplier.objects.all(),
-        'marks':Mark.objects.all(),
+        'marks':Mark.objects.order_by('name'),
         'facture':'1' if facture else '0'
     }
     return render(request, 'products/supply.html', ctx)
@@ -2308,7 +2309,7 @@ def addproduct(request):
         'title':'Ajouter les produits',
         'children':cc,
         'suppliers':Supplier.objects.all(),
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return render(request, 'products/add_product.html', ctx)
 
@@ -2506,7 +2507,10 @@ def addsupply(request):
                 newnet=round(float(i['price'])-((float(i['price'])*remise)/100), 2)
                 print('oldnet, newnet', product.prnet, newnet)
                 totalqtys=int(product.stock)+int(i['qty'])
-                actualtotal=float(product.prnet)*float(product.stock)
+                if product.pondire>0:
+                    actualtotal=float(product.pondire)*float(product.stock)
+                else:
+                    actualtotal=float(product.prnet)*float(product.stock)
                 totalprices=round((float(i['qty'])*newnet)+actualtotal, 2)
                 pondire=round(totalprices/totalqtys, 2)
                 #print(f'ttalqtys {totalqtys}, totalprices {totalprices}, pondire {pondire}')
@@ -3218,9 +3222,10 @@ def searchproduct(request):
     results=[]
     for i in products:
         stock=i.stockfacture if facture else i.stock
+        image=i.image.url if i.image else ''
         results.append({
-            'id':f'{i.ref}§{i.car}§{i.pr_achat}§{stock}§{i.id}§{i.remise}§{i.prnet}',
-            'text':f'{i.ref} - {i.car}'
+            'id':f'{i.ref}§{i.car}§{i.pr_achat}§{stock}§{i.id}§{i.remise}§{i.prnet}§{image}',
+            'text':f'{i.mark.name.upper()} - {i.ref} - {i.car}'
         })
     return JsonResponse({'results': results})
 
@@ -3279,7 +3284,7 @@ def sorticontoir(request):
         'title':'Bon Sortie comptoir',
         'present_date': timezone.now().date(),
         'children':Category.objects.filter(children__isnull=True).order_by('name'),
-        'marks':Mark.objects.all()
+        'marks':Mark.objects.order_by('name')
     }
     return render(request, 'products/sorticontoir.html', ctx)
 
@@ -3750,7 +3755,7 @@ def productdata(request):
     id=request.GET.get('id')
     product=Product.objects.get(pk=id)
     return JsonResponse({
-        'data':render(request, 'products/productdata.html', {'product':product, 'marks':Mark.objects.all(), 'categories':Category.objects.all().order_by('name'), 'suppliers':Supplier.objects.all()}).content.decode('utf-8')
+        'data':render(request, 'products/productdata.html', {'product':product, 'marks':Mark.objects.order_by('name'), 'categories':Category.objects.all().order_by('name'), 'suppliers':Supplier.objects.all()}).content.decode('utf-8')
     })
 
 def deletereglsupp(request):
@@ -4804,6 +4809,8 @@ def outprice(request):
     # go to index
     prices[int(index)][3] = float(prices[int(index)][3]) - float(qty)
     product.stock=float(product.stock)-float(qty)
+    if float(product.stock)-float(qty)<=0:
+        product.supplier=product.originsupp
     PurchasedProduct.objects.create(
         product=product,
         quantity=float(qty),
@@ -4829,3 +4836,30 @@ def addbulkclient(request):
             retailer_id=1
         )
     return redirect('product:initpage')
+
+def createcopy(request):
+    source=request.GET.get('source')
+    ref=request.GET.get('ref').lower()
+    mark=request.GET.get('mark')
+    pp=Product.objects.get(pk=source)
+    firstref=pp.ref.split()[0]
+    checkexist=Product.objects.filter(mark_id=mark).filter(Q(ref__startswith=firstref+' ') | Q(ref=firstref)).exists()
+    if checkexist:
+        return JsonResponse({
+            'success':False,
+            'error':'Marque deja exist'
+        })
+    Product.objects.create(
+        retailer_id=1,
+        price=0,
+        pr_achat=0,
+        category=pp.category,
+        stock=0,
+        car=pp.car,
+        ref=f'{pp.ref} {ref}',
+        mark_id=mark,
+        image=pp.image,
+    )
+    return JsonResponse({
+        'success':True,
+    })

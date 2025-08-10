@@ -331,7 +331,7 @@
             if ($('.productslist').val()==''){
                 return
             }
-            var [ref, car, pr_achat, stock, id, remise, prnet] = $('.productslist').val().split('§');
+            var [ref, car, pr_achat, stock, id, remise, prnet, image] = $('.productslist').val().split('§');
              // first time adding to localstorg
             qtyinpadd=$('.addqtyinp').val()
             priceinpadd=$('.addpriceinp').val()
@@ -456,7 +456,7 @@
             if ($(this).val()==''){
                 return
             }
-            var [ref, car, pr_achat, stock, id, remise, prnet] = $(this).val().split('§');
+            var [ref, car, pr_achat, stock, id, remise, prnet, image] = $(this).val().split('§');
             $.get('/product/getproductdata', {'id':id}, (data)=>{
                 $('.addstock').text('stock: '+data.stock)
                 $('.addprice').text('P.achat: '+data.price)

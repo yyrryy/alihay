@@ -71,14 +71,14 @@
                     <thead style="position: sticky; top: 0; background-color: white;">
                     <tr>
                         <th>Ref</th>
-                        <th >Famille</th>
-                        <th>Marque</th>
-                        <th>Designation</th>
-                        <!-- <th>Frn.</th> -->
-                        <th>Stock</th>
-                        <th>P. achat</th>
-                        <th>remise</th>
-                        <th>Action</th>
+                <th>Famille</th>
+                <th>Marque</th>
+                <th>Designation</th>
+                <th>Stock</th>
+                <th>Prix acht</th>
+                <th>Pr vent1</th>
+                <th>Pr vent2</th>
+                <th></th>
                     </tr>
                     </thead>
                     <tbody class="product-table-body product_search_result">
@@ -508,17 +508,7 @@
         typingTimer = setTimeout(liveSearch, typeInterval);
     });
 
-    const displayimage=()=>{
-        $('.imagedisplaybtn').each((i, el)=>{
-            $(el).on('click', ()=>{
-
-                img=$(el).find('.imgproduct').attr('src')
-                console.log(img)
-                $('.imgproductmodal').attr('src', img)
-            })
-        })
-    }
-
+    
         // change action in form
         $('select[name="category"]').on('change', ()=>{
             console.log('changed')

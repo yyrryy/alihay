@@ -348,7 +348,7 @@
           if ($(this).val()==''){
               return
           }
-          var [ref, car, pr_achat, stock, id, remise, prnet] = $(this).val().split('§');
+          var [ref, car, pr_achat, stock, id, remise, prnet, image] = $(this).val().split('§');
           if (pdcts.includes(id)){
             alertify.error('Deja')
             return

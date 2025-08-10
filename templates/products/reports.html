@@ -557,7 +557,7 @@
     $('.productslist').on('change', function(){
       $('.pdctdaterepport').toggleClass('blurred')
 
-      var [ref, car, pr_achat, stock, id, remise, prnet] = $(this).val().split('§');
+      var [ref, car, pr_achat, stock, id, remise, prnet, image] = $(this).val().split('§');
       getpdctins(ref)
       getpdctouts(ref)
     })

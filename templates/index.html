@@ -94,7 +94,8 @@
                 <th>Designation</th>
                 <th>Stock</th>
                 <th>Prix acht</th>
-                <th>Remise</th>
+                <th>Pr vent1</th>
+                <th>Pr vent2</th>
                 
                 <!-- <th style="width: 10%;">Sortie</th> -->
             </tr>
@@ -126,18 +127,10 @@
 {% block scripts %}
 {{ block.super }}
 <script>
+    $('.searchglobal').focus()
     $(function () {
         $('.searchref').focus()
-        const displayimage=()=>{
-            $('.imagedisplaybtn').each((i, el)=>{
-                $(el).on('click', ()=>{
-
-                    img=$(el).find('.imgproduct').attr('src')
-                    console.log(img)
-                    $('.imgproductmodal').attr('src', img)
-                })
-            })
-        }
+        
 
         $(".product-sub-btn").on ('click', function(){
                 $(this).addClass('disabled');

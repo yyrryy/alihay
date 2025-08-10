@@ -73,17 +73,6 @@
 <script>
     $(function () {
         $('.searchref').focus()
-        const displayimage=()=>{
-            $('.imagedisplaybtn').each((i, el)=>{
-                $(el).on('click', ()=>{
-
-                    img=$(el).find('.imgproduct').attr('src')
-                    console.log(img)
-                    $('.imgproductmodal').attr('src', img)
-                })
-            })
-        }
-
         $(".product-sub-btn").on ('click', function(){
                 $(this).addClass('disabled');
                 $(this).html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');

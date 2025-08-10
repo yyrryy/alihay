@@ -511,7 +511,7 @@ class GenerateInvoiceAPIView(View):
                     form = PurchasedProductForm(form_kwargs)
                     if form.is_valid():
                         purchased_item = form.save()
-                        product.stock=float(product.stock)-float(item.get('qty'))
+                        # product.stock=float(product.stock)-float(item.get('qty'))
                         product.save()
                         newstock=product.stock
                         if newstock==0:

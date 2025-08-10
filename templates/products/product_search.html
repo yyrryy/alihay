@@ -27,7 +27,7 @@
     </td>
     <td class="car">
         <b>
-            {{ item.car.upper }}
+            ({{item.location}}) {{ item.car.upper }}
         </b>
     </td>
     <td class="product_stock" style="background: {%if item.stock == 0%}red{%elif item.stock < 0%}#0d6efd59{%elif item.stock <= item.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
@@ -37,7 +37,7 @@
     </td>
     <td hidden class="pondire" suppid="{{item.originsupp.id}}">
       <b>
-        {{ item.pondire }}
+        {{ item.originsupp }}
       </b>
     </td>
     <td hidden class="minstock">
@@ -46,48 +46,39 @@
       </b>
     </td>
     <td class="product_pr_achat">
-        <!-- prices here price1 then price2 ... -->
+        <!-- prices here price1 then price2 ... 
+        <b>
+
+            {{item.pr_achat}}
+        </b>-->
         {% if item.stock > 0 %}
-        <table class="table table-bordered table-striped table-sm">
-            <tr>
-                <th>Prix</th>
-                <th>Qté</th>
-                <th>Frns+bon achat</th>
-                <th>Sortie</th>
-            </tr>
-            {% for i in item.getprices %}
-            {% if i.3 > 0 %}
-            <tr>
-                <td>{{i.2|floatformat:2}} Dh</td>
-                <td>{{i.3|floatformat:-2}}</td>
-                <td>{{i.0}}</td>
-                <td class="d-flex">
-                    <input type="number" class="form-control sortieinput" placeholder="quantité sortie" min="0" max="{{i.3}}" value="{{i.3}}">
-                    <button class="btn fa fa-check" onclick="outprice(event, '{{ forloop.counter0 }}', '{{i.3}}', '{{item.id}}')"></button>
-                </td>
-            </tr>
-            {% endif %}
-
-                <!-- <div class="d-flex">
-
-                    <span class="prices">
-                        
-                    </span>
-                    (<span class="qtyofprice">
-                        {{i.3|floatformat:-2}} => 
-                    </span>) 
-                    <input type="number" class="form-control priceinput" placeholder="quantité vente">
-                </div> -->
-
-            {% endfor %}
-            
-            
-        </table>
-        {% endif %}
         
+            {% for i in item.getprices %}
+                {% if i.3 > 0 %}
+                <div class="text-start" style="border-bottom: 1px solid; padding-bottom: 10px;">
+                    <div>
+                        <strong class="">
+                            {{i.2|floatformat:2}}
+                            (<span class="qtyofthisprice">{{i.3|floatformat:-2}}</span>) => {{i.0}}
+                        </strong>
+                    </div>
+                    <div></div>
+                    <div class="d-flex">
+                        <input type="number" class="form-control sortieinput" placeholder="quantité sortie" min="0" max="{{i.3}}" value="0">
+                        <button class="btn btn-danger fa fa-check" onclick="outprice(event, '{{ forloop.counter0 }}', '{{i.3}}', '{{item.id}}')"></button>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% endfor %}
+        
+        {% else %}
+        DP: {{item.pr_achat}}=>{{item.originsupp}}    
+            
+        {% endif %}
         <!-- {{item.pr_achat}} -->
     </td>
-    <td class="product_remise">
+    <td hidden class="product_remise">
         <!-- prices here price1 then price2 ... -->
         <b>
             {{item.remise}}
@@ -102,26 +93,35 @@
         {% endfor %} -->
         <!-- {{item.pr_achat}} -->
     </td>
-    <td hidden class="product_price">
+    <td class="product_price">
         <b>
             {{item.prvente}}
         </b>
     </td>
-    <td hidden class="product_price">
+    <td class="product_price">
         <b>
             {{item.price}}
         </b>
     </td>
-    {% if not home %}
     <td>
         <!-- <button type="button" class="btn btn-success update fa fa-edit" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="{{item.id}}" title="modifier"> -->
         <button type="button" class="btn btn-success fa fa-edit" data-id="{{item.id}}" title="modifier" onclick="productdata('{{item.id}}')">
-
+            
         </button>
         <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
-
-        
+        <button class="btn btn-success fa fa-copy" onclick="$('.copydiv{{item.id}}').toggleClass('d-none')"></button>
+        <div class="copydiv{{item.id}} d-none">
+            <select name="" id="" class="select2 form-control mark">
+                <option value="">Marque</option>
+                {% for i in marks %}
+                <option value="{{i.id}}">{{i.name.upper}}</option>
+                {% endfor %}
+            </select>
+            <input type="text" placeholder="REFERENCE" class="form-control ref">
+            <button class="btn btn-info w-100" onclick="createcopy(event, '{{item.id}}')">Valider</button>
+        </div>
     </td>
+    <!--{% if not home %}
     {% endif %}
 
     {% if home %}
@@ -129,13 +129,13 @@
         <a  href="{% url 'product:producthistory' id=item.id %}"><button class="btn btn-danger btn-xs fa fa-history" title="Historique"></button></a>
     </td>
         {% if item.stock != 0 %}
-        <!-- <td>
+        <td>
             <input type="number" class="form-control priceinput" placeholder="Prix" {% if item.getprices|length == 1 %} hidden {% endif %} value="{{item.pr_achat}}">
             <input class="form-control sortieinput" type="number" min="0" max="{{item.stock}}" name="sortieqty" placeholder="Qty">
             <button class="btn btn-primary updatestockbtn fa fa-check w-100" id="{{item.id}}" categoryid="{{item.category.id}}"></button>
-        </td> -->
+        </td> 
     {% endif %}
-    {% endif %}
+    {% endif %} -->
 </tr>
 {% empty %}
     <tr>
