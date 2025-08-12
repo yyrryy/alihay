@@ -209,7 +209,9 @@ class Product(models.Model):
     car = models.CharField(max_length=5000, blank=True, null=True, default=None)
     bar_code = models.CharField(max_length=500, unique=True, blank=True, null=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    
+    def splitrefs(self):
+        print('>>> splitted', self.ref.split())
+        return self.ref.split()
     def getsimillars(self):
         originref=self.ref.split()[0]
         return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref).exclude(stock=0)

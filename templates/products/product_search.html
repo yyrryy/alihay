@@ -4,9 +4,11 @@
  -->
  <tr class="pdct-row" pdctid="{{item.id}}">
     <td class="productref">
+        {% for i in item.splitrefs %}
         <b>
-            {{item.ref.upper}}
-        </b>
+            {{i.upper}}
+        </b><br>
+        {% endfor %}
     </td>
     <td class="pdct">
         {% if item.image %}
@@ -33,7 +35,12 @@
     <td class="product_stock" style="background: {%if item.stock == 0%}red{%elif item.stock < 0%}#0d6efd59{%elif item.stock <= item.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
         <b>
             {{item.stock|floatformat:-2}}
-        </b>
+        </b><br>
+        {% for i in item.getsimillars %}
+        {% if i.stock > 0 %}
+        {{i.mark.name.upper}}({{i.stock}}) <br>
+        {% endif %}
+        {% endfor %}
     </td>
     <td hidden class="pondire" suppid="{{item.originsupp.id}}">
       <b>
