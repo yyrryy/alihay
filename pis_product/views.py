@@ -1137,7 +1137,7 @@ def productscommande(request):
     return render(request, 'products/productscommande.html', {
         'title': 'commande',
         #'products':products,
-        'suppliers':suppliers
+        'suppliers':Supplier.objects.all()
         })
 
 #low stok by category
