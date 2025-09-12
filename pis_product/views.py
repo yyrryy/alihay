@@ -904,7 +904,6 @@ def refexeption(request):
 
 def filtercommandesupp(request):
     products=Product.objects.filter(supplier_id=request.POST.get('supplierid'))
-    print(products)
     suppliers_data = Supplier.objects.all()
     return JsonResponse({
         'data':render(request, 'products/commandefilter.html', {'products':products, 'suppliers':suppliers_data}).content.decode('utf-8'),
@@ -1140,7 +1139,7 @@ def productscommande(request):
         'suppliers':Supplier.objects.all()
         })
 
-#low stok by category
+#low stpok by category
 def getlowbycategory(request):
     # category = Category.objects.get(pk=request.POST.get('category'))
     # products = category.product.filter(category=category)[:10]

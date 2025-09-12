@@ -194,10 +194,10 @@
         let cards = document.querySelectorAll('.pure-tree_link')
         $('.searchref').on('change', ()=>{
             // ajax call to searchrefinlow
-            if ($('[name="supplier"]').val()==0){
-                alertify.error('Veuillez choisir un fournisseur')
-                return
-            }
+            // if ($('[name="supplier"]').val()==0){
+            //     alertify.error('Veuillez choisir un fournisseur')
+            //     return
+            // }
             let ref=$('.searchref').val()
             if(ref==''){
                 return

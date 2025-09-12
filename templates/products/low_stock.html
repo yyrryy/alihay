@@ -76,6 +76,14 @@
                             {% else %}
                             <td>
                             <div class="">
+                               
+                                {% for i in item.getsimillars %}
+                                {% if i.stock > 0 %}
+                                <div class="badge bg-info text-dark">
+                                    {{i.mark.name.upper}}=>{{i.stock}}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
                                 <input placeholder="Quantité" type="number" class="form-control" data-id="{{item.id}}" data-categoryid="{{item.category.id}}" onchange="commandepdct(event, '{{item.id}}')"">
                                 
                                
