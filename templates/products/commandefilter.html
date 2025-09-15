@@ -6,6 +6,11 @@
             {% if item.stock == 0 %}<i class="text-danger fa fa-exclamation-circle fa-2x"></i>{% endif %} {{item.ref.upper}} - {{ item.category.name.upper}} - {{ item.car.upper }}
         </td> -->
         <td class="product_name">
+            {% if item.image %}
+            <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" onclick="displayimage(event)">
+                <img src="{{ item.image.url }}" class="imgproduct" alt="{{ item.name }}" height="50px" width="50px">
+            </button>
+            {% endif %}
             {{item.ref.upper}} - {{ item.category.name.upper}} - {{ item.car.upper }}
         </td>
         <!-- <td class="#">{{ item.unit_type }}</td> -->

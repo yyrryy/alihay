@@ -1,5 +1,5 @@
 from django import template
-from pis_product.models import Product, Category, PaymentSupplier, Mark, PaymentClient
+from pis_product.models import Product, Category, PaymentSupplier, Mark, PaymentClient, Supplier
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
@@ -92,3 +92,7 @@ def allcategories():
 @register.simple_tag
 def allmarks():
     return Mark.objects.order_by('name')
+
+@register.simple_tag
+def allsuppliers():
+    return Supplier.objects.order_by('name')

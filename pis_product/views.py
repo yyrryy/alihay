@@ -1706,6 +1706,7 @@ def addoneproductinbase(request):
     #price = request.POST.get('price')
     car=request.POST.get('carinadd').strip()
     image=request.FILES.get('imageinadd')
+    supp=request.POST.get('suppinadd')
     ref=request.POST.get('refinadd').strip().lower()
     category=request.POST.get('categoryinadd')
     product=Product.objects.create(
@@ -1722,9 +1723,12 @@ def addoneproductinbase(request):
         car=car,
         ref=ref,
         mark_id=mark,
+        originsupp=supp
     )
     if image:
         product.image=image
+    product.command=True
+    product.supplier_id=supp
     product.save()
     
     return JsonResponse({

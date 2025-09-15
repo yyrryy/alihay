@@ -421,6 +421,7 @@ table{
   {% command as cmnd %}
   {% allcategories as allcategories%}
   {% allmarks as allmarks%}
+  {% allsuppliers as allsuppliers%}
   <div class="loading flex-column align-items-center justify-content-center w-100 h-100 position-fixed top-0 bg-dark d-none" style="z-index:1199">
     <div class="spinner-border text-light"></div>
     <strong class="text-light textloading">
@@ -1082,11 +1083,24 @@ Version: 1.3.0
               </div>
           </div>
           <div class="mb-3">
-              <strong>
-                  image
-              </strong>
-              <input class="form-control" type="file" name="imageinadd" >
-          </div>
+            <strong>
+                image
+            </strong>
+            <input class="form-control" type="file" name="imageinadd" >
+        </div>
+        <div class="mb-3">
+          <strong>
+              Fournisseur
+          </strong>
+          <select style="width: 100%;" class="form-select suppselect select2 notempty" type="text" name="suppinadd">
+            <option value=""></option>
+            {% for i in allsuppliers %}
+            <option value="{{i.id}}">
+                {{i.name.upper}}
+            </option>
+            {% endfor %}
+        </select>
+      </div>
 
 
 
@@ -1253,15 +1267,10 @@ Version: 1.3.0
       }
     })
   }
-  function displayimage(){
-      $('.imagedisplaybtn').each((i, el)=>{
-          $(el).on('click', ()=>{
-
-              img=$(el).find('.imgproduct').attr('src')
-              console.log(img)
-              $('.imgproductmodal').attr('src', img)
-          })
-      })
+  function displayimage(e){
+    img=$(e.target).attr('src')
+    console.log($(e.target))
+    $('.imgproductmodal').attr('src', img)
   }
   function outprice(event, index, qty, productid){
     outqty=$(event.target).parent().find('input').val()
