@@ -456,6 +456,11 @@ table{
                     "></div>
                     <div>Produits</div>
                   </a>
+                  <a href="/product/supplierslist" class="quickitem">
+                    <div class="fa fa-list
+                    "></div>
+                    <div>Fournisseur</div>
+                  </a>
                   <a href="/product/supply/" class="quickitem">
                     <div class="fa fa-money"></div>
                     <div>+Bon achat</div>
@@ -1769,6 +1774,7 @@ let inactivityTime=0;
                 $('.addoneproductforminbase')[0].reset();
                 $('[name="categoryinadd"]').select2().val("").trigger('change')
                 $('[name="markinadd"]').select2().val("").trigger('change')
+                $('[name="suppinadd"]').select2().val("").trigger('change')
                 return
               }
               location.reload()

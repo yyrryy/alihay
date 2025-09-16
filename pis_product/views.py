@@ -1723,7 +1723,7 @@ def addoneproductinbase(request):
         car=car,
         ref=ref,
         mark_id=mark,
-        originsupp=supp
+        originsupp_id=supp
     )
     if image:
         product.image=image
