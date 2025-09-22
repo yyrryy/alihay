@@ -1791,6 +1791,7 @@ def updateproduct(request, id):
         # name = request.POST.get('name')
         car = request.POST.get('updatecar')
         minstock = request.POST.get('updateminstock')
+        marks = request.POST.get('updatemarks')
         price = request.POST.get('updatepricemag')
         pricevente = request.POST.get('updatepricegro')
         #prachat = request.POST.get('updatepr_achat')
@@ -1800,13 +1801,12 @@ def updateproduct(request, id):
         exist=Product.objects.filter(category=category, ref=ref).exclude(pk=id).exists()
         if exist:
             print('already exist')
-            return JsonResponse({
-                'status':False,
-                'error': 'Ref already exist in this Category'
-            })
+            # return JsonResponse({
+            #     'status':False,
+            #     'error': 'Ref already exist in this Category'
+            # })
         else:
             mark = Mark.objects.get(pk=request.POST.get('updatemark'))
-            print('ref', ref, 'car', car, 'minstock', minstock, 'category', category, 'mark', mark)
             #originsupp =Supplier.objects.get(pk=request.POST.get('updateoriginsupp'))
             #prnet=round(float(prachat)-(float(prachat)*float(remise)/100), 2) if prachat != 0 else 0
 
@@ -1817,6 +1817,7 @@ def updateproduct(request, id):
             product.price=price
             product.car=car
             product.minstock=minstock
+            product.marks=marks
             product.mark=mark
             product.category=category
             #product.remise=remise

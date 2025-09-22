@@ -175,6 +175,7 @@ class Mark(models.Model):
 class Product(models.Model):
     category=models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=5000)
+    marks = models.TextField(default=None, null=True, blank=True)
     ref = models.CharField(max_length=5000, default=None, null=True, blank=True)
     brand_name = models.CharField(max_length=200, blank=True, null=True)
     stockfacture=models.FloatField(default=0.00)
@@ -215,6 +216,8 @@ class Product(models.Model):
     def getsimillars(self):
         originref=self.ref.split()[0]
         return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref).exclude(stock=0)
+    def getmarks(self):
+        return self.marks.split() if self.marks else ''
     def stockvalue(self):
         return round(self.pondire*self.stock, 2)
     def getprices(self):

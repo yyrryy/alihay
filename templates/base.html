@@ -1884,12 +1884,10 @@ let inactivityTime=0;
         contentType: false,
         success: function (data) {
             if (data.status){
-              console.log($(`tr[pdctid="${pdctid}"]`).find('.productref'))
-              console.log($(`tr[pdctid="${pdctid}"]`).find('.productref'))
-              $(`tr[pdctid="${pdctid}"]`).find('.productref').text(data.ref)
-              $(`tr[pdctid="${pdctid}"]`).find('.product_name').html(data.category)
-              $(`tr[pdctid="${pdctid}"]`).find('.mark').text(data.mark)
-              $(`tr[pdctid="${pdctid}"]`).find('.car').text(data.car)
+              // $(`tr[pdctid="${pdctid}"]`).find('.productref').text(data.ref)
+              // $(`tr[pdctid="${pdctid}"]`).find('.product_name').html(data.category)
+              // $(`tr[pdctid="${pdctid}"]`).find('.mark').text(data.mark)
+              // $(`tr[pdctid="${pdctid}"]`).find('.car').text(data.car)
               $('.bondataholder').addClass('d-none')
                 // categoryid=$('[name="thiscategory"]').val()
                 // //getproductsbycategory(categoryid)

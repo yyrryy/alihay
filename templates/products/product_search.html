@@ -10,6 +10,13 @@
         </b><br>
         {% endfor %}
     </td>
+    <td class="productmarks">
+        {% for i in item.getmarks %}
+        <b>
+            {{i.upper}}
+        </b><br>
+        {% endfor %}
+    </td>
     <td class="pdct">
         {% if item.image %}
         <button data-bs-toggle="modal" data-bs-target="#imagedisplaymodal" onclick="displayimage(event)">
