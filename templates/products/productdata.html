@@ -1,7 +1,8 @@
 <h4 class="mb-3 text-white rounded p-3" style="background: black;">
     Modifier: {{product.ref.upper}} - {{product.mark.name.upper}}
 </h4>
-<img src="{% if product.image %}{{product.image.url}}{% endif %}" class="w-50">
+<img src="{% if product.image %}{{product.image.url}}{% endif %}" style="
+    width: 200px;">
 <form class="add-product-form update-product-form p-3" action="/product/updateproduct/{{product.id}}" method="post" autocomplete="off" enctype="multipart/form-data">
     <div class="checkerror text-danger d-none">Deja existe</div>
     <div class="form-group">
@@ -37,7 +38,10 @@
                     <strong>Ref</strong>
                     <input type="text" class="notempty form-control product_name checkref" name="updateref" value="{{product.ref}}">
                 </div>
-                
+                <div class="col-3 text-start">
+                    <strong>Ref unification</strong>
+                    <input type="text" class="notempty form-control product_name" name="updaterefunity" value="{{product.refunity}}">
+                </div>
                 <div class="col-6 text-start">
                     <strong>
                         Designation

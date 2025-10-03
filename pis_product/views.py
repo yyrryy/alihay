@@ -1635,6 +1635,7 @@ def addoneproduct(request):
         priceslist=[[f'{suppliername} - stockinitial', date.today().strftime('%d/%m/%Y'), float(prachat), float(stock)]] if prachat != 0 else []
     car=request.POST.get('car').strip() or request.POST.get('carinadd').strip()
     ref=request.POST.get('ref').strip().lower() or request.POST.get('refinadd').strip().lower()
+    refunify=request.POST.get('refunify').strip().lower() or request.POST.get('refunifyinadd').strip().lower()
     category=request.POST.get('category') or request.POST.get('categoryinadd')
     image = request.FILES.get('image')
     prnet=round(float(prachat)-(float(prachat)*float(remise)/100), 2) if prachat != 0 else 0
@@ -1652,6 +1653,7 @@ def addoneproduct(request):
         price=prventemag,
         car=car,
         ref=ref,
+        refunify=refunify,
         originsupp_id=supplier,
         mark_id=mark,
         image=image,
@@ -1786,6 +1788,7 @@ def updateproduct(request, id):
             })
     # get data from formData sent from the ajax request
     try:
+        refunity = request.POST.get('updaterefunity')
         image = request.FILES.get('updateimage')
         ref = request.POST.get('updateref').lower().strip()
         # name = request.POST.get('name')
@@ -1801,10 +1804,10 @@ def updateproduct(request, id):
         exist=Product.objects.filter(category=category, ref=ref).exclude(pk=id).exists()
         if exist:
             print('already exist')
-            # return JsonResponse({
-            #     'status':False,
-            #     'error': 'Ref already exist in this Category'
-            # })
+            return JsonResponse({
+                'status':False,
+                'error': 'Ref already exist in this Category'
+            })
         else:
             mark = Mark.objects.get(pk=request.POST.get('updatemark'))
             #originsupp =Supplier.objects.get(pk=request.POST.get('updateoriginsupp'))
@@ -1813,6 +1816,7 @@ def updateproduct(request, id):
             #print('rrr',prnet)
             #product.name=name
             product.ref=ref
+            product.refunity=refunity
             product.prvente=pricevente
             product.price=price
             product.car=car
@@ -4819,12 +4823,13 @@ def outprice(request):
         product=product,
         quantity=float(qty),
         price=float(price),
-        total=total
+        total=total,
     )
     product.prices=json.dumps(prices)
     product.save()
     return JsonResponse({
-        'success':True
+        'success':True,
+        'reachzero':float(product.stock)-float(qty)<=0
     })
     
 def addbulkclient(request):

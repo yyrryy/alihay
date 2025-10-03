@@ -10,6 +10,12 @@
         </b><br>
         {% endfor %}
     </td>
+    <td class="productrefunify">
+        
+        <b>
+            {{item.refunity}}
+        </b>
+    </td>
     <td class="productmarks">
         {% for i in item.getmarks %}
         <b>
@@ -48,6 +54,7 @@
         {{i.mark.name.upper}}({{i.stock}}) <br>
         {% endif %}
         {% endfor %}
+        {%if item.supplier%}{{item.supplier}}{%endif%}
     </td>
     <td hidden class="pondire" suppid="{{item.originsupp.id}}">
       <b>

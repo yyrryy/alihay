@@ -173,6 +173,7 @@ class Mark(models.Model):
         return self.name
 
 class Product(models.Model):
+    refunity= models.CharField(max_length=100, default=None, null=True, blank=True)
     category=models.ForeignKey(Category, on_delete=models.CASCADE, default=None)
     name = models.CharField(max_length=5000)
     marks = models.TextField(default=None, null=True, blank=True)
@@ -215,7 +216,7 @@ class Product(models.Model):
         return self.ref.split()
     def getsimillars(self):
         originref=self.ref.split()[0]
-        return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref).exclude(stock=0)
+        return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref).exclude(stock=0)# + Product.objects.exclude(id=self.id).filter(refunity=self.refunity).exclude(stock=0)
     def getmarks(self):
         return self.marks.split() if self.marks else ''
     def stockvalue(self):
