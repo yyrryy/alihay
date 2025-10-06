@@ -98,15 +98,15 @@
           $('.product-table-body').html('')
             $('.qtycommand').attr('disabled', true)
         }else{
-          $('.loadertable').removeClass('d-none')
+          //$('.loadertable').removeClass('d-none')
             $('.qtycommand').removeAttr('disabled')
             // get low of this supplier
-            $.get("{% url 'product:getsupplierlow' %}", {"supplierid":$(this).val()}, (data)=>{
-              $('.loadertable').addClass('d-none')
-              $('.product-table-body').html(data.data)
-              command()
-              $('.select2').select2()
-            })
+            // $.get("{% url 'product:getsupplierlow' %}", {"supplierid":$(this).val()}, (data)=>{
+            //   $('.loadertable').addClass('d-none')
+            //   $('.product-table-body').html(data.data)
+            //   command()
+            //   $('.select2').select2()
+            // })
         }
     })
     $('.searchref').focus()

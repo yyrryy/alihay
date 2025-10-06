@@ -1368,7 +1368,7 @@ def searchglobal(request):
     q_objects = Q()
     for term in search_terms:
         if term:
-            q_objects &= (Q(ref__iregex=term) | Q(car__iregex=term)| Q(category__name__iregex=term)| Q(mark__name__iregex=term))
+            q_objects &= (Q(ref__iregex=term) | Q(refunity__iregex=term) | Q(car__iregex=term)| Q(category__name__iregex=term)| Q(mark__name__iregex=term))
 
     products = Product.objects.filter(q_objects).order_by('-stock')
 
@@ -1709,12 +1709,15 @@ def addoneproductinbase(request):
     car=request.POST.get('carinadd').strip()
     image=request.FILES.get('imageinadd')
     supp=request.POST.get('suppinadd')
+    refunify=request.POST.get('refunifyinadd', '').strip().lower()
+    prachat=request.POST.get('prachatinadd') or 0
     ref=request.POST.get('refinadd').strip().lower()
     category=request.POST.get('categoryinadd')
     product=Product.objects.create(
         retailer=request.user.retailer_user.retailer,
         # name=name.strip(),
-        pr_achat=0,
+        refunity=refunify,
+        pr_achat=prachat,
         category_id=category,
         stock=0,
         remise=0,
