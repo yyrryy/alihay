@@ -45,15 +45,15 @@
             ({{item.location}}) {{ item.car.upper }}
         </b>
     </td>
-    <td class="product_stock" style="background: {%if item.stock == 0%}red{%elif item.stock < 0%}#0d6efd59{%elif item.stock <= item.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
+    <td class="product_stock" style="background: {%if item.stock <= 0%}red{%elif item.stock <= item.minstock%} yellow {%else%}yellowgreen{%endif%}; color:black;">
         <b>
             {{item.stock|floatformat:-2}}
         </b><br>
+        {% if item.stock <= 0 %}
         {% for i in item.getsimillars %}
-        {% if i.stock > 0 %}
-        {{i.mark.name.upper}}({{i.stock}}) <br>
-        {% endif %}
+        <strong class="badge bg-success">{{i.mark.name.upper}}({{i.stock}})</strong> <br>
         {% endfor %}
+        {% endif %}
         {%if item.supplier%}{{item.supplier}}{%endif%}
     </td>
     <td hidden class="pondire" suppid="{{item.originsupp.id}}">

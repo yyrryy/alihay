@@ -216,7 +216,9 @@ class Product(models.Model):
         return self.ref.split()
     def getsimillars(self):
         originref=self.ref.split()[0]
-        return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref).exclude(stock=0)# + Product.objects.exclude(id=self.id).filter(refunity=self.refunity).exclude(stock=0)
+        if self.refunity:
+            return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref, stock__gt=0)|Product.objects.exclude(id=self.id, refunity=None).filter(refunity=self.refunity, stock__gt=0)
+        return Product.objects.exclude(id=self.id).filter(category=self.category).filter(ref__startswith=originref, stock__gt=0)
     def getmarks(self):
         return self.marks.split() if self.marks else ''
     def stockvalue(self):

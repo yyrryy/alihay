@@ -1369,7 +1369,6 @@ def searchglobal(request):
     for term in search_terms:
         if term:
             q_objects &= (Q(ref__iregex=term) | Q(refunity__iregex=term) | Q(car__iregex=term)| Q(category__name__iregex=term)| Q(mark__name__iregex=term))
-
     products = Product.objects.filter(q_objects).order_by('-stock')
 
     return JsonResponse({
@@ -4820,7 +4819,7 @@ def outprice(request):
     # go to index
     prices[int(index)][3] = float(prices[int(index)][3]) - float(qty)
     product.stock=float(product.stock)-float(qty)
-    if float(product.stock)-float(qty)<=0:
+    if float(product.stock)-float(qty)<=product.minstock:
         product.supplier=product.originsupp
     PurchasedProduct.objects.create(
         product=product,
@@ -4834,7 +4833,6 @@ def outprice(request):
         'success':True,
         'reachzero':float(product.stock)-float(qty)<=0
     })
-    
 def addbulkclient(request):
     myfile=request.FILES[next(iter(request.FILES))]
     df = pd.read_excel(myfile)

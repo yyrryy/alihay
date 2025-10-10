@@ -1318,10 +1318,16 @@ Version: 1.3.0
       'qty':outqty
     }, (data)=>{
       tr.find('.product_stock').text(stock)
-      $(event.target).parent().parent().find('.qtyofthisprice').text(qtyprice)
-      if (data.reachzero){
+      if (stock>0){
+        tr.find('.product_stock').removeClass('bg-danger')
+      }
+      else{
         tr.find('.product_stock').addClass('bg-danger')
       }
+      $(event.target).parent().parent().find('.qtyofthisprice').text(qtyprice)
+      // if (data.reachzero){
+      //   tr.find('.product_stock').addClass('bg-danger')
+      // }
       //location.reload()
     })
   }
