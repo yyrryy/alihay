@@ -72,7 +72,7 @@
                         <!-- <td class="#">{{ item.unit_type }}</td> -->
                         <td>{{ item.originsupp.name }}</td>
                         
-                            {% if item.command %}
+                            {% if item.supplier %}
                             <td>
                             <i class="fa fa-check text-success fa-2x"></i> <button class="fa fa-times text-danger fa-2x" id="{{item.id}}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '{{item.id}}')"></button> {{item.supplier.name}}
                             </td>
