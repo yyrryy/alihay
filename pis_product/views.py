@@ -903,7 +903,7 @@ def refexeption(request):
 
 
 def filtercommandesupp(request):
-    products=Product.objects.filter(supplier_id=request.POST.get('supplierid'), stock__lte=F('minstock'))
+    products=Product.objects.filter(supplier_id=request.POST.get('supplierid'), stock__lte=F('minstock')).order_by('commanded')
     suppliers_data = Supplier.objects.all()
     return JsonResponse({
         'data':render(request, 'products/commandefilter.html', {'products':products, 'suppliers':suppliers_data}).content.decode('utf-8'),
