@@ -1285,8 +1285,8 @@ def cancelcommande(request):
     product=Product.objects.get(pk=request.GET.get('id'))
     # originref=product.ref.split(' ')[0]
     # simillar = Product.objects..filter(Q(ref__startswith=originref+' ') | Q(ref=originref))
-    product.command=False
-    product.supplier=None
+    # product.command=False
+    # product.supplier=None
     product.commanded=False
     product.save()
     # simillar.update(rcommand=True)
