@@ -5,13 +5,13 @@ import subprocess
 import sys
 
 def runserver():
-    os.system('python manage.py runserver 192.168.100.15:8000')
+    os.system('python manage.py runserver 0.0.0.0:8000')
 
 def lunchchrome():
     # ensure the django server is up and running
     sleep(2)
     # get ipv4 address
-    os.system('start chrome http://192.168.100.15:8000')
+    os.system('start chrome http://0.0.0.0:8000')
 t1=Thread(target=runserver)
 
 t2=Thread(target=lunchchrome)
