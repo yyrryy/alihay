@@ -60,3 +60,23 @@
         <td colspan="6">Aucun produit trouvé</td>
     </tr>
 {% endfor %}
+<script>
+      function cancelcommand(event, pdctid, ...args){
+
+    const commandepage = args[0] === true;
+    $.get('/product/cancelcommande', {
+      'id':pdctid
+    }, (data)=>{
+      console.log($(event.target).parent())
+      if (commandepage){
+        $(event.target).parent().parent().remove()
+      }else{
+        $(event.target).parent().html(`
+        <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="commandepdct(event, '${pdctid}')"></div>
+        `)
+      }
+
+    })
+
+  }
+</script>
