@@ -69,7 +69,7 @@
     }, (data)=>{
       console.log($(event.target).parent())
       if (commandepage){
-        $(event.target).parent().parent().remove()
+        $(event.target).parent().parent().css("background","white")
       }else{
         $(event.target).parent().html(`
         <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="commandepdct(event, '${pdctid}')"></div>
