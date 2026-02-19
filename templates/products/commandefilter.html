@@ -28,7 +28,7 @@
             <!-- <a href=''product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a> -->
             <button class="btn fa fa-edit fa-2x editcommandebtn" type="button" class="btn btn-success" dataid={{item.id}} onclick="$('.updatesuppcommnd{{item.id}}').toggleClass('d-none')"></button>
             {% if not item.commanded %}
-            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}"></i>
+            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}" onclick="validcommand(event, '{{item.id}}')"></i>
             {%else%}
             <i class="fa fa-times text-danger bg-danger fa-2x btn" id="{{item.id}}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '{{item.id}}', commandepage=true)"></i>
             {% endif %}
