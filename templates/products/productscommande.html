@@ -91,6 +91,24 @@
     </div>
 </div>
 <script>
+    function cancelcommand(event, pdctid, ...args){
+
+        const commandepage = args[0] === true;
+        $.get('/product/cancelcommande', {
+            'id':pdctid
+        }, (data)=>{
+            console.log($(event.target).parent())
+            if (commandepage){
+            $(event.target).parent().parent().remove()
+            }
+            // else{
+            // $(event.target).parent().append(`
+            // <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="validcommand(event, '${pdctid}')"></div>
+            // `)
+            // }
+
+        })
+        }
    $(window).on('click', (e)=>{
     //     if(e.target.classList.contains('rrr')){
     //         el=$(e.target)
@@ -170,7 +188,7 @@
             })
         }
     })
-    
+
      function PrintInvoice(divName){
         $('.item-table thead tr th:nth-child(2), .item-table tbody tr td:nth-child(2)').remove();
         $('.item-table thead tr th:nth-child(3), .item-table tbody tr td:nth-child(3)').remove();
