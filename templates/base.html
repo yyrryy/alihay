@@ -1270,6 +1270,30 @@ Version: 1.3.0
 
 
 <script>
+  function validcommand(event, productid){
+    $.ajax({
+        url: "{% url 'product:validcommande' %}",
+        type: "POST",
+        data: {
+            'itemid': productid,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+            console.log(response)
+            if(response.valid){
+
+                $(event.target).parent().parent().append(`<i class="fa fa-times text-danger bg-danger fa-2x btn" id="${productid}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '${productid}', commandepage=true)"></i>`)
+                $(event.target).parent().parent().css('background-color', 'yellowgreen')
+                $(event.target).remove()  
+            }
+        },
+        error: function (response) {
+            console.log(response)
+        }
+    })
+  }
+        
+        
   function createcopy(event, source){
     // source is id of source product
     mark=$(event.target).parent().find('.mark').val()
@@ -2016,7 +2040,7 @@ let inactivityTime=0;
         $(event.target).parent().parent().remove()
       }else{
         $(event.target).parent().html(`
-        <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="commandepdct(event, '${pdctid}')"></div>
+        <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="validcommand(event, '${pdctid}')"></div>
         `)
       }
 

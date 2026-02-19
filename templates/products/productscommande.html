@@ -170,6 +170,7 @@
             })
         }
     })
+    
      function PrintInvoice(divName){
         $('.item-table thead tr th:nth-child(2), .item-table tbody tr td:nth-child(2)').remove();
         $('.item-table thead tr th:nth-child(3), .item-table tbody tr td:nth-child(3)').remove();
@@ -195,34 +196,7 @@
    
         })
         // do each validcommand and update the modal with the product id
-        const validcommand=()=>{
-            $('.validcommand').each((i, el)=>{
-            $(el).click(()=>{
-                let id = $(el).attr('data-itemid')
-                console.log(id)
-                $.ajax({
-                    url: "{% url 'product:validcommande' %}",
-                    type: "POST",
-                    data: {
-                        'itemid': id,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function (response) {
-                        console.log(response)
-                        if(response.valid){
-                            $(el).parent().parent().css('background-color', 'yellowgreen')
-                            $(el).remove()  
-                        }
-                    },
-                    error: function (response) {
-                        console.log(response)
-                    }
-                })
-            })
-   
-            })
-        }
-        validcommand()
+        
         // filter supplier
         $('[name="supplierfilter"]').on('change', ()=>{
             let supplierid = $('[name="supplierfilter"]').val()
