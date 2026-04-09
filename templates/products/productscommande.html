@@ -91,24 +91,24 @@
     </div>
 </div>
 <script>
-    function cancelcommand(event, pdctid, ...args){
+    // function cancelcommand(event, pdctid, ...args){
 
-        const commandepage = args[0] === true;
-        $.get('/product/cancelcommande', {
-            'id':pdctid
-        }, (data)=>{
-            console.log($(event.target).parent())
-            if (commandepage){
-            $(event.target).parent().parent().remove()
-            }
-            // else{
-            // $(event.target).parent().append(`
-            // <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="validcommand(event, '${pdctid}')"></div>
-            // `)
-            // }
+    //     const commandepage = args[0] === true;
+    //     $.get('/product/cancelcommande', {
+    //         'id':pdctid
+    //     }, (data)=>{
+    //         console.log($(event.target).parent())
+    //         if (commandepage){
+    //         $(event.target).parent().parent().remove()
+    //         }
+    //         // else{
+    //         // $(event.target).parent().append(`
+    //         // <div class=""><input placeholder="Quantité" type="number" class="form-control " data-id="14" onchange="validcommand(event, '${pdctid}')"></div>
+    //         // `)
+    //         // }
 
-        })
-        }
+    //     })
+    //     }
    $(window).on('click', (e)=>{
     //     if(e.target.classList.contains('rrr')){
     //         el=$(e.target)

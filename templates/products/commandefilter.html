@@ -13,29 +13,29 @@
             {% endif %}
             {{item.ref.upper}} - {{ item.category.name.upper}} - {{ item.car.upper }}
         </td>
+
         <!-- <td class="#">{{ item.unit_type }}</td> -->
         <td>{{ item.stock|floatformat:-2 }}</td>
         <td>
             {{item.qtycommand|floatformat:-2}}
         </td>
+
         <td>
             {{ item.supplier.name }}
         </td>
-        <!-- <td>{{ item.product_purchased_items|floatformat:-2 }}</td>
-        <td>{{ item.bar_code}}</td> -->
+        
         <td>
-            <!-- new code -->
-            <!-- <a href=''product:update_product' pk=item.id %}"><button class="btn btn-success btn-xs">Modifier</button></a> -->
             <button class="btn fa fa-edit fa-2x editcommandebtn" type="button" class="btn btn-success" dataid={{item.id}} onclick="$('.updatesuppcommnd{{item.id}}').toggleClass('d-none')"></button>
-            {% if not item.commanded %}
-            <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}" onclick="validcommand(event, '{{item.id}}')"></i>
-            {%else%}
-            <i class="fa fa-times text-danger bg-danger fa-2x btn" id="{{item.id}}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '{{item.id}}', commandepage=true)"></i>
-            {% endif %}
+            <div>
+                {% if not item.commanded %}
+                <i class="fa fa-check text-success fa-2x btn validcommand" data-itemid="{{item.id}}" onclick="validcommand(event, '{{item.id}}')"></i>
+                {%else%}
+                <i class="fa fa-times text-danger bg-danger fa-2x btn" id="{{item.id}}" categoryid="{{item.category.id}}" onclick="cancelcommand(event, '{{item.id}}', commandepage=true)"></i>
+                {% endif %}
+            </div>
 
 
             <div class="updatesuppcommnd{{item.id}} d-none">
-                <!-- <form class="form-horizontal add-ledger-form addsupplierform" action="{% url 'product:updatecommande' %}" method="post" autocomplete="off"> -->
                     <div class="form-group">
                             <select name="supplier" required class="select2 form-select mb-3 select2">
                                 <option value="">Fournisseurs</option>
@@ -49,10 +49,6 @@
                 </form>
             </div>
             
-
-            <!-- old code
-            <a href=''product:add_product_items' product_id=item.id %}"><button class="btn btn-primary btn-xs">الدخول</button></a>
-            <a href=''product:item_details' pk=item.id %}"><button class="btn btn-success btn-xs"><i class="fa fa-eye"></i></button></a>-->
         </td>
     </tr>
     {% empty %}
