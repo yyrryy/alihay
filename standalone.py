@@ -13,8 +13,8 @@ def get_local_ip():
         s.close() 
     return ip
 
-print("ip", ip)
 ip = get_local_ip()
+print("ip", ip)
 def runserver():
     os.system(f'python manage.py runserver {ip}:80')
 
